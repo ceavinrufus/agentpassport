@@ -6,7 +6,13 @@ from aps_sdk.identity import (
     verify_auth_chain,
 )
 from aps_sdk.observability import EventEmitter, FileSink, MemorySink, StdoutSink
-from aps_sdk.task import BudgetExceededError, BudgetTracker, TaskLifecycle, create_subtask
+from aps_sdk.task import (
+    BudgetExceededError,
+    BudgetTracker,
+    RetryExecutor,
+    TaskLifecycle,
+    create_subtask,
+)
 from aps_sdk.registry_client import RegistryClient
 from aps_sdk.transport import HttpTransport, StdioTransport
 from aps_sdk.types import (
@@ -37,6 +43,7 @@ __all__ = [
     "MemorySink",
     "ObservabilityEvent",
     "RegistryClient",
+    "RetryExecutor",
     "StdioTransport",
     "StdoutSink",
     "TaskEnvelope",
