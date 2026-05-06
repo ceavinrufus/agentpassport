@@ -1,4 +1,5 @@
 """Run the 3-agent incident investigation demo."""
+# demo entrypoint — uses print() intentionally
 
 from __future__ import annotations
 

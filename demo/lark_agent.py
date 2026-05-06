@@ -17,10 +17,8 @@ async def notify_team(task: TaskEnvelope) -> dict[str, Any]:
     incident_id = task.intent.params.get("incident_id", "unknown")
 
     webhook_url = os.environ.get("LARK_WEBHOOK_URL")
-    app_id = os.environ.get("LARK_APP_ID")
-    app_secret = os.environ.get("LARK_APP_SECRET")
 
-    if not webhook_url and not (app_id and app_secret):
+    if not webhook_url:
         return {
             "source": "lark",
             "notified": False,
@@ -28,7 +26,7 @@ async def notify_team(task: TaskEnvelope) -> dict[str, Any]:
             "message": f"[MOCK] Would notify team about {incident_id}: {summary}",
         }
 
-    channel = "webhook" if webhook_url else "api"
+    channel = "webhook"
     try:
         import urllib.request
 
@@ -39,9 +37,8 @@ async def notify_team(task: TaskEnvelope) -> dict[str, Any]:
             }
         ).encode()
 
-        target_url = webhook_url or f"https://open.larksuite.com/open-apis/bot/v2/hook/{app_id}"
         req = urllib.request.Request(
-            target_url,
+            webhook_url,
             data=payload,
             headers={"Content-Type": "application/json"},
             method="POST",

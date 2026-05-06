@@ -63,7 +63,7 @@ async def investigate_incident(task: TaskEnvelope) -> dict[str, Any]:
             metrics = data if isinstance(data, list) else [data]
         else:
             metrics = [{"metric": "system.cpu.user", "value": None, "error": "query failed"}]
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:  # noqa: BLE001  # demo: degrade gracefully; don't let pup failures crash the orchestrator
         metrics = [{"metric": "system.cpu.user", "error": str(exc)}]
 
     summary = (
