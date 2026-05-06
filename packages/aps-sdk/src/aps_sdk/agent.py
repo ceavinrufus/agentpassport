@@ -34,6 +34,7 @@ class Agent:
         self.did = did_from_public_key(self._public_key)
         self._transport = HttpTransport()
         self.capabilities: dict[str, CapabilityHandler] = {}
+        self._trusted_keys: dict[str, bytes] = {}
         self.emitter = emitter or EventEmitter(sinks=[StdoutSink()])
 
     def capability(self, name: str) -> Callable[[CapabilityHandler], CapabilityHandler]:
@@ -44,6 +45,10 @@ class Agent:
             return func
 
         return decorator
+
+    def trust_keys(self, keys: dict[str, bytes]) -> None:
+        """Register known public keys for auth chain verification."""
+        self._trusted_keys.update(keys)
 
     async def delegate(
         self,
@@ -63,6 +68,18 @@ class Agent:
         )
         signed_task = task.model_copy(update={"auth_chain": [*task.auth_chain, entry]})
         return await self._transport.send(signed_task, endpoint)
+
+    async def serve(
+        self, host: str = "0.0.0.0", port: int = 8100, verify_auth: bool = False
+    ) -> None:
+        """Start HTTP server to receive tasks. Requires agentps[server] extra."""
+        import uvicorn
+        from aps_sdk.server import create_agent_app
+
+        app = create_agent_app(self, verify_auth=verify_auth)
+        config = uvicorn.Config(app, host=host, port=port, log_level="info")
+        server = uvicorn.Server(config)
+        await server.serve()
 
     async def handle(self, task: TaskEnvelope) -> dict[str, Any]:
         """Handle an incoming task by dispatching to the registered capability handler."""
