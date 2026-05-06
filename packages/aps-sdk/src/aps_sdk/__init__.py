@@ -5,7 +5,7 @@ from aps_sdk.identity import (
     sign_delegation,
     verify_auth_chain,
 )
-from aps_sdk.observability import EventEmitter, FileSink, MemorySink, StdoutSink
+from aps_sdk.observability import EventEmitter, FileSink, MemorySink, OtelSink, StdoutSink
 from aps_sdk.task import (
     BudgetExceededError,
     BudgetTracker,
@@ -42,6 +42,7 @@ __all__ = [
     "Intent",
     "MemorySink",
     "ObservabilityEvent",
+    "OtelSink",
     "RegistryClient",
     "RetryExecutor",
     "StdioTransport",
