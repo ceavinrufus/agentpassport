@@ -9,7 +9,7 @@ dependencies = [
     "uvicorn>=0.30",
     "aiosqlite>=0.20",
     "httpx>=0.28.1",
-    "slowapi>=0.1.9",
+    "slowapi>=0.1.9,<0.2",
 ]
 
 [tool.uv.sources]

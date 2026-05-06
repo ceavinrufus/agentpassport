@@ -7,6 +7,9 @@ from aps_registry.limiter import limiter
 from aps_registry.query import QueryEngine
 from aps_registry.storage.base import Storage
 
+PUBLISH_RATE = "10/minute"
+QUERY_RATE = "60/minute"
+
 router = APIRouter()
 _storage: Storage | None = None
 _query_engine = QueryEngine()
@@ -29,14 +32,14 @@ def health() -> dict[str, str]:
 
 
 @router.post("/v1/agents", status_code=201)
-@limiter.limit("10/minute")
+@limiter.limit(PUBLISH_RATE)
 def publish_agent(request: Request, card: AgentCard) -> dict[str, str]:
     get_storage().register(card)
     return {"status": "registered", "did": card.did}
 
 
 @router.get("/v1/agents/query")
-@limiter.limit("60/minute")
+@limiter.limit(QUERY_RATE)
 def query_agents(
     request: Request,
     capability: str,
@@ -54,7 +57,7 @@ def query_agents(
 
 
 @router.get("/v1/agents/{did:path}")
-@limiter.limit("60/minute")
+@limiter.limit(QUERY_RATE)
 def get_agent(request: Request, did: str) -> dict:
     card = get_storage().get(did)
     if card is None:

@@ -49,3 +49,24 @@ async def test_rate_limit_search(client):
 
     resp = await client.get("/v1/agents/query", params={"capability": "test"})
     assert resp.status_code == 429
+
+
+async def test_rate_limit_get_agent(client):
+    """GET /v1/agents/{did} is limited to 60/minute; 61st call returns 429."""
+    resp = await client.post(
+        "/v1/agents",
+        json={
+            "did": "did:aps:rl_get",
+            "name": "Get Agent",
+            "capabilities": ["test"],
+            "endpoint": "http://test:8000",
+        },
+    )
+    assert resp.status_code == 201
+
+    for i in range(60):
+        resp = await client.get("/v1/agents/did:aps:rl_get")
+        assert resp.status_code == 200, f"Request {i} failed: {resp.text}"
+
+    resp = await client.get("/v1/agents/did:aps:rl_get")
+    assert resp.status_code == 429
