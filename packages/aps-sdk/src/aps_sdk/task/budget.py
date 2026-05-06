@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 
 class BudgetExceededError(Exception):
     def __init__(self, requested: float, remaining: float):
@@ -12,6 +14,7 @@ class BudgetTracker:
     def __init__(self, total_credits: float):
         self.total_credits = total_credits
         self.spent: float = 0.0
+        self._lock = asyncio.Lock()
 
     @property
     def remaining(self) -> float:
@@ -38,3 +41,29 @@ class BudgetTracker:
         if amount < 0:
             raise ValueError(f"amount must be non-negative, got {amount}")
         self.spent = max(0.0, self.spent - amount)
+
+    async def async_spend(self, amount: float) -> None:
+        """Thread-safe spend under asyncio lock."""
+        if amount < 0:
+            raise ValueError(f"amount must be non-negative, got {amount}")
+        async with self._lock:
+            if amount > self.remaining:
+                raise BudgetExceededError(requested=amount, remaining=self.remaining)
+            self.spent += amount
+
+    async def async_allocate(self, amount: float) -> float:
+        """Thread-safe allocate under asyncio lock. Returns allocated amount."""
+        if amount < 0:
+            raise ValueError(f"amount must be non-negative, got {amount}")
+        async with self._lock:
+            if amount > self.remaining:
+                raise BudgetExceededError(requested=amount, remaining=self.remaining)
+            self.spent += amount
+            return amount
+
+    async def async_return_unused(self, amount: float) -> None:
+        """Thread-safe return_unused under asyncio lock."""
+        if amount < 0:
+            raise ValueError(f"amount must be non-negative, got {amount}")
+        async with self._lock:
+            self.spent = max(0.0, self.spent - amount)
