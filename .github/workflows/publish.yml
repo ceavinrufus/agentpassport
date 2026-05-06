@@ -1,0 +1,36 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # OIDC for trusted publishing
+
+    strategy:
+      matrix:
+        package:
+          - { dir: packages/aps-sdk, name: agentps }
+          - { dir: packages/aps-registry, name: agentps-registry }
+          - { dir: packages/aps-adapters, name: agentps-adapters }
+          - { dir: packages/aps-cli, name: agentps-cli }
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Build ${{ matrix.package.name }}
+        working-directory: ${{ matrix.package.dir }}
+        run: uv build --out-dir ../../dist/
+
+      - name: Publish ${{ matrix.package.name }} to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/

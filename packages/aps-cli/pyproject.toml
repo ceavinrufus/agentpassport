@@ -1,10 +1,10 @@
 [project]
-name = "aps-cli"
+name = "agentps-cli"
 version = "0.1.0"
 description = "CLI tools for APS trace viewing and key management"
 requires-python = ">=3.11"
 dependencies = [
-    "aps-sdk",
+    "agentps",
     "click>=8.1",
     "rich>=13.0",
 ]
@@ -13,7 +13,7 @@ dependencies = [
 aps = "aps_cli.main:cli"
 
 [tool.uv.sources]
-aps-sdk = { workspace = true }
+agentps = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]

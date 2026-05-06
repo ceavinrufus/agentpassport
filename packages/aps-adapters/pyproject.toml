@@ -1,15 +1,15 @@
 [project]
-name = "aps-adapters"
+name = "agentps-adapters"
 version = "0.1.0"
 description = "Adapter templates for wrapping existing tools as APS agents"
 requires-python = ">=3.11"
 dependencies = [
-    "aps-sdk",
+    "agentps",
     "httpx>=0.27",
 ]
 
 [tool.uv.sources]
-aps-sdk = { workspace = true }
+agentps = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]

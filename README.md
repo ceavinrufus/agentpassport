@@ -5,9 +5,9 @@ A Python SDK for building multi-agent systems with auth-chain delegation, typed 
 ## Install
 
 ```bash
-pip install aps-sdk              # core
-pip install aps-sdk[server]      # + agent server mode
-pip install aps-sdk[otel]        # + OpenTelemetry
+pip install agentps              # core
+pip install agentps[server]      # + agent server mode
+pip install agentps[otel]        # + OpenTelemetry
 ```
 
 ## Quick Start
@@ -48,11 +48,11 @@ Every agent emits `ObservabilityEvent` records through an `EventEmitter`. Attach
 | `StdoutSink` | Print to stdout (default) |
 | `FileSink` | Append to a log file |
 | `MemorySink` | Buffer in memory (useful for testing) |
-| `OtelSink` | Export via OpenTelemetry (`aps-sdk[otel]`) |
+| `OtelSink` | Export via OpenTelemetry (`agentps[otel]`) |
 
 ### Registry
 
-`RegistryClient` resolves agent DIDs to HTTP endpoints, enabling dynamic discovery. Agents can publish their `AgentCard` (name, DID, capabilities, endpoint) to a running `aps-registry` instance and look up other agents by capability or DID.
+`RegistryClient` resolves agent DIDs to HTTP endpoints, enabling dynamic discovery. Agents can publish their `AgentCard` (name, DID, capabilities, endpoint) to a running `agentps-registry` instance and look up other agents by capability or DID.
 
 ## Demo
 
@@ -66,12 +66,12 @@ uv run python -m demo.run_demo
 
 ## Packages
 
-| Package | Description |
-|---------|-------------|
-| `aps-sdk` | Core agent SDK |
-| `aps-registry` | Agent discovery registry |
-| `aps-adapters` | MCP and other adapters |
-| `aps-cli` | CLI tools |
+| Package | PyPI name | Description |
+|---------|-----------|-------------|
+| `aps-sdk` | `agentps` | Core agent SDK |
+| `aps-registry` | `agentps-registry` | Agent discovery registry |
+| `aps-adapters` | `agentps-adapters` | MCP and other adapters |
+| `aps-cli` | `agentps-cli` | CLI tools |
 
 ## Development
 

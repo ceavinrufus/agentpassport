@@ -1,10 +1,10 @@
 [project]
-name = "aps-registry"
+name = "agentps-registry"
 version = "0.1.0"
 description = "Reference registry for APS capability discovery"
 requires-python = ">=3.11"
 dependencies = [
-    "aps-sdk",
+    "agentps",
     "fastapi>=0.111",
     "uvicorn>=0.30",
     "aiosqlite>=0.20",
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-aps-sdk = { workspace = true }
+agentps = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
