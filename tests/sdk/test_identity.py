@@ -1,6 +1,7 @@
 from aps_sdk.identity.did import generate_keypair, did_from_public_key, parse_did
 from aps_sdk.identity.signing import sign_delegation, verify_auth_chain
 from aps_sdk.types import AuthEntry
+import time
 
 
 def test_generate_keypair():
@@ -57,6 +58,29 @@ def test_verify_fails_on_tampered_scope():
     )
     # Tamper with scope
     entry.scope = ["search", "delete"]
+
+    is_valid = verify_auth_chain(
+        auth_chain=[entry],
+        expected_subject=did_b,
+        known_public_keys={did_a: pub_a},
+    )
+    assert is_valid is False
+
+
+def test_verify_fails_on_expired_delegation():
+    priv_a, pub_a = generate_keypair()
+    _, pub_b = generate_keypair()
+    did_a = did_from_public_key(pub_a)
+    did_b = did_from_public_key(pub_b)
+
+    # Create a delegation that expired 1 second ago
+    entry = sign_delegation(
+        issuer_private_key=priv_a,
+        issuer_did=did_a,
+        subject_did=did_b,
+        scope=["search"],
+        ttl_seconds=-1,  # already expired
+    )
 
     is_valid = verify_auth_chain(
         auth_chain=[entry],

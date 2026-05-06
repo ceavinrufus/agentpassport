@@ -51,6 +51,16 @@ def verify_auth_chain(
         if pub_key_bytes is None:
             return False
 
+        # Validate timestamps
+        now = datetime.now(timezone.utc)
+        try:
+            issued = datetime.fromisoformat(entry.issued_at)
+            expires = datetime.fromisoformat(entry.expires_at)
+        except ValueError:
+            return False
+        if issued > now or now > expires:
+            return False
+
         payload = _canonical_payload(
             entry.issuer,
             entry.subject,
@@ -63,7 +73,7 @@ def verify_auth_chain(
         try:
             vk = VerifyKey(pub_key_bytes)
             vk.verify(payload, sig_bytes)
-        except (BadSignatureError, Exception):
+        except (BadSignatureError, ValueError):
             return False
 
     if auth_chain[-1].subject != expected_subject:

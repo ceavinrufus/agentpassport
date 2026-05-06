@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 from aps_sdk.identity.did import generate_keypair, did_from_public_key
@@ -24,7 +25,11 @@ class FileKeystore:
             "private_key": private_key.hex(),
             "public_key": public_key.hex(),
         }
-        self.path.write_text(json.dumps(data, indent=2))
+        serialized = json.dumps(data, indent=2)
+        # Write with restricted permissions (owner read/write only)
+        fd = os.open(self.path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(serialized)
         return did
 
     def get_private_key(self, alias: str) -> bytes:
