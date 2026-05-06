@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from aps_sdk.types import AgentCard
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
+from aps_registry.limiter import limiter
 from aps_registry.query import QueryEngine
 from aps_registry.storage.base import Storage
 
@@ -28,13 +29,16 @@ def health() -> dict[str, str]:
 
 
 @router.post("/v1/agents", status_code=201)
-def publish_agent(card: AgentCard) -> dict[str, str]:
+@limiter.limit("10/minute")
+def publish_agent(request: Request, card: AgentCard) -> dict[str, str]:
     get_storage().register(card)
     return {"status": "registered", "did": card.did}
 
 
 @router.get("/v1/agents/query")
+@limiter.limit("60/minute")
 def query_agents(
+    request: Request,
     capability: str,
     max_cost: float | None = None,
     max_latency_ms: int | None = None,
@@ -50,7 +54,8 @@ def query_agents(
 
 
 @router.get("/v1/agents/{did:path}")
-def get_agent(did: str) -> dict:
+@limiter.limit("60/minute")
+def get_agent(request: Request, did: str) -> dict:
     card = get_storage().get(did)
     if card is None:
         raise HTTPException(status_code=404, detail="Agent not found")
