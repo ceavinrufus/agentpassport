@@ -7,6 +7,7 @@ from aps_sdk.identity import (
 )
 from aps_sdk.observability import EventEmitter, FileSink, MemorySink, StdoutSink
 from aps_sdk.task import BudgetExceededError, BudgetTracker, TaskLifecycle, create_subtask
+from aps_sdk.registry_client import RegistryClient
 from aps_sdk.transport import HttpTransport, StdioTransport
 from aps_sdk.types import (
     AgentCard,
@@ -35,6 +36,7 @@ __all__ = [
     "Intent",
     "MemorySink",
     "ObservabilityEvent",
+    "RegistryClient",
     "StdioTransport",
     "StdoutSink",
     "TaskEnvelope",
