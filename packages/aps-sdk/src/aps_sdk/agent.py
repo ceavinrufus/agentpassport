@@ -4,9 +4,11 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 
 from aps_sdk.identity.did import did_from_public_key, generate_keypair
+from aps_sdk.identity.signing import sign_delegation
 from aps_sdk.observability.emitter import EventEmitter
 from aps_sdk.observability.sinks import StdoutSink
 from aps_sdk.task.lifecycle import TaskLifecycle
+from aps_sdk.transport.http import HttpTransport
 from aps_sdk.types.task import TaskEnvelope, TaskState
 
 CapabilityHandler = Callable[[TaskEnvelope], Awaitable[dict[str, Any]]]
@@ -30,6 +32,7 @@ class Agent:
             self._private_key, self._public_key = generate_keypair()
 
         self.did = did_from_public_key(self._public_key)
+        self._transport = HttpTransport()
         self.capabilities: dict[str, CapabilityHandler] = {}
         self.emitter = emitter or EventEmitter(sinks=[StdoutSink()])
 
@@ -41,6 +44,25 @@ class Agent:
             return func
 
         return decorator
+
+    async def delegate(
+        self,
+        task: TaskEnvelope,
+        target_did: str,
+        endpoint: str,
+        scope: list[str] | None = None,
+        ttl_seconds: int = 3600,
+    ) -> dict:
+        """Sign auth chain and send task to target agent."""
+        entry = sign_delegation(
+            issuer_private_key=self._private_key,
+            issuer_did=self.did,
+            subject_did=target_did,
+            scope=scope or ["*"],
+            ttl_seconds=ttl_seconds,
+        )
+        signed_task = task.model_copy(update={"auth_chain": [*task.auth_chain, entry]})
+        return await self._transport.send(signed_task, endpoint)
 
     async def handle(self, task: TaskEnvelope) -> dict[str, Any]:
         """Handle an incoming task by dispatching to the registered capability handler."""
