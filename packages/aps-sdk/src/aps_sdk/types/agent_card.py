@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Any
 from pydantic import BaseModel, Field
 
 
@@ -12,8 +13,8 @@ class AgentCard(BaseModel):
     name: str
     version: str = "0.1.0"
     capabilities: list[str]
-    input_schema: dict = Field(default_factory=dict)
-    output_schema: dict = Field(default_factory=dict)
+    input_schema: dict[str, Any] = Field(default_factory=dict)
+    output_schema: dict[str, Any] = Field(default_factory=dict)
     cost: CostInfo = Field(default_factory=CostInfo)
     latency_p99_ms: int | None = None
     trust_requirements: list[str] = Field(default_factory=list)

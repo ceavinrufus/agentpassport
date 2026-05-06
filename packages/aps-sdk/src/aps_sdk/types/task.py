@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import uuid
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any, Literal
+
+from aps_sdk.types.identity import AuthEntry
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -40,7 +42,7 @@ class Constraints(BaseModel):
 class FailurePolicy(BaseModel):
     retry: bool = True
     max_retries: int = 2
-    fallback: str = "return_partial"
+    fallback: Literal["return_partial", "fail_hard", "try_alternative"] = "return_partial"
 
 
 class TaskEnvelope(BaseModel):
@@ -49,7 +51,7 @@ class TaskEnvelope(BaseModel):
     parent_id: str | None = None
     intent: Intent
     constraints: Constraints = Field(default_factory=Constraints)
-    auth_chain: list[dict[str, Any]] = Field(default_factory=list)
+    auth_chain: list[AuthEntry] = Field(default_factory=list)
     result_schema: dict[str, Any] | None = None
     failure_policy: FailurePolicy = Field(default_factory=FailurePolicy)
     trace_id: str = Field(default_factory=lambda: f"trace_{uuid.uuid4().hex[:16]}")
