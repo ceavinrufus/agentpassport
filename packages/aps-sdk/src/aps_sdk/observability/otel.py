@@ -11,22 +11,32 @@ class OtelSink(Sink):
 
     def __init__(self, tracer: Any = None) -> None:
         if tracer is None:
-            from opentelemetry import trace
+            try:
+                from opentelemetry import trace
+                from opentelemetry.trace import NonRecordingSpan  # noqa: F401
+            except ImportError as e:
+                raise ImportError(
+                    "opentelemetry-api is required for OtelSink. "
+                    "Install with: pip install aps-sdk[otel]"
+                ) from e
 
             tracer = trace.get_tracer("aps-sdk")
         self._tracer = tracer
 
     def write(self, event: ObservabilityEvent) -> None:
-        with self._tracer.start_span(f"aps.{event.event}") as span:
-            span.set_attribute("aps.trace_id", event.trace_id)
-            span.set_attribute("aps.task_id", event.task_id)
-            span.set_attribute("aps.agent", event.agent)
-            span.set_attribute("aps.event", event.event)
-            span.set_attribute("aps.cost_used", event.cost_used)
-            span.set_attribute("aps.budget_remaining", event.budget_remaining)
-            if event.from_state:
-                span.set_attribute("aps.from_state", event.from_state)
-            if event.to_state:
-                span.set_attribute("aps.to_state", event.to_state)
-            for k, v in event.metadata.items():
-                span.set_attribute(f"aps.meta.{k}", str(v))
+        try:
+            with self._tracer.start_as_current_span(f"aps.{event.event}") as span:
+                span.set_attribute("aps.trace_id", event.trace_id)
+                span.set_attribute("aps.task_id", event.task_id)
+                span.set_attribute("aps.agent", event.agent)
+                span.set_attribute("aps.event", event.event)
+                span.set_attribute("aps.cost_used", event.cost_used)
+                span.set_attribute("aps.budget_remaining", event.budget_remaining)
+                if event.from_state:
+                    span.set_attribute("aps.from_state", event.from_state)
+                if event.to_state:
+                    span.set_attribute("aps.to_state", event.to_state)
+                for k, v in event.metadata.items():
+                    span.set_attribute(f"aps.meta.{k}", str(v))
+        except Exception:
+            pass  # don't let observability failures crash the agent

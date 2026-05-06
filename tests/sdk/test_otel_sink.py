@@ -4,11 +4,11 @@ from aps_sdk.observability.otel import OtelSink
 
 
 def test_otel_sink_starts_span():
-    """OtelSink.write() calls tracer.start_span with the event name."""
+    """OtelSink.write() calls tracer.start_as_current_span with the event name."""
     mock_tracer = MagicMock()
     mock_span = MagicMock()
-    mock_tracer.start_span.return_value.__enter__ = MagicMock(return_value=mock_span)
-    mock_tracer.start_span.return_value.__exit__ = MagicMock(return_value=False)
+    mock_tracer.start_as_current_span.return_value.__enter__ = MagicMock(return_value=mock_span)
+    mock_tracer.start_as_current_span.return_value.__exit__ = MagicMock(return_value=False)
 
     sink = OtelSink(tracer=mock_tracer)
     event = ObservabilityEvent(
@@ -19,16 +19,15 @@ def test_otel_sink_starts_span():
     )
     sink.write(event)
 
-    mock_tracer.start_span.assert_called_once()
-    assert "task_completed" in str(mock_tracer.start_span.call_args)
+    mock_tracer.start_as_current_span.assert_called_once_with("aps.task_completed")
 
 
 def test_otel_sink_sets_aps_attributes():
     """OtelSink sets trace_id, task_id, agent, cost_used as span attributes."""
     mock_tracer = MagicMock()
     mock_span = MagicMock()
-    mock_tracer.start_span.return_value.__enter__ = MagicMock(return_value=mock_span)
-    mock_tracer.start_span.return_value.__exit__ = MagicMock(return_value=False)
+    mock_tracer.start_as_current_span.return_value.__enter__ = MagicMock(return_value=mock_span)
+    mock_tracer.start_as_current_span.return_value.__exit__ = MagicMock(return_value=False)
 
     sink = OtelSink(tracer=mock_tracer)
     event = ObservabilityEvent(
@@ -45,3 +44,24 @@ def test_otel_sink_sets_aps_attributes():
     mock_span.set_attribute.assert_any_call("aps.task_id", "task_123")
     mock_span.set_attribute.assert_any_call("aps.agent", "did:aps:xyz")
     mock_span.set_attribute.assert_any_call("aps.cost_used", 0.1)
+
+
+def test_otel_sink_metadata_fan_out():
+    """OtelSink fans out metadata dict as aps.meta.<k> span attributes."""
+    mock_tracer = MagicMock()
+    mock_span = MagicMock()
+    mock_tracer.start_as_current_span.return_value.__enter__ = MagicMock(return_value=mock_span)
+    mock_tracer.start_as_current_span.return_value.__exit__ = MagicMock(return_value=False)
+
+    sink = OtelSink(tracer=mock_tracer)
+    event = ObservabilityEvent(
+        trace_id="trace_abc",
+        task_id="task_123",
+        event="task_running",
+        agent="did:aps:xyz",
+        metadata={"model": "gpt-4o", "retry": 2},
+    )
+    sink.write(event)
+
+    mock_span.set_attribute.assert_any_call("aps.meta.model", "gpt-4o")
+    mock_span.set_attribute.assert_any_call("aps.meta.retry", "2")
