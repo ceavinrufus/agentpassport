@@ -112,6 +112,7 @@ dependencies = [
     { name = "aiosqlite" },
     { name = "aps-sdk" },
     { name = "fastapi" },
+    { name = "httpx" },
     { name = "uvicorn" },
 ]
 
@@ -120,6 +121,7 @@ requires-dist = [
     { name = "aiosqlite", specifier = ">=0.20" },
     { name = "aps-sdk", editable = "packages/aps-sdk" },
     { name = "fastapi", specifier = ">=0.111" },
+    { name = "httpx", specifier = ">=0.28.1" },
     { name = "uvicorn", specifier = ">=0.30" },
 ]
 

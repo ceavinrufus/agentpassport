@@ -8,6 +8,7 @@ dependencies = [
     "fastapi>=0.111",
     "uvicorn>=0.30",
     "aiosqlite>=0.20",
+    "httpx>=0.28.1",
 ]
 
 [tool.uv.sources]
