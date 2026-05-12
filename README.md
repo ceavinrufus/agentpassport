@@ -125,7 +125,7 @@ registry.revoke(jti)  # all future requests with this token fail
 Wire-compatible with Python — cross-language trust chains work out of the box.
 
 ```typescript
-import { Agent, InMemoryRevocationRegistry, ScopeError } from "agentpassport-ts"
+import { Agent, InMemoryRevocationRegistry, ScopeError } from "@agentpassport/core"
 
 const agent = new Agent("ts-agent", { privateKey, revocationRegistry })
 agent.trustKeys({ [orchestratorDid]: orchestratorPublicKey })
@@ -163,7 +163,7 @@ cd packages/agentpassport-ts && npm install  # TypeScript SDK
 | Package | Description |
 |---------|-------------|
 | `agentpassport` | Python trust and authorization layer |
-| `agentpassport-ts` | TypeScript SDK (wire-compatible) |
+| `@agentpassport/core` | TypeScript SDK (wire-compatible) |
 | `agentpassport-registry` | Trusted agent registry with signature verification |
 | `agentpassport-adapters` | MCP and REST adapters |
 | `agentpassport-cli` | CLI — keygen, trace viewer |

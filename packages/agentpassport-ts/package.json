@@ -1,6 +1,6 @@
 {
-  "name": "agentpassport-ts",
-  "version": "0.1.0",
+  "name": "@agentpassport/core",
+  "version": "0.1.1",
   "description": "TypeScript SDK for agentpassport — the AI passport layer",
   "type": "module",
   "main": "./dist/index.js",

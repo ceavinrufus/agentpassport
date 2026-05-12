@@ -1,17 +1,17 @@
-# agentpassport-ts — TypeScript SDK
+# @agentpassport/core — TypeScript SDK
 
 Wire-compatible TypeScript SDK for agentpassport. Same four primitives as the Python SDK — cross-language trust chains work out of the box.
 
 ## Install
 
 ```bash
-npm install
+npm install @agentpassport/core
 ```
 
 ## Quickstart
 
 ```typescript
-import { Agent, InMemoryRevocationRegistry, ScopeError } from "agentpassport-ts"
+import { Agent, InMemoryRevocationRegistry, ScopeError } from "@agentpassport/core"
 
 const revocationRegistry = new InMemoryRevocationRegistry()
 const agent = new Agent("ts-agent", { privateKey, revocationRegistry })
