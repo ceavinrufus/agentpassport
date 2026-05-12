@@ -9,6 +9,7 @@ from aps_sdk.observability.emitter import EventEmitter
 from aps_sdk.observability.sinks import StdoutSink
 from aps_sdk.task.lifecycle import TaskLifecycle
 from aps_sdk.transport.http import HttpTransport
+from aps_sdk.trust import ScopeError, TrustMiddleware
 from aps_sdk.types.task import TaskEnvelope, TaskState
 
 CapabilityHandler = Callable[[TaskEnvelope], Awaitable[dict[str, Any]]]
@@ -34,14 +35,34 @@ class Agent:
         self.did = did_from_public_key(self._public_key)
         self._transport = HttpTransport()
         self.capabilities: dict[str, CapabilityHandler] = {}
+        self._capability_scopes: dict[str, list[str]] = {}
         self._trusted_keys: dict[str, bytes] = {}
         self.emitter = emitter or EventEmitter(sinks=[StdoutSink()])
+        self._trust_middleware = TrustMiddleware(
+            agent_did=self.did,
+            known_public_keys=self._trusted_keys,
+            capability_scopes=self._capability_scopes,
+        )
 
-    def capability(self, name: str) -> Callable[[CapabilityHandler], CapabilityHandler]:
-        """Decorator to register a capability handler."""
+    def capability(
+        self,
+        name: str,
+        requires: list[str] | None = None,
+    ) -> Callable[[CapabilityHandler], CapabilityHandler]:
+        """Decorator to register a capability handler.
+
+        Args:
+            name:     Capability name matched against task.intent.type.
+            requires: Optional list of scope strings (action:resource) that the
+                      incoming task's auth chain must grant before the handler
+                      runs. If omitted or empty, no scope check is performed.
+                      Example: requires=["read:db:customers"]
+        """
 
         def decorator(func: CapabilityHandler) -> CapabilityHandler:
             self.capabilities[name] = func
+            if requires:
+                self._capability_scopes[name] = requires
             return func
 
         return decorator
@@ -69,23 +90,19 @@ class Agent:
         signed_task = task.model_copy(update={"auth_chain": [*task.auth_chain, entry]})
         return await self._transport.send(signed_task, endpoint)
 
-    async def serve(
-        self, host: str = "0.0.0.0", port: int = 8100, verify_auth: bool = False
-    ) -> None:
-        """Start HTTP server to receive tasks. Requires agentps[server] extra."""
-        import uvicorn
-        from aps_sdk.server import create_agent_app
-
-        app = create_agent_app(self, verify_auth=verify_auth)
-        config = uvicorn.Config(app, host=host, port=port, log_level="info")
-        server = uvicorn.Server(config)
-        await server.serve()
-
     async def handle(self, task: TaskEnvelope) -> dict[str, Any]:
-        """Handle an incoming task by dispatching to the registered capability handler."""
+        """Handle an incoming task by dispatching to the registered capability handler.
+
+        Pre-execution scope check runs automatically if the capability
+        declares requires=[...]. ScopeError is raised before the handler
+        is called if the auth chain does not cover the declared scope.
+        """
         handler = self.capabilities.get(task.intent.type)
         if handler is None:
             raise ValueError(f"No handler for capability: {task.intent.type}")
+
+        # Pre-execution scope declaration check — raises ScopeError if violated
+        self._trust_middleware.check(task.auth_chain, task.intent.type)
 
         trace_id = str(task.trace_id or task.id)
         task_id = str(task.id)

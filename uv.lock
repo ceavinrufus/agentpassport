@@ -57,10 +57,6 @@ otel = [
     { name = "opentelemetry-api" },
     { name = "opentelemetry-sdk" },
 ]
-server = [
-    { name = "starlette" },
-    { name = "uvicorn" },
-]
 
 [package.metadata]
 requires-dist = [
@@ -75,10 +71,8 @@ requires-dist = [
     { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.4" },
     { name = "starlette", marker = "extra == 'dev'", specifier = ">=0.37" },
-    { name = "starlette", marker = "extra == 'server'", specifier = ">=0.37" },
-    { name = "uvicorn", marker = "extra == 'server'", specifier = ">=0.30" },
 ]
-provides-extras = ["server", "otel", "dev"]
+provides-extras = ["otel", "dev"]
 
 [[package]]
 name = "agentps-adapters"

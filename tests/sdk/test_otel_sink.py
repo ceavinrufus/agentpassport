@@ -1,10 +1,14 @@
 from unittest.mock import MagicMock
+from aps_sdk.identity.did import generate_keypair, did_from_public_key
 from aps_sdk.types.events import ObservabilityEvent
 from aps_sdk.observability.otel import OtelSink
 
 
 def test_otel_sink_starts_span():
     """OtelSink.write() calls tracer.start_as_current_span with the event name."""
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     mock_tracer = MagicMock()
     mock_span = MagicMock()
     mock_tracer.start_as_current_span.return_value.__enter__ = MagicMock(return_value=mock_span)
@@ -15,7 +19,7 @@ def test_otel_sink_starts_span():
         trace_id="trace_abc",
         task_id="task_123",
         event="task_completed",
-        agent="did:aps:xyz",
+        agent=agent_did,
     )
     sink.write(event)
 
@@ -24,6 +28,9 @@ def test_otel_sink_starts_span():
 
 def test_otel_sink_sets_aps_attributes():
     """OtelSink sets trace_id, task_id, agent, cost_used as span attributes."""
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     mock_tracer = MagicMock()
     mock_span = MagicMock()
     mock_tracer.start_as_current_span.return_value.__enter__ = MagicMock(return_value=mock_span)
@@ -34,7 +41,7 @@ def test_otel_sink_sets_aps_attributes():
         trace_id="trace_abc",
         task_id="task_123",
         event="task_running",
-        agent="did:aps:xyz",
+        agent=agent_did,
         cost_used=0.1,
         budget_remaining=0.9,
     )
@@ -42,12 +49,15 @@ def test_otel_sink_sets_aps_attributes():
 
     mock_span.set_attribute.assert_any_call("aps.trace_id", "trace_abc")
     mock_span.set_attribute.assert_any_call("aps.task_id", "task_123")
-    mock_span.set_attribute.assert_any_call("aps.agent", "did:aps:xyz")
+    mock_span.set_attribute.assert_any_call("aps.agent", agent_did)
     mock_span.set_attribute.assert_any_call("aps.cost_used", 0.1)
 
 
 def test_otel_sink_metadata_fan_out():
     """OtelSink fans out metadata dict as aps.meta.<k> span attributes."""
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     mock_tracer = MagicMock()
     mock_span = MagicMock()
     mock_tracer.start_as_current_span.return_value.__enter__ = MagicMock(return_value=mock_span)
@@ -58,7 +68,7 @@ def test_otel_sink_metadata_fan_out():
         trace_id="trace_abc",
         task_id="task_123",
         event="task_running",
-        agent="did:aps:xyz",
+        agent=agent_did,
         metadata={"model": "gpt-4o", "retry": 2},
     )
     sink.write(event)

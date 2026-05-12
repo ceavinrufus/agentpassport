@@ -1,7 +1,7 @@
 [project]
 name = "agentps-registry"
 version = "0.1.0"
-description = "Reference registry for APS capability discovery"
+description = "Trusted agent registry with AgentCard signature verification"
 requires-python = ">=3.11"
 dependencies = [
     "agentps",

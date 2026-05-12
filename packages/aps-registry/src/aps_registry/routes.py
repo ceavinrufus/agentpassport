@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from aps_sdk.identity.did import parse_did
+from aps_sdk.identity.signing import verify_agent_card
 from aps_sdk.types import AgentCard
 from fastapi import APIRouter, HTTPException, Request
 
@@ -34,6 +36,13 @@ def health() -> dict[str, str]:
 @router.post("/v1/agents", status_code=201)
 @limiter.limit(PUBLISH_RATE)
 def publish_agent(request: Request, card: AgentCard) -> dict[str, str]:
+    if card.signature is not None:
+        try:
+            public_key_bytes = parse_did(card.did)
+        except ValueError as e:
+            raise HTTPException(status_code=422, detail=f"Invalid DID: {e}") from e
+        if not verify_agent_card(card, public_key_bytes):
+            raise HTTPException(status_code=422, detail="AgentCard signature verification failed")
     get_storage().register(card)
     return {"status": "registered", "did": card.did}
 

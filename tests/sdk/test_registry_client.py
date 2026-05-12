@@ -1,17 +1,21 @@
 import pytest
 import httpx
 from unittest.mock import AsyncMock, patch, MagicMock
+from aps_sdk.identity.did import generate_keypair, did_from_public_key
 from aps_sdk.registry_client import RegistryClient
 from aps_sdk.types import AgentCard, CostInfo
 
 
 async def test_discover_agents_by_capability():
     """RegistryClient.discover() queries registry and returns AgentCards."""
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     mock_response = MagicMock(spec=httpx.Response)
     mock_response.status_code = 200
     mock_response.json.return_value = [
         {
-            "did": "did:aps:abc123",
+            "did": agent_did,
             "name": "test-agent",
             "capabilities": ["log_search"],
             "endpoint": "http://localhost:8101",
@@ -25,7 +29,7 @@ async def test_discover_agents_by_capability():
         agents = await client.discover(capability="log_search")
 
     assert len(agents) == 1
-    assert agents[0].did == "did:aps:abc123"
+    assert agents[0].did == agent_did
     assert "log_search" in agents[0].capabilities
 
 
@@ -48,8 +52,11 @@ async def test_discover_with_cost_filter():
 
 async def test_publish_agent_card():
     """RegistryClient.publish() posts card and returns response."""
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     card = AgentCard(
-        did="did:aps:xyz",
+        did=agent_did,
         name="my-agent",
         capabilities=["search"],
         endpoint="http://localhost:8100",

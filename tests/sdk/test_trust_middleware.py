@@ -1,78 +1,92 @@
-import pytest
-import httpx
-from aps_sdk import Agent, Intent, TaskEnvelope
+"""Tests for auth chain verification (formerly test_trust_middleware).
+
+server.py / create_agent_app removed in step 3. These tests verify the
+underlying verify_auth_chain logic directly — same coverage intent, no
+HTTP server dependency.
+"""
 from aps_sdk.identity import generate_keypair, did_from_public_key, sign_delegation
-from aps_sdk.types.identity import AuthEntry
-from aps_sdk.server import create_agent_app
+from aps_sdk.identity.signing import verify_auth_chain
 
 
-@pytest.fixture
-def receiver():
-    agent = Agent(name="receiver")
-
-    @agent.capability("echo")
-    async def echo(task: TaskEnvelope) -> dict:
-        return {"ok": True}
-
-    return agent
+def _make_agent_did():
+    _, pub = generate_keypair()
+    return did_from_public_key(pub), pub
 
 
-async def test_valid_chain_accepted(receiver):
-    """Task with valid auth chain and trusted key is accepted."""
+def test_valid_chain_accepted():
+    """Valid JWT signed by trusted key is accepted."""
     sender_priv, sender_pub = generate_keypair()
     sender_did = did_from_public_key(sender_pub)
-    entry = sign_delegation(sender_priv, sender_did, receiver.did, ["*"])
+    _, receiver_pub = generate_keypair()
+    receiver_did = did_from_public_key(receiver_pub)
 
-    receiver.trust_keys({sender_did: sender_pub})
-    app = create_agent_app(receiver, verify_auth=True)
+    token = sign_delegation(sender_priv, sender_did, receiver_did, ["*"])
 
-    task = TaskEnvelope(intent=Intent(type="echo", params={}), auth_chain=[entry])
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test"
-    ) as client:
-        resp = await client.post("/aps/tasks", content=task.model_dump_json())
-    assert resp.status_code == 200
-
-
-async def test_bad_signature_rejected(receiver):
-    """Task with forged signature returns 403."""
-    bad_entry = AuthEntry(
-        issuer="did:aps:fake",
-        subject=receiver.did,
-        scope=["*"],
-        issued_at="2026-01-01T00:00:00+00:00",
-        expires_at="2099-01-01T00:00:00+00:00",
-        sig="aa" * 32,
+    assert verify_auth_chain(
+        auth_chain=[token],
+        expected_subject=receiver_did,
+        known_public_keys={sender_did: sender_pub},
     )
-    app = create_agent_app(receiver, verify_auth=True)
-
-    task = TaskEnvelope(intent=Intent(type="echo", params={}), auth_chain=[bad_entry])
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test"
-    ) as client:
-        resp = await client.post("/aps/tasks", content=task.model_dump_json())
-    assert resp.status_code == 403
 
 
-async def test_empty_chain_rejected(receiver):
-    """Empty auth chain returns 403 when verify_auth=True."""
-    app = create_agent_app(receiver, verify_auth=True)
+def test_untrusted_key_rejected():
+    """JWT signed by a key not in known_public_keys is rejected."""
+    untrusted_priv, untrusted_pub = generate_keypair()
+    untrusted_did = did_from_public_key(untrusted_pub)
+    _, receiver_pub = generate_keypair()
+    receiver_did = did_from_public_key(receiver_pub)
 
-    task = TaskEnvelope(intent=Intent(type="echo", params={}), auth_chain=[])
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test"
-    ) as client:
-        resp = await client.post("/aps/tasks", content=task.model_dump_json())
-    assert resp.status_code == 403
+    token = sign_delegation(untrusted_priv, untrusted_did, receiver_did, ["*"])
+
+    # Empty trusted key set — issuer not registered
+    assert not verify_auth_chain(
+        auth_chain=[token],
+        expected_subject=receiver_did,
+        known_public_keys={},
+    )
 
 
-async def test_no_verify_accepts_no_chain(receiver):
-    """When verify_auth=False (default), tasks without auth chain are accepted."""
-    app = create_agent_app(receiver, verify_auth=False)
+def test_empty_chain_rejected():
+    """Empty auth chain always returns False."""
+    assert not verify_auth_chain(
+        auth_chain=[],
+        expected_subject="did:key:zanything",
+        known_public_keys={},
+    )
 
-    task = TaskEnvelope(intent=Intent(type="echo", params={}), auth_chain=[])
-    async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app=app), base_url="http://test"
-    ) as client:
-        resp = await client.post("/aps/tasks", content=task.model_dump_json())
-    assert resp.status_code == 200
+
+def test_multi_hop_chain_accepted():
+    """Two-hop chain: root → sender → receiver, all trusted."""
+    root_priv, root_pub = generate_keypair()
+    root_did = did_from_public_key(root_pub)
+    sender_priv, sender_pub = generate_keypair()
+    sender_did = did_from_public_key(sender_pub)
+    _, receiver_pub = generate_keypair()
+    receiver_did = did_from_public_key(receiver_pub)
+
+    hop1 = sign_delegation(root_priv, root_did, sender_did, ["*"])
+    hop2 = sign_delegation(sender_priv, sender_did, receiver_did, ["*"])
+
+    assert verify_auth_chain(
+        auth_chain=[hop1, hop2],
+        expected_subject=receiver_did,
+        known_public_keys={root_did: root_pub, sender_did: sender_pub},
+    )
+
+
+def test_wrong_subject_rejected():
+    """Chain with correct signature but wrong final subject is rejected."""
+    sender_priv, sender_pub = generate_keypair()
+    sender_did = did_from_public_key(sender_pub)
+    _, receiver_pub = generate_keypair()
+    receiver_did = did_from_public_key(receiver_pub)
+    _, other_pub = generate_keypair()
+    other_did = did_from_public_key(other_pub)
+
+    token = sign_delegation(sender_priv, sender_did, receiver_did, ["*"])
+
+    assert not verify_auth_chain(
+        auth_chain=[token],
+        expected_subject=other_did,  # wrong subject
+        known_public_keys={sender_did: sender_pub},
+    )

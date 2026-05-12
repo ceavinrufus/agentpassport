@@ -1,7 +1,7 @@
 [project]
 name = "agentps-adapters"
 version = "0.1.0"
-description = "Adapter templates for wrapping existing tools as APS agents"
+description = "MCP and REST adapters for APS agents"
 requires-python = ">=3.11"
 dependencies = [
     "agentps",

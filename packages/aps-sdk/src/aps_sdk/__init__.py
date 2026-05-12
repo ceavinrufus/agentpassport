@@ -2,25 +2,31 @@ from aps_sdk.agent import Agent
 from aps_sdk.identity import (
     did_from_public_key,
     generate_keypair,
+    parse_did,
+    sign_agent_card,
     sign_delegation,
+    verify_agent_card,
     verify_auth_chain,
 )
 from aps_sdk.observability import EventEmitter, FileSink, MemorySink, OtelSink, StdoutSink
+from aps_sdk.registry_client import RegistryClient
+from aps_sdk.revocation import (
+    InMemoryRevocationRegistry,
+    RevocationRegistry,
+    SqliteRevocationRegistry,
+)
 from aps_sdk.task import (
     BudgetExceededError,
     BudgetTracker,
-    RetryExecutor,
     TaskLifecycle,
     create_subtask,
 )
-from aps_sdk.registry_client import RegistryClient
 from aps_sdk.transport import HttpTransport, StdioTransport
+from aps_sdk.trust import ScopeError, TrustMiddleware
 from aps_sdk.types import (
     AgentCard,
-    AuthEntry,
     Constraints,
     CostInfo,
-    FailurePolicy,
     Intent,
     ObservabilityEvent,
     TaskEnvelope,
@@ -28,31 +34,45 @@ from aps_sdk.types import (
 )
 
 __all__ = [
+    # Agent
     "Agent",
-    "AgentCard",
-    "AuthEntry",
-    "BudgetExceededError",
-    "BudgetTracker",
-    "Constraints",
-    "CostInfo",
-    "EventEmitter",
-    "FailurePolicy",
-    "FileSink",
-    "HttpTransport",
-    "Intent",
-    "MemorySink",
-    "ObservabilityEvent",
-    "OtelSink",
-    "RegistryClient",
-    "RetryExecutor",
-    "StdioTransport",
-    "StdoutSink",
-    "TaskEnvelope",
-    "TaskLifecycle",
-    "TaskState",
-    "create_subtask",
+    # Identity
     "did_from_public_key",
     "generate_keypair",
+    "parse_did",
+    "sign_agent_card",
     "sign_delegation",
+    "verify_agent_card",
     "verify_auth_chain",
+    # Observability
+    "EventEmitter",
+    "FileSink",
+    "MemorySink",
+    "OtelSink",
+    "StdoutSink",
+    # Registry
+    "RegistryClient",
+    # Revocation
+    "InMemoryRevocationRegistry",
+    "RevocationRegistry",
+    "SqliteRevocationRegistry",
+    # Task
+    "BudgetExceededError",
+    "BudgetTracker",
+    "TaskLifecycle",
+    "create_subtask",
+    # Transport
+    "HttpTransport",
+    "StdioTransport",
+    # Trust
+    "ScopeError",
+    "TrustMiddleware",
+    # Types
+    "AgentCard",
+    "Constraints",
+    "CostInfo",
+    "Intent",
+    "ObservabilityEvent",
+    "TaskEnvelope",
+    "TaskState",
 ]

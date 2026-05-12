@@ -10,7 +10,7 @@ class ObservabilityEvent(BaseModel):
     event: str
     from_state: str | None = None
     to_state: str | None = None
-    agent: str  # did:aps:<id>
+    agent: str  # did:key:z<base58btc>
     timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     cost_used: float = 0.0
     budget_remaining: float = 0.0

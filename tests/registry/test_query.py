@@ -1,11 +1,24 @@
 from aps_registry.query import QueryEngine
+from aps_sdk.identity.did import generate_keypair, did_from_public_key
 from aps_sdk.types import AgentCard, CostInfo
+
+
+def _make_did():
+    _, pub = generate_keypair()
+    return did_from_public_key(pub)
+
+
+# Generate stable DIDs once at module level so assertion values are consistent
+# within a single test run.
+_DID_FAST_SEARCH = _make_did()
+_DID_CHEAP_SEARCH = _make_did()
+_DID_WRITER = _make_did()
 
 
 def _cards():
     return [
         AgentCard(
-            did="did:aps:fast-search",
+            did=_DID_FAST_SEARCH,
             name="Fast Search",
             capabilities=["search"],
             endpoint="http://a",
@@ -13,7 +26,7 @@ def _cards():
             latency_p99_ms=200,
         ),
         AgentCard(
-            did="did:aps:cheap-search",
+            did=_DID_CHEAP_SEARCH,
             name="Cheap Search",
             capabilities=["search", "summarize"],
             endpoint="http://b",
@@ -21,7 +34,7 @@ def _cards():
             latency_p99_ms=1000,
         ),
         AgentCard(
-            did="did:aps:writer",
+            did=_DID_WRITER,
             name="Writer",
             capabilities=["write"],
             endpoint="http://c",
@@ -42,14 +55,14 @@ def test_query_with_budget_filter():
     engine = QueryEngine()
     results = engine.query(_cards(), capability="search", max_cost_per_task=0.01)
     assert len(results) == 1
-    assert results[0].did == "did:aps:cheap-search"
+    assert results[0].did == _DID_CHEAP_SEARCH
 
 
 def test_query_with_latency_filter():
     engine = QueryEngine()
     results = engine.query(_cards(), capability="search", max_latency_ms=500)
     assert len(results) == 1
-    assert results[0].did == "did:aps:fast-search"
+    assert results[0].did == _DID_FAST_SEARCH
 
 
 def test_query_no_match():

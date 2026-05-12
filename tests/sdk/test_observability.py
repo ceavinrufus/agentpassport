@@ -1,8 +1,12 @@
+from aps_sdk.identity.did import generate_keypair, did_from_public_key
 from aps_sdk.observability.emitter import EventEmitter
 from aps_sdk.observability.sinks import MemorySink
 
 
 def test_emit_event_to_memory_sink():
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     sink = MemorySink()
     emitter = EventEmitter(sinks=[sink])
 
@@ -10,7 +14,7 @@ def test_emit_event_to_memory_sink():
         trace_id="trace_abc",
         task_id="task_123",
         event="task_created",
-        agent="did:aps:test",
+        agent=agent_did,
     )
 
     assert len(sink.events) == 1
@@ -19,13 +23,16 @@ def test_emit_event_to_memory_sink():
 
 
 def test_emit_state_change():
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     sink = MemorySink()
     emitter = EventEmitter(sinks=[sink])
 
     emitter.emit_state_change(
         trace_id="trace_abc",
         task_id="task_123",
-        agent="did:aps:test",
+        agent=agent_did,
         from_state="created",
         to_state="delegated",
         cost_used=1.0,

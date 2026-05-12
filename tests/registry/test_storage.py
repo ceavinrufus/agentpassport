@@ -1,5 +1,6 @@
 import pytest
 from aps_registry.storage.sqlite import SqliteStorage
+from aps_sdk.identity.did import generate_keypair, did_from_public_key
 from aps_sdk.types import AgentCard, CostInfo
 
 
@@ -12,8 +13,11 @@ def storage(tmp_path):
 
 
 def test_register_and_get(storage):
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     card = AgentCard(
-        did="did:aps:test123",
+        did=agent_did,
         name="Test Agent",
         capabilities=["search", "summarize"],
         endpoint="http://localhost:9000",
@@ -21,24 +25,29 @@ def test_register_and_get(storage):
         latency_p99_ms=500,
     )
     storage.register(card)
-    result = storage.get("did:aps:test123")
+    result = storage.get(agent_did)
     assert result is not None
     assert result.name == "Test Agent"
     assert result.capabilities == ["search", "summarize"]
 
 
 def test_get_nonexistent(storage):
-    result = storage.get("did:aps:nope")
+    _, pub = generate_keypair()
+    unknown_did = did_from_public_key(pub)
+    result = storage.get(unknown_did)
     assert result is None
 
 
 def test_delete(storage):
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     card = AgentCard(
-        did="did:aps:del",
+        did=agent_did,
         name="To Delete",
         capabilities=["x"],
         endpoint="http://localhost:9001",
     )
     storage.register(card)
-    storage.delete("did:aps:del")
-    assert storage.get("did:aps:del") is None
+    storage.delete(agent_did)
+    assert storage.get(agent_did) is None

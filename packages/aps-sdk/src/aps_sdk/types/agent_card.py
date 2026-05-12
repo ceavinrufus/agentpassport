@@ -1,5 +1,9 @@
 from __future__ import annotations
+
+import hashlib
+import json
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -20,3 +24,22 @@ class AgentCard(BaseModel):
     trust_requirements: list[str] = Field(default_factory=list)
     transports: list[str] = Field(default_factory=lambda: ["http"])
     endpoint: str
+    signature: str | None = None  # hex-encoded Ed25519 sig over canonical_payload()
+
+    def canonical_payload(self) -> bytes:
+        """Deterministic bytes for signing and verification.
+
+        Signed fields: name, did, capabilities (sorted), endpoint.
+        Mutable metadata (version, cost, latency, schemas, transports,
+        trust_requirements) and the signature field itself are excluded.
+
+        Uses sorted keys and compact JSON separators for determinism.
+        """
+        payload = {
+            "capabilities": sorted(self.capabilities),
+            "did": self.did,
+            "endpoint": self.endpoint,
+            "name": self.name,
+        }
+        canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode()).digest()

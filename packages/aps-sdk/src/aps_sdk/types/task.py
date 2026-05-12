@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import uuid
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Literal
-
-from aps_sdk.types.identity import AuthEntry
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -39,21 +37,14 @@ class Constraints(BaseModel):
         return v
 
 
-class FailurePolicy(BaseModel):
-    retry: bool = True
-    max_retries: int = 2
-    fallback: Literal["return_partial", "fail_hard", "try_alternative"] = "return_partial"
-
-
 class TaskEnvelope(BaseModel):
     aps_version: str = "1.0"
     id: str = Field(default_factory=lambda: f"task_{uuid.uuid4().hex[:16]}")
     parent_id: str | None = None
     intent: Intent
     constraints: Constraints = Field(default_factory=Constraints)
-    auth_chain: list[AuthEntry] = Field(default_factory=list)
+    auth_chain: list[str] = Field(default_factory=list)  # list of delegation JWT strings
     result_schema: dict[str, Any] | None = None
-    failure_policy: FailurePolicy = Field(default_factory=FailurePolicy)
     trace_id: str = Field(default_factory=lambda: f"trace_{uuid.uuid4().hex[:16]}")
     transport: str = "http"
     state: TaskState = TaskState.CREATED

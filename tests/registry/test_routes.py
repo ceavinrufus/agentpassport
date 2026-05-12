@@ -1,5 +1,6 @@
 import pytest
 from aps_registry.app import create_app
+from aps_sdk.identity.did import generate_keypair, did_from_public_key
 from httpx import ASGITransport, AsyncClient
 
 
@@ -22,8 +23,11 @@ async def test_health(client):
 
 
 async def test_publish_and_query(client):
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     card = {
-        "did": "did:aps:testpub",
+        "did": agent_did,
         "name": "Test Pub",
         "capabilities": ["search"],
         "endpoint": "http://test:8000",
@@ -35,18 +39,21 @@ async def test_publish_and_query(client):
     assert resp.status_code == 200
     data = resp.json()
     assert len(data) == 1
-    assert data[0]["did"] == "did:aps:testpub"
+    assert data[0]["did"] == agent_did
 
 
 async def test_get_agent(client):
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     card = {
-        "did": "did:aps:getme",
+        "did": agent_did,
         "name": "Get Me",
         "capabilities": ["write"],
         "endpoint": "http://test:8001",
     }
     await client.post("/v1/agents", json=card)
 
-    resp = await client.get("/v1/agents/did:aps:getme")
+    resp = await client.get(f"/v1/agents/{agent_did}")
     assert resp.status_code == 200
     assert resp.json()["name"] == "Get Me"

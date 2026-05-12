@@ -1,6 +1,7 @@
 import uuid
-from aps_sdk.types.task import TaskEnvelope, Intent, Constraints, FailurePolicy, TaskState
-from aps_sdk.types.identity import AuthEntry
+from aps_sdk.identity.did import generate_keypair, did_from_public_key
+from aps_sdk.identity.signing import sign_delegation, _decode_jwt_claims
+from aps_sdk.types.task import TaskEnvelope, Intent, Constraints, TaskState
 from aps_sdk.types.agent_card import AgentCard, CostInfo
 from aps_sdk.types.events import ObservabilityEvent
 
@@ -34,24 +35,38 @@ def test_task_state_enum():
     assert TaskState.FAILED.value == "failed"
 
 
-def test_auth_entry_round_trip():
-    entry = AuthEntry(
-        issuer="did:aps:abc",
-        subject="did:aps:xyz",
-        scope=["search"],
-        issued_at="2026-05-07T00:00:00Z",
-        expires_at="2026-05-07T01:00:00Z",
-        sig="deadbeef",
+def test_auth_chain_jwt_round_trip():
+    """auth_chain is list[str]; JWT strings survive TaskEnvelope serialisation."""
+    priv_a, pub_a = generate_keypair()
+    _, pub_b = generate_keypair()
+    did_a = did_from_public_key(pub_a)
+    did_b = did_from_public_key(pub_b)
+
+    token = sign_delegation(priv_a, did_a, did_b, ["read:db:customers"])
+
+    task = TaskEnvelope(
+        intent=Intent(type="query", params={}),
+        auth_chain=[token],
     )
-    data = entry.model_dump()
-    restored = AuthEntry.model_validate(data)
-    assert restored.issuer == entry.issuer
-    assert restored.sig == entry.sig
+    data = task.model_dump()
+    restored = TaskEnvelope.model_validate(data)
+
+    assert len(restored.auth_chain) == 1
+    assert restored.auth_chain[0] == token
+
+    claims = _decode_jwt_claims(restored.auth_chain[0])
+    assert claims["iss"] == did_a
+    assert claims["sub"] == did_b
+    assert claims["scope"] == ["read:db:customers"]
+    assert "jti" in claims
 
 
 def test_agent_card_round_trip():
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     card = AgentCard(
-        did="did:aps:searcher",
+        did=agent_did,
         name="Searcher",
         capabilities=["search"],
         endpoint="http://localhost:9000",
@@ -66,11 +81,14 @@ def test_agent_card_round_trip():
 
 
 def test_observability_event_round_trip():
+    _, pub = generate_keypair()
+    agent_did = did_from_public_key(pub)
+
     evt = ObservabilityEvent(
         trace_id="trace_abc",
         task_id="task_123",
         event="task_created",
-        agent="did:aps:planner",
+        agent=agent_did,
         cost_used=0.0,
         budget_remaining=10.0,
     )

@@ -14,7 +14,7 @@ def test_agent_registers_capability():
 
 def test_agent_has_did():
     agent = Agent(name="test-agent")
-    assert agent.did.startswith("did:aps:")
+    assert agent.did.startswith("did:key:z")
 
 
 async def test_agent_handles_task():
