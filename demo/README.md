@@ -13,6 +13,11 @@ Works out-of-the-box with mock fallbacks — no credentials required.
 ## How to run
 
 ```bash
+# Install deps (first time only)
+cd packages/aps-sdk-ts && npm install && cd ../..
+cd demo/ts_agent && npm install && cd ../..
+
+# Run the demo
 uv run python -m demo.run_demo
 ```
 
