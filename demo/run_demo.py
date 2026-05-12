@@ -103,8 +103,24 @@ def http_get(url: str) -> tuple[int, dict]:
 # ---------------------------------------------------------------------------
 # Build the TS agent bundle
 # ---------------------------------------------------------------------------
+def npm_install_if_needed(directory: Path, label: str) -> None:
+    if not (directory / "node_modules").exists():
+        print(f"  Installing {label} deps...")
+        result = subprocess.run(
+            ["npm", "install"],
+            cwd=directory,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            print(result.stderr)
+            raise RuntimeError(f"npm install failed in {label}")
+
 def build_ts_agent() -> None:
     print("\n[BUILD] Bundling TS agent...")
+    sdk_dir = Path(__file__).parent.parent / "packages" / "aps-sdk-ts"
+    npm_install_if_needed(sdk_dir, "aps-sdk-ts")
+    npm_install_if_needed(TS_AGENT_DIR, "ts-agent")
     result = subprocess.run(
         ["npm", "run", "build:bundle"],
         cwd=TS_AGENT_DIR,
