@@ -1,10 +1,10 @@
-"""Orchestrator APS agent — coordinates Datadog + Lark agents in-process."""
+"""Orchestrator agentpassport agent — coordinates Datadog + Lark agents in-process."""
 
 from __future__ import annotations
 
 from typing import Any
 
-from aps_sdk import Agent, Intent, TaskEnvelope
+from agentpassport import Agent, Intent, TaskEnvelope
 
 from demo.datadog_agent import datadog_agent
 from demo.lark_agent import lark_agent

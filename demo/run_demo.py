@@ -1,5 +1,5 @@
 """
-demo/run_demo.py — APS Cross-SDK Trust Demo
+demo/run_demo.py — agentpassport Cross-SDK Trust Demo
 
 Scenario:
   1. Python orchestrator creates identity, signs delegation JWT for TS agent
@@ -28,10 +28,10 @@ from pathlib import Path
 # Ensure the Python SDK is importable
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(REPO_ROOT / "packages" / "aps-sdk" / "src"))
+sys.path.insert(0, str(REPO_ROOT / "packages" / "agentpassport" / "src"))
 
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
-from aps_sdk.identity.signing import sign_delegation, _decode_jwt_claims
+from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.identity.signing import sign_delegation, _decode_jwt_claims
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -118,8 +118,8 @@ def npm_install_if_needed(directory: Path, label: str) -> None:
 
 def build_ts_agent() -> None:
     print("\n[BUILD] Bundling TS agent...")
-    sdk_dir = Path(__file__).parent.parent / "packages" / "aps-sdk-ts"
-    npm_install_if_needed(sdk_dir, "aps-sdk-ts")
+    sdk_dir = Path(__file__).parent.parent / "packages" / "agentpassport-ts"
+    npm_install_if_needed(sdk_dir, "agentpassport-ts")
     npm_install_if_needed(TS_AGENT_DIR, "ts-agent")
     result = subprocess.run(
         ["npm", "run", "build:bundle"],
@@ -138,16 +138,16 @@ def build_ts_agent() -> None:
 def start_ts_agent() -> subprocess.Popen:
     proc = subprocess.Popen(
         ["node", str(SERVER_JS)],
-        env={**os.environ, "APS_AGENT_PORT": str(AGENT_PORT)},
+        env={**os.environ, "AGENTPASSPORT_AGENT_PORT": str(AGENT_PORT)},
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
     )
-    # Wait for "APS_AGENT_READY" on stdout
+    # Wait for "AGENTPASSPORT_AGENT_READY" on stdout
     deadline = time.time() + 10
     while time.time() < deadline:
         line = proc.stdout.readline()  # type: ignore[union-attr]
-        if "APS_AGENT_READY" in line:
+        if "AGENTPASSPORT_AGENT_READY" in line:
             return proc
         if proc.poll() is not None:
             err = proc.stderr.read()  # type: ignore[union-attr]
@@ -179,7 +179,7 @@ def render_auth_chain(chain: list[str], known_keys: dict[str, bytes]) -> None:
         pub = known_keys.get(iss)
         if pub:
             try:
-                from aps_sdk.identity.signing import _verify_jwt_signature
+                from agentpassport.identity.signing import _verify_jwt_signature
                 _verify_jwt_signature(token, pub)
                 sig_ok = True
             except Exception:
@@ -200,7 +200,7 @@ def render_auth_chain(chain: list[str], known_keys: dict[str, bytes]) -> None:
 # Main demo
 # ---------------------------------------------------------------------------
 def main() -> None:
-    header("APS DEMO — Cross-SDK Trust Chain")
+    header("agentpassport DEMO — Cross-SDK Trust Chain")
 
     # ------------------------------------------------------------------
     # Generate identities
@@ -257,7 +257,7 @@ def main() -> None:
         # Build TaskEnvelope (plain dict — wire format)
         def make_task(intent_type: str, params: dict | None = None) -> dict:
             return {
-                "aps_version": "1.0",
+                "version": "1.0",
                 "id": "demo-task-001",
                 "intent": {"type": intent_type, "params": params or {}},
                 "constraints": {

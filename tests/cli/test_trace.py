@@ -2,9 +2,9 @@ import json
 import tempfile
 from pathlib import Path
 
-from aps_cli.main import cli
-from aps_sdk.identity import generate_keypair, did_from_public_key, sign_delegation
-from aps_sdk.identity.signing import _decode_jwt_claims
+from agentpassport_cli.main import cli
+from agentpassport.identity import generate_keypair, did_from_public_key, sign_delegation
+from agentpassport.identity.signing import _decode_jwt_claims
 from click.testing import CliRunner
 
 
@@ -12,7 +12,7 @@ def test_cli_help():
     runner = CliRunner()
     result = runner.invoke(cli, ["--help"])
     assert result.exit_code == 0
-    assert "APS CLI" in result.output
+    assert "agentpassport CLI" in result.output
 
 
 def test_trace_command_exists():

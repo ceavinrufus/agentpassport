@@ -1,5 +1,5 @@
 import pytest
-from aps_sdk.task.budget import BudgetExceededError, BudgetTracker
+from agentpassport.task.budget import BudgetExceededError, BudgetTracker
 
 
 def test_budget_spend():

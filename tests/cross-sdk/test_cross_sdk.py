@@ -17,9 +17,9 @@ import sys
 
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../packages/aps-sdk/src"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../packages/agentpassport/src"))
 
-from aps_sdk.identity.signing import verify_auth_chain
+from agentpassport.identity.signing import verify_auth_chain
 
 FIXTURES_PATH = os.path.join(os.path.dirname(__file__), "ts_fixtures.json")
 

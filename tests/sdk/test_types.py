@@ -1,9 +1,9 @@
 import uuid
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
-from aps_sdk.identity.signing import sign_delegation, _decode_jwt_claims
-from aps_sdk.types.task import TaskEnvelope, Intent, Constraints, TaskState
-from aps_sdk.types.agent_card import AgentCard, CostInfo
-from aps_sdk.types.events import ObservabilityEvent
+from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.identity.signing import sign_delegation, _decode_jwt_claims
+from agentpassport.types.task import TaskEnvelope, Intent, Constraints, TaskState
+from agentpassport.types.agent_card import AgentCard, CostInfo
+from agentpassport.types.events import ObservabilityEvent
 
 
 def test_task_envelope_creation():
@@ -11,7 +11,7 @@ def test_task_envelope_creation():
         intent=Intent(type="search", params={"query": "hello"}),
         constraints=Constraints(budget_credits=10, deadline_ms=5000),
     )
-    assert task.aps_version == "1.0"
+    assert task.version == "1.0"
     assert task.id.startswith("task_")
     assert task.state == TaskState.CREATED
     assert task.constraints.budget_credits == 10

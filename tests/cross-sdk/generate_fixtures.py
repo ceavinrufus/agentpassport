@@ -15,10 +15,10 @@ import sys
 import os
 
 # Ensure the Python SDK is importable
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../packages/aps-sdk/src"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../../packages/agentpassport/src"))
 
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
-from aps_sdk.identity.signing import sign_delegation
+from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.identity.signing import sign_delegation
 
 
 def _hex(b: bytes) -> str:

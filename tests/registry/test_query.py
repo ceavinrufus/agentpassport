@@ -1,6 +1,6 @@
-from aps_registry.query import QueryEngine
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
-from aps_sdk.types import AgentCard, CostInfo
+from agentpassport_registry.query import QueryEngine
+from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.types import AgentCard, CostInfo
 
 
 def _make_did():

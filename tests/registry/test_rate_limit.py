@@ -1,6 +1,6 @@
 import pytest
-from aps_registry.app import create_app
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
+from agentpassport_registry.app import create_app
+from agentpassport.identity.did import generate_keypair, did_from_public_key
 from httpx import ASGITransport, AsyncClient
 
 

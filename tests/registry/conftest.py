@@ -1,5 +1,5 @@
 import pytest
-from aps_registry.limiter import limiter
+from agentpassport_registry.limiter import limiter
 
 
 @pytest.fixture(autouse=True)

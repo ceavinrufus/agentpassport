@@ -4,7 +4,7 @@
  * Generates DIDs, signs delegation JWTs, builds multi-hop chains, and writes
  * everything to ts_fixtures.json for consumption by the Python test suite.
  *
- * Run from packages/aps-sdk-ts/:
+ * Run from packages/agentpassport-ts/:
  *   npx tsx ../../tests/cross-sdk/generate_ts_fixtures.ts
  */
 
@@ -12,8 +12,8 @@ import { writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
-import { generateKeypair, didFromPublicKey } from "../../packages/aps-sdk-ts/src/identity.js";
-import { signDelegation } from "../../packages/aps-sdk-ts/src/jwt.js";
+import { generateKeypair, didFromPublicKey } from "../../packages/agentpassport-ts/src/identity.js";
+import { signDelegation } from "../../packages/agentpassport-ts/src/jwt.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

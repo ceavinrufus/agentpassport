@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// ../../packages/aps-sdk-ts/node_modules/@noble/ed25519/index.js
+// ../../packages/agentpassport-ts/node_modules/@noble/ed25519/index.js
 var ed25519_CURVE = {
   p: 0x7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffedn,
   n: 0x1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3edn,
@@ -482,7 +482,7 @@ var wNAF = (n) => {
   return { p, f };
 };
 
-// ../../packages/aps-sdk-ts/node_modules/@noble/hashes/esm/utils.js
+// ../../packages/agentpassport-ts/node_modules/@noble/hashes/esm/utils.js
 function isBytes2(a) {
   return a instanceof Uint8Array || ArrayBuffer.isView(a) && a.constructor.name === "Uint8Array";
 }
@@ -535,7 +535,7 @@ function createHasher(hashCons) {
   return hashC;
 }
 
-// ../../packages/aps-sdk-ts/node_modules/@noble/hashes/esm/_md.js
+// ../../packages/agentpassport-ts/node_modules/@noble/hashes/esm/_md.js
 function setBigUint64(view, byteOffset, value, isLE) {
   if (typeof view.setBigUint64 === "function")
     return view.setBigUint64(byteOffset, value, isLE);
@@ -657,7 +657,7 @@ var SHA512_IV = /* @__PURE__ */ Uint32Array.from([
   327033209
 ]);
 
-// ../../packages/aps-sdk-ts/node_modules/@noble/hashes/esm/_u64.js
+// ../../packages/agentpassport-ts/node_modules/@noble/hashes/esm/_u64.js
 var U32_MASK64 = /* @__PURE__ */ BigInt(2 ** 32 - 1);
 var _32n = /* @__PURE__ */ BigInt(32);
 function fromBig(n, le = false) {
@@ -692,7 +692,7 @@ var add4H = (low, Ah, Bh, Ch, Dh) => Ah + Bh + Ch + Dh + (low / 2 ** 32 | 0) | 0
 var add5L = (Al, Bl, Cl, Dl, El) => (Al >>> 0) + (Bl >>> 0) + (Cl >>> 0) + (Dl >>> 0) + (El >>> 0);
 var add5H = (low, Ah, Bh, Ch, Dh, Eh) => Ah + Bh + Ch + Dh + Eh + (low / 2 ** 32 | 0) | 0;
 
-// ../../packages/aps-sdk-ts/node_modules/@noble/hashes/esm/sha2.js
+// ../../packages/agentpassport-ts/node_modules/@noble/hashes/esm/sha2.js
 var K512 = /* @__PURE__ */ (() => split([
   "0x428a2f98d728ae22",
   "0x7137449123ef65cd",
@@ -892,10 +892,10 @@ var SHA512 = class extends HashMD {
 };
 var sha512 = /* @__PURE__ */ createHasher(() => new SHA512());
 
-// ../../packages/aps-sdk-ts/node_modules/@noble/hashes/esm/sha512.js
+// ../../packages/agentpassport-ts/node_modules/@noble/hashes/esm/sha512.js
 var sha5122 = sha512;
 
-// ../../packages/aps-sdk-ts/src/identity.ts
+// ../../packages/agentpassport-ts/src/identity.ts
 etc.sha512Sync = (...m) => sha5122(...m);
 var BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 var ED25519_PREFIX = Uint8Array.from([237, 1]);
@@ -940,7 +940,7 @@ function didFromPublicKey(publicKey) {
   return `did:key:z${base58btcEncode(prefixed)}`;
 }
 
-// ../../packages/aps-sdk-ts/src/jwt.ts
+// ../../packages/agentpassport-ts/src/jwt.ts
 etc.sha512Sync = (...m) => sha5122(...m);
 function b64urlEncode(data) {
   let binary = "";
@@ -1047,7 +1047,7 @@ function verifyAuthChain(opts) {
   }
 }
 
-// ../../packages/aps-sdk-ts/src/revocation.ts
+// ../../packages/agentpassport-ts/src/revocation.ts
 var InMemoryRevocationRegistry = class {
   _revoked = /* @__PURE__ */ new Set();
   revoke(jti) {
@@ -1058,7 +1058,7 @@ var InMemoryRevocationRegistry = class {
   }
 };
 
-// ../../packages/aps-sdk-ts/src/trust.ts
+// ../../packages/agentpassport-ts/src/trust.ts
 var ScopeError = class extends Error {
   constructor(capability, required, granted) {
     const missing = required.filter((s) => !granted.includes(s) && !granted.includes("*"));
@@ -1127,7 +1127,7 @@ var TrustMiddleware = class {
   }
 };
 
-// ../../packages/aps-sdk-ts/src/agent.ts
+// ../../packages/agentpassport-ts/src/agent.ts
 var Agent = class {
   name;
   did;
@@ -1247,7 +1247,7 @@ agent.capability(
     return { written: true, record: task.intent.params };
   }
 );
-var PORT = parseInt(process.env.APS_AGENT_PORT ?? "7700", 10);
+var PORT = parseInt(process.env.AGENTPASSPORT_AGENT_PORT ?? "7700", 10);
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let body = "";
@@ -1313,7 +1313,7 @@ var server = http.createServer(async (req, res) => {
   }
 });
 server.listen(PORT, "127.0.0.1", () => {
-  process.stdout.write(`APS_AGENT_READY port=${PORT} did=${agent.did}
+  process.stdout.write(`AGENTPASSPORT_AGENT_READY port=${PORT} did=${agent.did}
 `);
 });
 /*! Bundled license information:

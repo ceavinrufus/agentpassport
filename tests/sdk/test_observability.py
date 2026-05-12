@@ -1,6 +1,6 @@
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
-from aps_sdk.observability.emitter import EventEmitter
-from aps_sdk.observability.sinks import MemorySink
+from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.observability.emitter import EventEmitter
+from agentpassport.observability.sinks import MemorySink
 
 
 def test_emit_event_to_memory_sink():

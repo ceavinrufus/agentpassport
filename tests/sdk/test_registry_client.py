@@ -1,9 +1,9 @@
 import pytest
 import httpx
 from unittest.mock import AsyncMock, patch, MagicMock
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
-from aps_sdk.registry_client import RegistryClient
-from aps_sdk.types import AgentCard, CostInfo
+from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.registry_client import RegistryClient
+from agentpassport.types import AgentCard, CostInfo
 
 
 async def test_discover_agents_by_capability():

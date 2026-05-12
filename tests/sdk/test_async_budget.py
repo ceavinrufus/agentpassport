@@ -1,6 +1,6 @@
 import asyncio
 import pytest
-from aps_sdk.task.budget import BudgetTracker, BudgetExceededError
+from agentpassport.task.budget import BudgetTracker, BudgetExceededError
 
 
 async def test_concurrent_spend_is_thread_safe():

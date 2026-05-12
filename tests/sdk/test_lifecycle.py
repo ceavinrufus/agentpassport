@@ -1,6 +1,6 @@
 import pytest
-from aps_sdk.task.lifecycle import InvalidTransitionError, TaskLifecycle
-from aps_sdk.types import Intent, TaskEnvelope, TaskState
+from agentpassport.task.lifecycle import InvalidTransitionError, TaskLifecycle
+from agentpassport.types import Intent, TaskEnvelope, TaskState
 
 
 def test_valid_transitions():

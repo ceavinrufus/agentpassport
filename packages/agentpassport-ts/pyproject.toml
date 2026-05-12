@@ -1,0 +1,6 @@
+[project]
+name = "agentpassport-ts"
+version = "0.1.0"
+description = "TypeScript SDK for agentpassport (not a Python package — placeholder for uv workspace)"
+requires-python = ">=3.11"
+dependencies = []

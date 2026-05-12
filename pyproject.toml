@@ -1,7 +1,7 @@
 [project]
 name = "agent-protocol-stack"
 version = "0.1.0"
-description = "APS: Open protocol for AI agent-to-agent task delegation"
+description = "agentpassport — the AI passport layer"
 requires-python = ">=3.11"
 
 [tool.uv.workspace]

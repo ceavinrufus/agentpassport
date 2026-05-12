@@ -5,11 +5,11 @@ requires-python = ">=3.11"
 [manifest]
 members = [
     "agent-protocol-stack",
-    "agentps",
-    "agentps-adapters",
-    "agentps-cli",
-    "agentps-registry",
-    "aps-sdk-ts",
+    "agentpassport",
+    "agentpassport-adapters",
+    "agentpassport-cli",
+    "agentpassport-registry",
+    "agentpassport-ts",
 ]
 
 [[package]]
@@ -36,9 +36,9 @@ dev = [
 ]
 
 [[package]]
-name = "agentps"
+name = "agentpassport"
 version = "0.1.0"
-source = { editable = "packages/aps-sdk" }
+source = { editable = "packages/agentpassport" }
 dependencies = [
     { name = "anyio" },
     { name = "httpx" },
@@ -76,43 +76,43 @@ requires-dist = [
 provides-extras = ["otel", "dev"]
 
 [[package]]
-name = "agentps-adapters"
+name = "agentpassport-adapters"
 version = "0.1.0"
-source = { editable = "packages/aps-adapters" }
+source = { editable = "packages/agentpassport-adapters" }
 dependencies = [
-    { name = "agentps" },
+    { name = "agentpassport" },
     { name = "httpx" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "agentps", editable = "packages/aps-sdk" },
+    { name = "agentpassport", editable = "packages/agentpassport" },
     { name = "httpx", specifier = ">=0.27" },
 ]
 
 [[package]]
-name = "agentps-cli"
+name = "agentpassport-cli"
 version = "0.1.0"
-source = { editable = "packages/aps-cli" }
+source = { editable = "packages/agentpassport-cli" }
 dependencies = [
-    { name = "agentps" },
+    { name = "agentpassport" },
     { name = "click" },
     { name = "rich" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "agentps", editable = "packages/aps-sdk" },
+    { name = "agentpassport", editable = "packages/agentpassport" },
     { name = "click", specifier = ">=8.1" },
     { name = "rich", specifier = ">=13.0" },
 ]
 
 [[package]]
-name = "agentps-registry"
+name = "agentpassport-registry"
 version = "0.1.0"
-source = { editable = "packages/aps-registry" }
+source = { editable = "packages/agentpassport-registry" }
 dependencies = [
-    { name = "agentps" },
+    { name = "agentpassport" },
     { name = "aiosqlite" },
     { name = "fastapi" },
     { name = "httpx" },
@@ -122,13 +122,18 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "agentps", editable = "packages/aps-sdk" },
+    { name = "agentpassport", editable = "packages/agentpassport" },
     { name = "aiosqlite", specifier = ">=0.20" },
     { name = "fastapi", specifier = ">=0.111" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "slowapi", specifier = ">=0.1.9,<0.2" },
     { name = "uvicorn", specifier = ">=0.30" },
 ]
+
+[[package]]
+name = "agentpassport-ts"
+version = "0.1.0"
+source = { virtual = "packages/agentpassport-ts" }
 
 [[package]]
 name = "aiosqlite"
@@ -169,11 +174,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/19/14/2c5dd9f512b66549a
 wheels = [
     { url = "https://files.pythonhosted.org/packages/da/42/e921fccf5015463e32a3cf6ee7f980a6ed0f395ceeaa45060b61d86486c2/anyio-4.13.0-py3-none-any.whl", hash = "sha256:08b310f9e24a9594186fd75b4f73f4a4152069e3853f1ed8bfbf58369f4ad708", size = 114353, upload-time = "2026-03-24T12:59:08.246Z" },
 ]
-
-[[package]]
-name = "aps-sdk-ts"
-version = "0.1.0"
-source = { virtual = "packages/aps-sdk-ts" }
 
 [[package]]
 name = "certifi"

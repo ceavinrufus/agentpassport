@@ -1,7 +1,7 @@
 import pytest
-from aps_adapters.base import Adapter
-from aps_adapters.rest import RestAdapter
-from aps_sdk.types import Intent, TaskEnvelope
+from agentpassport_adapters.base import Adapter
+from agentpassport_adapters.rest import RestAdapter
+from agentpassport.types import Intent, TaskEnvelope
 
 
 def test_adapter_is_abstract():

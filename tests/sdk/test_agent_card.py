@@ -1,7 +1,7 @@
 """Tests for signed AgentCard (step 5)."""
 import pytest
-from aps_sdk.identity import generate_keypair, did_from_public_key, sign_agent_card, verify_agent_card
-from aps_sdk.types.agent_card import AgentCard
+from agentpassport.identity import generate_keypair, did_from_public_key, sign_agent_card, verify_agent_card
+from agentpassport.types.agent_card import AgentCard
 
 
 def _make_card(did: str) -> AgentCard:
@@ -103,7 +103,7 @@ def test_verify_fails_on_wrong_public_key():
 
 import pytest
 from httpx import ASGITransport, AsyncClient
-from aps_registry.app import create_app
+from agentpassport_registry.app import create_app
 
 
 @pytest.fixture

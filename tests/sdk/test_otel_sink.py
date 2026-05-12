@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
-from aps_sdk.types.events import ObservabilityEvent
-from aps_sdk.observability.otel import OtelSink
+from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.types.events import ObservabilityEvent
+from agentpassport.observability.otel import OtelSink
 
 
 def test_otel_sink_starts_span():
@@ -23,10 +23,10 @@ def test_otel_sink_starts_span():
     )
     sink.write(event)
 
-    mock_tracer.start_as_current_span.assert_called_once_with("aps.task_completed")
+    mock_tracer.start_as_current_span.assert_called_once_with("agentpassport.task_completed")
 
 
-def test_otel_sink_sets_aps_attributes():
+def test_otel_sink_sets_agentpassport_attributes():
     """OtelSink sets trace_id, task_id, agent, cost_used as span attributes."""
     _, pub = generate_keypair()
     agent_did = did_from_public_key(pub)
@@ -47,14 +47,14 @@ def test_otel_sink_sets_aps_attributes():
     )
     sink.write(event)
 
-    mock_span.set_attribute.assert_any_call("aps.trace_id", "trace_abc")
-    mock_span.set_attribute.assert_any_call("aps.task_id", "task_123")
-    mock_span.set_attribute.assert_any_call("aps.agent", agent_did)
-    mock_span.set_attribute.assert_any_call("aps.cost_used", 0.1)
+    mock_span.set_attribute.assert_any_call("agentpassport.trace_id", "trace_abc")
+    mock_span.set_attribute.assert_any_call("agentpassport.task_id", "task_123")
+    mock_span.set_attribute.assert_any_call("agentpassport.agent", agent_did)
+    mock_span.set_attribute.assert_any_call("agentpassport.cost_used", 0.1)
 
 
 def test_otel_sink_metadata_fan_out():
-    """OtelSink fans out metadata dict as aps.meta.<k> span attributes."""
+    """OtelSink fans out metadata dict as agentpassport.meta.<k> span attributes."""
     _, pub = generate_keypair()
     agent_did = did_from_public_key(pub)
 
@@ -73,5 +73,5 @@ def test_otel_sink_metadata_fan_out():
     )
     sink.write(event)
 
-    mock_span.set_attribute.assert_any_call("aps.meta.model", "gpt-4o")
-    mock_span.set_attribute.assert_any_call("aps.meta.retry", "2")
+    mock_span.set_attribute.assert_any_call("agentpassport.meta.model", "gpt-4o")
+    mock_span.set_attribute.assert_any_call("agentpassport.meta.retry", "2")

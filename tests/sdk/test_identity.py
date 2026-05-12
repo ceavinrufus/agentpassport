@@ -3,8 +3,8 @@ import base64
 
 import pytest
 
-from aps_sdk.identity.did import generate_keypair, did_from_public_key, parse_did
-from aps_sdk.identity.signing import (
+from agentpassport.identity.did import generate_keypair, did_from_public_key, parse_did
+from agentpassport.identity.signing import (
     sign_delegation,
     verify_auth_chain,
     _decode_jwt_claims,
@@ -38,11 +38,11 @@ def test_did_round_trip():
 
 def test_parse_did_rejects_wrong_scheme():
     with pytest.raises(ValueError, match="did:key:z"):
-        parse_did("did:aps:somelegacyvalue")
+        parse_did("did:invalid:somelegacyvalue")
 
 
 def test_parse_did_rejects_wrong_multicodec():
-    from aps_sdk.identity.did import _base58btc_encode
+    from agentpassport.identity.did import _base58btc_encode
     bad_prefixed = bytes([0xe7, 0x01]) + bytes(33)
     bad_did = f"did:key:z{_base58btc_encode(bad_prefixed)}"
     with pytest.raises(ValueError, match="0xed01"):

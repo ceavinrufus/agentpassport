@@ -1,5 +1,5 @@
 /**
- * server.ts — APS Demo TypeScript Agent
+ * server.ts — agentpassport Demo TypeScript Agent
  *
  * Reads bootstrap.json (written by run_demo.py) to get:
  *   - orchestrator DID + public key (to trust)
@@ -16,8 +16,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { Agent, InMemoryRevocationRegistry, ScopeError } from "@aps/sdk-ts";
-import type { TaskEnvelope } from "@aps/sdk-ts";
+import { Agent, InMemoryRevocationRegistry, ScopeError } from "agentpassport-ts";
+import type { TaskEnvelope } from "agentpassport-ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -36,7 +36,7 @@ const agentPrivateKey = Buffer.from(bootstrap.agent_private_key_hex, "hex");
 const orchestratorPublicKey = Buffer.from(bootstrap.orchestrator_public_key_hex, "hex");
 
 // ---------------------------------------------------------------------------
-// APS Agent setup
+// agentpassport Agent setup
 // ---------------------------------------------------------------------------
 
 const revocationRegistry = new InMemoryRevocationRegistry();
@@ -77,7 +77,7 @@ agent.capability(
 // HTTP server
 // ---------------------------------------------------------------------------
 
-const PORT = parseInt(process.env.APS_AGENT_PORT ?? "7700", 10);
+const PORT = parseInt(process.env.AGENTPASSPORT_AGENT_PORT ?? "7700", 10);
 
 function readBody(req: http.IncomingMessage): Promise<unknown> {
   return new Promise((resolve, reject) => {
@@ -155,5 +155,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, "127.0.0.1", () => {
-  process.stdout.write(`APS_AGENT_READY port=${PORT} did=${agent.did}\n`);
+  process.stdout.write(`AGENTPASSPORT_AGENT_READY port=${PORT} did=${agent.did}\n`);
 });

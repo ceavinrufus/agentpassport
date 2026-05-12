@@ -1,9 +1,9 @@
 {
-  "name": "aps-demo-ts-agent",
+  "name": "agentpassport-demo-ts-agent",
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build:bundle": "esbuild src/server.ts --bundle --platform=node --outfile=server.js --format=esm --alias:@aps/sdk-ts=../../packages/aps-sdk-ts/src/index.ts"
+    "build:bundle": "esbuild src/server.ts --bundle --platform=node --outfile=server.js --format=esm --alias:agentpassport-ts=../../packages/agentpassport-ts/src/index.ts"
   },
   "dependencies": {
     "@noble/ed25519": "^2.1.0",

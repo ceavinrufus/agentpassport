@@ -1,7 +1,7 @@
 import pytest
-from aps_sdk.transport.base import Transport
-from aps_sdk.transport.http import HttpTransport
-from aps_sdk.types import Intent, TaskEnvelope
+from agentpassport.transport.base import Transport
+from agentpassport.transport.http import HttpTransport
+from agentpassport.types import Intent, TaskEnvelope
 
 
 def test_transport_is_abstract():

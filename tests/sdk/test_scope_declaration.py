@@ -5,10 +5,10 @@ ScopeError raised before handler runs, wildcard scope, empty chain
 failure, and backward compat for capabilities with no requires.
 """
 import pytest
-from aps_sdk.agent import Agent
-from aps_sdk.identity import generate_keypair, did_from_public_key, sign_delegation
-from aps_sdk.trust import ScopeError, TrustMiddleware
-from aps_sdk.types.task import TaskEnvelope, Intent
+from agentpassport.agent import Agent
+from agentpassport.identity import generate_keypair, did_from_public_key, sign_delegation
+from agentpassport.trust import ScopeError, TrustMiddleware
+from agentpassport.types.task import TaskEnvelope, Intent
 
 
 # ---------------------------------------------------------------------------

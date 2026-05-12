@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from aps_sdk import Intent, TaskEnvelope
+from agentpassport import Intent, TaskEnvelope
 from demo.orchestrator import orchestrator
 
 

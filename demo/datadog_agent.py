@@ -1,4 +1,4 @@
-"""Datadog APS agent — investigates incidents via pup CLI or returns mock data."""
+"""Datadog agentpassport agent — investigates incidents via pup CLI or returns mock data."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import json
 import subprocess
 from typing import Any
 
-from aps_sdk import Agent, TaskEnvelope
+from agentpassport import Agent, TaskEnvelope
 
 datadog_agent = Agent(name="datadog-agent")
 

@@ -1,5 +1,5 @@
-from aps_sdk.agent import Agent
-from aps_sdk.types import Intent, TaskEnvelope
+from agentpassport.agent import Agent
+from agentpassport.types import Intent, TaskEnvelope
 
 
 def test_agent_registers_capability():

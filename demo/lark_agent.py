@@ -1,4 +1,4 @@
-"""Lark APS agent — uses app credentials (LARK_APP_ID + LARK_APP_SECRET) or mock fallback.
+"""Lark agentpassport agent — uses app credentials (LARK_APP_ID + LARK_APP_SECRET) or mock fallback.
 
 Set env vars:
   LARK_APP_ID      — your Lark app ID (cli_xxx)
@@ -14,7 +14,7 @@ import urllib.error
 import urllib.request
 from typing import Any
 
-from aps_sdk import Agent, TaskEnvelope
+from agentpassport import Agent, TaskEnvelope
 
 lark_agent = Agent(name="lark-agent")
 
@@ -68,7 +68,7 @@ async def notify_team(task: TaskEnvelope) -> dict[str, Any]:
     summary = task.intent.params.get("summary", "Incident detected.")
     incident_id = task.intent.params.get("incident_id", "unknown")
     chat_id = task.intent.params.get("chat_id") or os.environ.get("LARK_CHAT_ID")
-    text = f"[APS Alert] {incident_id}: {summary}"
+    text = f"[agentpassport Alert] {incident_id}: {summary}"
 
     token = _get_tenant_token()
     if not token:

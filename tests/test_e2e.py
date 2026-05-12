@@ -1,7 +1,7 @@
 """End-to-end test: agent creates task, delegates, budget enforced, events emitted."""
 
 import pytest
-from aps_sdk import (
+from agentpassport import (
     Agent,
     BudgetTracker,
     Constraints,
@@ -57,7 +57,7 @@ async def test_budget_prevents_over_delegation():
         constraints=Constraints(budget_credits=5),
     )
 
-    from aps_sdk.task.budget import BudgetExceededError
+    from agentpassport.task.budget import BudgetExceededError
 
     _subtask1 = create_subtask(task, Intent(type="a", params={}), 3, budget)
     assert budget.remaining == 2.0

@@ -1,7 +1,7 @@
 import pytest
-from aps_registry.storage.sqlite import SqliteStorage
-from aps_sdk.identity.did import generate_keypair, did_from_public_key
-from aps_sdk.types import AgentCard, CostInfo
+from agentpassport_registry.storage.sqlite import SqliteStorage
+from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.types import AgentCard, CostInfo
 
 
 @pytest.fixture

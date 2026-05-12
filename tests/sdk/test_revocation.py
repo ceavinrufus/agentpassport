@@ -4,9 +4,9 @@ Covers: InMemoryRevocationRegistry, SqliteRevocationRegistry,
 and verify_auth_chain rejecting revoked jtis.
 """
 import pytest
-from aps_sdk.identity import generate_keypair, did_from_public_key, sign_delegation
-from aps_sdk.identity.signing import verify_auth_chain, _decode_jwt_claims
-from aps_sdk.revocation import (
+from agentpassport.identity import generate_keypair, did_from_public_key, sign_delegation
+from agentpassport.identity.signing import verify_auth_chain, _decode_jwt_claims
+from agentpassport.revocation import (
     InMemoryRevocationRegistry,
     SqliteRevocationRegistry,
 )

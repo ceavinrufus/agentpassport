@@ -1,6 +1,6 @@
-# APS Incident Investigation Demo
+# agentpassport Demo
 
-A 3-agent demo showing the Agent Protocol Stack (APS) in action.
+A 3-agent demo showing the agentpassport in action.
 
 ## What it shows
 
@@ -14,7 +14,7 @@ Works out-of-the-box with mock fallbacks — no credentials required.
 
 ```bash
 # Install deps (first time only)
-cd packages/aps-sdk-ts && npm install && cd ../..
+cd packages/agentpassport-ts && npm install && cd ../..
 cd demo/ts_agent && npm install && cd ../..
 
 # Run the demo

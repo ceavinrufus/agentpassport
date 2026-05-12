@@ -1,6 +1,0 @@
-[project]
-name = "aps-sdk-ts"
-version = "0.1.0"
-description = "TypeScript SDK for APS (not a Python package — placeholder for uv workspace)"
-requires-python = ">=3.11"
-dependencies = []

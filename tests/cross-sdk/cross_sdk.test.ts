@@ -5,7 +5,7 @@
  * the TypeScript SDK can verify every token Python signed, and correctly
  * rejects tampered tokens.
  *
- * Run from packages/aps-sdk-ts/:
+ * Run from packages/agentpassport-ts/:
  *   npx vitest run ../../tests/cross-sdk/cross_sdk.test.ts
  */
 
@@ -14,7 +14,7 @@ import { readFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
-import { verifyAuthChain } from "../../packages/aps-sdk-ts/src/jwt.js";
+import { verifyAuthChain } from "../../packages/agentpassport-ts/src/jwt.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

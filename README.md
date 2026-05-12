@@ -1,10 +1,10 @@
-# APS — Agent Protocol Stack
+# agentpassport
 
 **The AI passport layer.**
 
 Agents are flooding the internet. They're sending emails, making purchases, running code — on your behalf, or someone else's. But there's no standard way to prove who an agent belongs to, what it's authorized to do, or whether it stayed within bounds.
 
-APS is building that. Starting with the authorization primitive — cryptographic proof of delegation at every hop. Growing into full agent identity and ownership verification across the open web.
+agentpassport is building that. Starting with the authorization primitive — cryptographic proof of delegation at every hop. Growing into full agent identity and ownership verification across the open web.
 
 **Today:** prove an agent was authorized to act.
 **Next:** prove who it belongs to.
@@ -22,7 +22,7 @@ When Agent A delegates work to Agent B, how do you prove:
 - It stayed within its authorized scope?
 - You can revoke that right mid-flight?
 
-Right now you can't. Every framework just trusts. APS proves it.
+Right now you can't. Every framework just trusts. agentpassport proves it.
 
 ## Demo
 
@@ -34,7 +34,7 @@ uv run python -m demo.run_demo
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  APS DEMO — Cross-SDK Trust Chain
+  agentpassport DEMO — Cross-SDK Trust Chain
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Orchestrator  did:key:z6MkskpV…pks2  (Python)
@@ -68,7 +68,7 @@ uv run python -m demo.run_demo
 Every agent has an Ed25519 keypair. Its public key becomes a W3C-standard `did:key:` DID — no central registry, verifiable by anyone.
 
 ```python
-from aps_sdk import Agent
+from agentpassport import Agent
 
 agent = Agent("my-agent")
 print(agent.did)  # did:key:z6Mk...
@@ -79,7 +79,7 @@ print(agent.did)  # did:key:z6Mk...
 Trust flows through a chain of signed JWTs. Each hop narrows scope — an agent can never grant more than it has.
 
 ```python
-from aps_sdk import sign_delegation, verify_auth_chain
+from agentpassport import sign_delegation, verify_auth_chain
 
 # Root signs initial grant
 token = sign_delegation(
@@ -100,7 +100,7 @@ verify_auth_chain(
 
 ### 3. Pre-execution Scope Declaration
 
-Capabilities declare what scope they need. APS checks before the handler runs — fail fast, no partial state.
+Capabilities declare what scope they need. agentpassport checks before the handler runs — fail fast, no partial state.
 
 ```python
 @agent.capability("query_customers", requires=["read:db:customers"])
@@ -114,7 +114,7 @@ async def handle(task: TaskEnvelope) -> dict:
 Revoke a delegation by JTI without stopping in-flight work — the agent completes its current action and stops before the next.
 
 ```python
-from aps_sdk import InMemoryRevocationRegistry, SqliteRevocationRegistry
+from agentpassport import InMemoryRevocationRegistry, SqliteRevocationRegistry
 
 registry = SqliteRevocationRegistry("revocations.db")
 registry.revoke(jti)  # all future requests with this token fail
@@ -125,7 +125,7 @@ registry.revoke(jti)  # all future requests with this token fail
 Wire-compatible with Python — cross-language trust chains work out of the box.
 
 ```typescript
-import { Agent, InMemoryRevocationRegistry, ScopeError } from "@aps/sdk-ts"
+import { Agent, InMemoryRevocationRegistry, ScopeError } from "agentpassport-ts"
 
 const agent = new Agent("ts-agent", { privateKey, revocationRegistry })
 agent.trustKeys({ [orchestratorDid]: orchestratorPublicKey })
@@ -150,32 +150,32 @@ Both parts together make authorization provable. Action-only (`"read"`) is too l
 ## Install
 
 ```bash
-pip install agentps          # Python SDK
-pip install agentps[otel]    # + OpenTelemetry sink
+pip install agentpassport          # Python SDK
+pip install agentpassport[otel]    # + OpenTelemetry sink
 ```
 
 ```bash
-cd packages/aps-sdk-ts && npm install  # TypeScript SDK
+cd packages/agentpassport-ts && npm install  # TypeScript SDK
 ```
 
 ## Packages
 
 | Package | Description |
 |---------|-------------|
-| `aps-sdk` | Python trust and authorization layer |
-| `aps-sdk-ts` | TypeScript SDK (wire-compatible) |
-| `aps-registry` | Trusted agent registry with signature verification |
-| `aps-adapters` | MCP and REST adapters |
-| `aps-cli` | CLI — keygen, trace viewer |
+| `agentpassport` | Python trust and authorization layer |
+| `agentpassport-ts` | TypeScript SDK (wire-compatible) |
+| `agentpassport-registry` | Trusted agent registry with signature verification |
+| `agentpassport-adapters` | MCP and REST adapters |
+| `agentpassport-cli` | CLI — keygen, trace viewer |
 
 ## CLI
 
 ```bash
 # Generate a keypair and DID
-aps identity keygen --alias myagent
+agentpassport identity keygen --alias myagent
 
 # Inspect an auth chain from a trace
-aps trace show --id trace_abc --file traces.jsonl
+agentpassport trace show --id trace_abc --file traces.jsonl
 ```
 
 ## Roadmap
@@ -198,7 +198,7 @@ aps trace show --id trace_abc --file traces.jsonl
 ```bash
 uv sync --all-packages
 uv run pytest                          # Python tests (120)
-cd packages/aps-sdk-ts && npm test     # TypeScript tests (48)
+cd packages/agentpassport-ts && npm test     # TypeScript tests (48)
 uv run python -m tests.cross-sdk.generate_fixtures && \
   cd tests/cross-sdk && npx tsx generate_ts_fixtures.ts  # cross-SDK fixtures
 ```

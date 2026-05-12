@@ -15,10 +15,10 @@ jobs:
     strategy:
       matrix:
         package:
-          - { dir: packages/aps-sdk, name: agentps }
-          - { dir: packages/aps-registry, name: agentps-registry }
-          - { dir: packages/aps-adapters, name: agentps-adapters }
-          - { dir: packages/aps-cli, name: agentps-cli }
+          - { dir: packages/agentpassport, name: agentpassport }
+          - { dir: packages/agentpassport-registry, name: agentpassport-registry }
+          - { dir: packages/agentpassport-adapters, name: agentpassport-adapters }
+          - { dir: packages/agentpassport-cli, name: agentpassport-cli }
 
     steps:
       - uses: actions/checkout@v4

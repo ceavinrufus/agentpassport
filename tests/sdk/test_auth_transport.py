@@ -1,8 +1,8 @@
 import pytest
 from unittest.mock import AsyncMock, patch
-from aps_sdk import Agent, Intent, TaskEnvelope
-from aps_sdk.identity import generate_keypair, did_from_public_key, sign_delegation
-from aps_sdk.identity.signing import _decode_jwt_claims
+from agentpassport import Agent, Intent, TaskEnvelope
+from agentpassport.identity import generate_keypair, did_from_public_key, sign_delegation
+from agentpassport.identity.signing import _decode_jwt_claims
 
 
 @pytest.fixture
