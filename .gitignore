@@ -7,3 +7,4 @@ dist/
 .venv/
 node_modules
 agentpassport_registry.db
+assessments/
