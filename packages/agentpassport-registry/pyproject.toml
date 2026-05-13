@@ -1,6 +1,6 @@
 [project]
 name = "agentpassport-registry"
-version = "0.1.0"
+version = "0.2.0"
 description = "Trusted agent registry with AgentCard signature verification"
 requires-python = ">=3.11"
 dependencies = [
