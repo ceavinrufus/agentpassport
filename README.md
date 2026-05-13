@@ -65,11 +65,11 @@ uv run python -m demo.run_demo
 [STEP 2] Python → TS: queryCustomers → 200 ✅
   Auth chain verified, capability executed
 
-[STEP 3] Python → TS: writeCustomer → 403 ✅
+[STEP 3] Python → TS: writeCustomer → 403 🛡️
   ScopeError: requires [write:db:customers], granted [read:db:customers]
 
 [STEP 4] Python revokes delegation mid-scenario
-  jti revoked → same request fails → 403 ✅
+  jti revoked → same request fails → 403 🛡️
 
 [STEP 5] Auth chain trace
   hop 0  jti=d77dd09a…  ✅
