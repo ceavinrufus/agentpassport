@@ -1,5 +1,9 @@
 # agentpassport
 
+[![PyPI](https://img.shields.io/pypi/v/agentpassport)](https://pypi.org/project/agentpassport/)
+[![npm](https://img.shields.io/npm/v/@agentpassport/core)](https://www.npmjs.com/package/@agentpassport/core)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 **The AI passport layer.**
 
 Agents are flooding the internet. They're sending emails, making purchases, running code — on your behalf, or someone else's. But there's no standard way to prove who an agent belongs to, what it's authorized to do, or whether it stayed within bounds.
@@ -14,6 +18,21 @@ agentpassport is building that. Starting with the authorization primitive — cr
          ↓
     ScopeError: requires [write:db:customers], granted [read:db:customers]  ✅
 ```
+
+## Install
+
+```bash
+# Python
+pip install agentpassport
+
+# TypeScript / JavaScript
+npm install @agentpassport/core
+```
+
+- [agentpassport on PyPI](https://pypi.org/project/agentpassport/)
+- [@agentpassport/core on npm](https://www.npmjs.com/package/@agentpassport/core)
+
+---
 
 ## The Problem
 
