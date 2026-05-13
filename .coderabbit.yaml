@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: en-US
+tone_instructions: ''
+early_access: false
+enable_free_tier: true
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches: [main]
+  path_instructions:
+    - path: "**/*.py"
+      instructions: |
+        Follow PEP 8. Prefer explicit over implicit. Use type hints throughout.
+        Flag any use of bare except or mutable default arguments.
+    - path: "**/*.ts"
+      instructions: |
+        Follow the existing tsconfig strict settings. Avoid any-typed values.
+        Prefer named exports over default exports.
+    - path: "tests/**"
+      instructions: |
+        Ensure tests are isolated, deterministic, and cover both happy-path and
+        error cases. Prefer pytest fixtures over setup/teardown methods.
+    - path: ".github/workflows/**"
+      instructions: |
+        Pin actions to full commit SHAs where possible. Avoid storing secrets
+        in env vars at the job level if a step-level scope suffices.
+    - path: "docs/**"
+      instructions: |
+        Keep language concise and example-driven. Verify all code snippets are
+        runnable against the current public API.
+chat:
+  auto_reply: true
