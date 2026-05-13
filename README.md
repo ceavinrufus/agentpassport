@@ -165,7 +165,7 @@ cd packages/agentpassport-ts && npm install  # TypeScript SDK
 | `agentpassport` | Python trust and authorization layer |
 | `@agentpassport/core` | TypeScript SDK (wire-compatible) |
 | `agentpassport-registry` | Trusted agent registry with signature verification |
-| `agentpassport-adapters` | MCP and REST adapters |
+| `agentpassport-adapters` | MCP, REST, and A2A adapters |
 | `agentpassport-cli` | CLI — keygen, trace viewer |
 
 ## CLI
@@ -188,7 +188,9 @@ agentpass trace show --id trace_abc --file traces.jsonl
 | | Python SDK | ✅ Done |
 | | TypeScript SDK | ✅ Done |
 | | Cross-language wire compatibility | ✅ Done |
-| **AI Passport** | Identity revocation | 🔜 Next |
+| | MCP middleware adapter | ✅ Done |
+| | A2A protocol adapter (inbound + outbound) | ✅ Done |
+| **AI Passport** | Identity revocation | ✅ Done |
 | | Ownership binding (domain → agent DID) | 🔜 Next |
 | | Decentralized agent discovery | 🔜 Planned |
 | | Human-readable ownership declaration | 🔜 Planned |
@@ -197,7 +199,7 @@ agentpass trace show --id trace_abc --file traces.jsonl
 
 ```bash
 uv sync --all-packages
-uv run pytest                          # Python tests (120)
+uv run pytest                          # Python tests (173)
 cd packages/agentpassport-ts && npm test     # TypeScript tests (48)
 uv run python -m tests.cross-sdk.generate_fixtures && \
   cd tests/cross-sdk && npx tsx generate_ts_fixtures.ts  # cross-SDK fixtures

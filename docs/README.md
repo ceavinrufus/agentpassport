@@ -27,7 +27,7 @@ Available in Python (`agentpassport`) and TypeScript (`@agentpassport/core`), wi
 - Observability and event sinks
 - Transport layer
 - Registry
-- Adapters (MCP, REST, CLI)
+- Adapters (MCP, REST, CLI, A2A)
 - Multi-SDK wire compatibility
 
 ---
@@ -37,7 +37,7 @@ Available in Python (`agentpassport`) and TypeScript (`@agentpassport/core`), wi
 | Document | Contents |
 |----------|----------|
 | **[python/api-reference.md](./python/api-reference.md)** | Every class, function, method, and type in `agentpassport`. Full parameter tables, return types, exceptions, and 2–3 examples per item. |
-| **[python/adapters.md](./python/adapters.md)** | `McpAdapter`, `RestAdapter`, `CliAdapter` — bridge AgentPassport tasks to external services. |
+| **[python/adapters.md](./python/adapters.md)** | `McpAdapter`, `RestAdapter`, `CliAdapter`, `A2AServerAdapter`, `A2AClientAdapter` — bridge AgentPassport tasks to external services and protocols. |
 | **[python/registry.md](./python/registry.md)** | Registry service HTTP API (`POST /v1/agents`, `GET /v1/agents/query`, etc.), `SqliteStorage`, `QueryEngine`, and `RegistryClient`. |
 
 **Exported symbols covered in api-reference.md:**
@@ -192,7 +192,7 @@ packages/
 │           ├── identity.py       # Auth chain notes
 │           └── events.py         # ObservabilityEvent
 │
-├── agentpassport-adapters/ # Python adapters (MCP, REST, CLI)
+├── agentpassport-adapters/ # Python adapters (MCP, REST, CLI, A2A)
 │   └── src/agentpassport_adapters/
 │       ├── base.py               # Adapter ABC
 │       ├── mcp.py                # McpAdapter

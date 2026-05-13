@@ -407,3 +407,170 @@ async def summarize(task: TaskEnvelope) -> dict:
         },
     }
 ```
+
+---
+
+## A2A Adapters
+
+agentpassport ships two A2A adapters that bridge the [Agent2Agent (A2A) protocol](https://a2a-protocol.org) with agentpassport's trust model.
+
+**Module:** `agentpassport_adapters.a2a`
+
+```python
+from agentpassport_adapters import A2AServerAdapter, A2AClientAdapter, synthesize_a2a_agent_card
+```
+
+**Install:**
+
+```bash
+pip install agentpassport-adapters starlette httpx
+# Optional: pip install a2a-sdk  (for protobuf-backed serialization)
+```
+
+---
+
+### `synthesize_a2a_agent_card()`
+
+```python
+def synthesize_a2a_agent_card(
+    aps_card: AgentCard,
+    endpoint: str | None = None,
+) -> dict[str, Any]
+```
+
+Convert an agentpassport `AgentCard` to an A2A AgentCard dict suitable for serving at `/.well-known/agent-card.json`.
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `aps_card` | `AgentCard` | Yes | The agentpassport AgentCard to convert. |
+| `endpoint` | `str \| None` | No | Override the endpoint URL. Defaults to `aps_card.endpoint`. |
+
+**Returns:** `dict` — A2A AgentCard wire format. Safe to pass to `json.dumps`.
+
+Agentpassport-specific fields are preserved as extension fields:
+- `x_agentpassport_did` — the agent's DID
+- `x_agentpassport_signature` — the AgentCard signature (if present)
+
+---
+
+### Class: `A2AServerAdapter`
+
+**Pattern B — expose an agentpassport agent as an A2A server.**
+
+```python
+class A2AServerAdapter:
+    def __init__(
+        self,
+        agent: Agent,
+        agent_card: AgentCard | None = None,
+        endpoint: str = "",
+        skill_map: dict[str, str] | None = None,
+    ) -> None
+    def build_app(self) -> Starlette
+```
+
+Wraps an agentpassport `Agent` in a Starlette application that speaks the A2A protocol. Any A2A-compatible client (LangGraph, Google ADK, Salesforce Agentforce, etc.) can discover and call your agent.
+
+**Constructor parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `agent` | `Agent` | Yes | The agentpassport agent to expose. |
+| `agent_card` | `AgentCard \| None` | No | Pre-built AgentCard. If omitted, falls back to `agent.card`. |
+| `endpoint` | `str` | No | Public HTTP URL for this server. Included in the A2A AgentCard. |
+| `skill_map` | `dict[str, str] \| None` | No | Maps A2A skill ids → agentpassport capability names. By default, skill id == capability name. |
+
+**`build_app()` returns** a `Starlette` app with two routes:
+- `GET /.well-known/agent-card.json` — A2A discovery endpoint
+- `POST /` — JSON-RPC 2.0 handler for `message/send`
+
+**Auth chain:** extracted from `X-AgentPassport-Auth-Chain` header (comma-separated JWTs). Capabilities without `requires=` work for any A2A client with no auth chain.
+
+**Errors:**
+- `ScopeError` → JSON-RPC error response (not HTTP 500)
+- Unknown skill → JSON-RPC error listing available capabilities
+- Multiple capabilities with no `skillId` in request → JSON-RPC error
+
+**Example:**
+
+```python
+import uvicorn
+from agentpassport import Agent, AgentCard, sign_agent_card, generate_keypair
+from agentpassport_adapters import A2AServerAdapter
+
+priv, pub = generate_keypair()
+agent = Agent("my-agent", private_key=priv)
+
+@agent.capability("search", requires=["search:web"])
+async def search(task):
+    return {"results": ["..."]}
+
+@agent.capability("ping")  # open — no auth required
+async def ping(task):
+    return {"pong": True}
+
+card = AgentCard(did=agent.did, name="my-agent",
+                 capabilities=["search", "ping"], endpoint="http://localhost:8000")
+
+server = A2AServerAdapter(agent=agent, agent_card=card, endpoint="http://localhost:8000")
+app = server.build_app()
+
+uvicorn.run(app, host="0.0.0.0", port=8000)
+```
+
+---
+
+### Class: `A2AClientAdapter`
+
+**Pattern A — delegate to an external A2A agent.**
+
+```python
+class A2AClientAdapter(Adapter):
+    def __init__(
+        self,
+        agent_card_url: str,
+        auth_token: str | None = None,
+        timeout: float = 30.0,
+    ) -> None
+    async def execute(self, task: TaskEnvelope) -> dict[str, Any]
+```
+
+Wraps a remote A2A agent as an agentpassport `Adapter`. Fetches the remote AgentCard, translates `TaskEnvelope` → A2A `SendMessageRequest`, polls to completion, and returns the result.
+
+**Constructor parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `agent_card_url` | `str` | Yes | URL of the remote A2A agent's `/.well-known/agent-card.json`. |
+| `auth_token` | `str \| None` | No | Bearer token for transport-level auth (A2A OAuth2). |
+| `timeout` | `float` | No | Request and polling timeout in seconds. Default `30.0`. |
+
+**`execute(task)` behaviour:**
+1. Fetches and caches the remote AgentCard (once per adapter instance).
+2. Translates `task.intent.type` → A2A skill selection, `task.intent.params` → `DataPart`.
+3. Injects `task.auth_chain` as `X-AgentPassport-Auth-Chain` header if non-empty.
+4. Sends `message/send` JSON-RPC request.
+5. Polls with exponential backoff (0.5s → 5s) until terminal state.
+6. Parses result text as JSON if possible; returns dict.
+
+**Raises:**
+- `RuntimeError` — remote task failed, JSON-RPC error, or AgentCard fetch failed.
+- `TimeoutError` — task did not complete within `timeout` seconds.
+
+**Example:**
+
+```python
+from agentpassport import Agent
+from agentpassport_adapters import A2AClientAdapter
+
+agent = Agent("orchestrator")
+salesforce_adapter = A2AClientAdapter(
+    agent_card_url="https://agents.salesforce.com/.well-known/agent-card.json",
+    auth_token="Bearer <oauth-token>",
+    timeout=60.0,
+)
+
+@agent.capability("crm_lookup")
+async def crm_lookup(task):
+    return await salesforce_adapter.execute(task)
+```

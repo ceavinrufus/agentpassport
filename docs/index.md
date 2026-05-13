@@ -125,7 +125,7 @@ worker.capability(
 | `agentpassport` (npm) | TypeScript | Wire-compatible TS SDK |
 | `agentpassport-cli` | Python | CLI — `agentpass trace show`, key management (`ap` for short) |
 | `agentpassport-registry` | Python | Optional agent registry server |
-| `agentpassport-adapters` | Python | MCP, REST, and other framework adapters |
+| `agentpassport-adapters` | Python | MCP, REST, CLI, and A2A adapters |
 
 ---
 
@@ -136,11 +136,12 @@ worker.capability(
 | [Concepts](./concepts.md) | DID identity, auth chain, delegation, scope, trust middleware, revocation |
 | [Python API Reference](./python/api-reference.md) | Every exported class and function in the Python SDK |
 | [TypeScript API Reference](./typescript/api-reference.md) | Every exported class and function in the TypeScript SDK |
-| [Python Adapters](./python/adapters.md) | MCP middleware, REST adapter, CLI |
+| [Python Adapters](./python/adapters.md) | MCP middleware, REST adapter, CLI adapter, A2A adapter |
 | [Guide: Python Quickstart](./guides/python-quickstart.md) | Full runnable Python multi-agent walkthrough |
 | [Guide: TypeScript Quickstart](./guides/typescript-quickstart.md) | Full runnable TypeScript multi-agent walkthrough |
 | [Guide: Cross-SDK Interop](./guides/cross-sdk.md) | Python signs → TypeScript verifies, and vice versa |
 | [Guide: MCP Middleware](./guides/mcp.md) | Enforce passport and scope before MCP tool execution |
+| [Guide: A2A Integration](./guides/a2a.md) | Expose agentpassport agents as A2A servers; delegate to external A2A agents |
 
 ---
 
