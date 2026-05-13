@@ -6,7 +6,7 @@ import { sha512 } from "@noble/hashes/sha512";
 import { parseDid } from "./identity.js";
 import type { RevocationRegistry } from "./revocation.js";
 
-ed.etc.sha512Sync = (...m: Uint8Array[]) => sha512(...m);
+ed.etc.sha512Sync = (...m: Uint8Array[]) => sha512(ed.etc.concatBytes(...m));
 
 // ---------------------------------------------------------------------------
 // Base64url helpers (no external dep)

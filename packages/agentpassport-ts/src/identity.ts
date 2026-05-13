@@ -5,7 +5,7 @@ import * as ed from "@noble/ed25519";
 import { sha512 } from "@noble/hashes/sha512";
 
 // @noble/ed25519 v2+ requires an explicit SHA-512 implementation
-ed.etc.sha512Sync = (...m: Uint8Array[]) => sha512(...m);
+ed.etc.sha512Sync = (...m: Uint8Array[]) => sha512(ed.etc.concatBytes(...m));
 
 // Base58btc alphabet — identical to Python SDK
 const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
