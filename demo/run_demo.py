@@ -64,6 +64,9 @@ def info(label: str, value: str):
 def ok(msg: str):
     print(f"  {msg} ✅")
 
+def blocked(msg: str):
+    print(f"  {msg} 🛡️")
+
 def fail(msg: str):
     print(f"  {msg} ❌")
 
@@ -294,7 +297,7 @@ def main() -> None:
         status3, body3 = http_post(f"{base_url}/task", task3)
         arrow("in", f"{status3}  {json.dumps(body3)}")
         if status3 == 403 and body3.get("error") == "scope_denied":
-            ok("ScopeError: requires [write:db:customers], granted [read:db:customers]")
+            blocked("ScopeError: requires [write:db:customers], granted [read:db:customers]")
         else:
             fail(f"Expected 403 scope_denied, got {status3}: {body3}")
             sys.exit(1)
@@ -313,7 +316,7 @@ def main() -> None:
         status4, body4 = http_post(f"{base_url}/task", task4)
         arrow("in", f"{status4}  {json.dumps(body4)}")
         if status4 == 403:
-            ok("Agent correctly soft-stopped (jti revoked)")
+            blocked("Agent correctly soft-stopped (jti revoked)")
         else:
             fail(f"Expected 403, got {status4}: {body4}")
             sys.exit(1)
