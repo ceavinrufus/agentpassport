@@ -67,6 +67,11 @@ class Agent:
 
         return decorator
 
+    @property
+    def public_key(self) -> bytes:
+        """The agent's Ed25519 public key (32 bytes)."""
+        return self._public_key
+
     def trust_keys(self, keys: dict[str, bytes]) -> None:
         """Register known public keys for auth chain verification."""
         self._trusted_keys.update(keys)

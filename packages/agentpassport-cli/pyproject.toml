@@ -10,7 +10,8 @@ dependencies = [
 ]
 
 [project.scripts]
-agentpassport = "agentpassport_cli.main:cli"
+agentpass = "agentpassport_cli.main:cli"
+ap = "agentpassport_cli.main:cli"
 
 [tool.uv.sources]
 agentpassport = { workspace = true }

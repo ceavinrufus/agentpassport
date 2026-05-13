@@ -27,8 +27,8 @@ Right now you can't. Every framework just trusts. agentpassport proves it.
 ## Demo
 
 ```bash
-git clone https://github.com/ceavinrufus/agent-protocol-stack
-cd agent-protocol-stack
+git clone https://github.com/ceavinrufus/agentpassport
+cd agentpassport
 uv run python -m demo.run_demo
 ```
 
@@ -172,10 +172,10 @@ cd packages/agentpassport-ts && npm install  # TypeScript SDK
 
 ```bash
 # Generate a keypair and DID
-agentpassport identity keygen --alias myagent
+agentpass identity keygen --alias myagent
 
 # Inspect an auth chain from a trace
-agentpassport trace show --id trace_abc --file traces.jsonl
+agentpass trace show --id trace_abc --file traces.jsonl
 ```
 
 ## Roadmap
