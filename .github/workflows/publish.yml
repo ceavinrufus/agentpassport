@@ -1,4 +1,4 @@
-name: Publish to PyPI
+name: Publish
 
 on:
   push:
@@ -6,7 +6,8 @@ on:
       - "v*"
 
 jobs:
-  publish:
+  publish-python:
+    name: Publish Python packages to PyPI
     runs-on: ubuntu-latest
     environment: pypi
     permissions:
@@ -34,3 +35,30 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: dist/
+
+  publish-npm:
+    name: Publish @agentpassport/core to npm
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        working-directory: packages/agentpassport-ts
+        run: npm install
+
+      - name: Build
+        working-directory: packages/agentpassport-ts
+        run: npm run build
+
+      - name: Publish to npm
+        working-directory: packages/agentpassport-ts
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
