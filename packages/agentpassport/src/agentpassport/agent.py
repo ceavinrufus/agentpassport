@@ -10,6 +10,7 @@ from agentpassport.observability.sinks import StdoutSink
 from agentpassport.task.lifecycle import TaskLifecycle
 from agentpassport.transport.http import HttpTransport
 from agentpassport.trust import ScopeError, TrustMiddleware
+from agentpassport.types.agent_card import AgentCard
 from agentpassport.types.task import TaskEnvelope, TaskState
 
 CapabilityHandler = Callable[[TaskEnvelope], Awaitable[dict[str, Any]]]
@@ -71,6 +72,31 @@ class Agent:
     def public_key(self) -> bytes:
         """The agent's Ed25519 public key (32 bytes)."""
         return self._public_key
+
+    @property
+    def card(self) -> AgentCard:
+        """A basic :class:`~agentpassport.types.AgentCard` for this agent.
+
+        Returns an AgentCard populated from the agent's own metadata:
+
+        * ``did`` — the agent's DID derived from its Ed25519 public key.
+        * ``name`` — the agent's name.
+        * ``capabilities`` — the names of all registered capabilities.
+        * ``endpoint`` — empty string (the caller should set this when
+          exposing the agent over HTTP).
+
+        The returned card is not signed.  Sign it with
+        :func:`~agentpassport.identity.sign_agent_card` before publishing.
+
+        Returns:
+            A :class:`~agentpassport.types.AgentCard` instance.
+        """
+        return AgentCard(
+            did=self.did,
+            name=self.name,
+            capabilities=list(self.capabilities.keys()),
+            endpoint="",
+        )
 
     def trust_keys(self, keys: dict[str, bytes]) -> None:
         """Register known public keys for auth chain verification."""
