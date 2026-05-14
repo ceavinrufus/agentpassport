@@ -1,5 +1,9 @@
 # agentpassport
 
+<p align="center">
+  <img src="assets/logo.png" width="120" alt="agentpassport logo" />
+</p>
+
 [![PyPI](https://img.shields.io/pypi/v/agentpassport)](https://pypi.org/project/agentpassport/)
 [![npm](https://img.shields.io/npm/v/@agentpassport/core)](https://www.npmjs.com/package/@agentpassport/core)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
