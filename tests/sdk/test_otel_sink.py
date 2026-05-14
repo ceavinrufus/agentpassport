@@ -1,7 +1,8 @@
 from unittest.mock import MagicMock
-from agentpassport.identity.did import generate_keypair, did_from_public_key
-from agentpassport.types.events import ObservabilityEvent
+
+from agentpassport.identity.did import did_from_public_key, generate_keypair
 from agentpassport.observability.otel import OtelSink
+from agentpassport.types.events import ObservabilityEvent
 
 
 def test_otel_sink_starts_span():

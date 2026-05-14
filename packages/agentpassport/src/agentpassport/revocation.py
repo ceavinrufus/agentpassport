@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Soft revocation support for delegation JWTs.
 
 Each delegation JWT carries a required `jti` (UUID) claim. When a
@@ -20,9 +18,11 @@ Usage:
     )
 """
 
+from __future__ import annotations
+
 import sqlite3
 from abc import ABC, abstractmethod
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 class RevocationRegistry(ABC):
@@ -81,7 +81,7 @@ class SqliteRevocationRegistry(RevocationRegistry):
 
     def revoke(self, jti: str) -> None:
         """Mark *jti* as revoked. Idempotent — safe to call multiple times."""
-        now_ts = int(datetime.now(timezone.utc).timestamp())
+        now_ts = int(datetime.now(UTC).timestamp())
         self._db.execute(
             "INSERT OR IGNORE INTO revoked_jtis (jti, revoked_at) VALUES (?, ?)",
             (jti, now_ts),

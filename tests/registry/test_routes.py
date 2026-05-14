@@ -1,6 +1,6 @@
 import pytest
+from agentpassport.identity.did import did_from_public_key, generate_keypair
 from agentpassport_registry.app import create_app
-from agentpassport.identity.did import generate_keypair, did_from_public_key
 from httpx import ASGITransport, AsyncClient
 
 

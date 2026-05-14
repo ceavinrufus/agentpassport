@@ -1,10 +1,9 @@
 import sys
 
 import pytest
-
-from agentpassport_adapters.mcp import McpAdapter
 from agentpassport.types import TaskEnvelope
 from agentpassport.types.task import Intent
+from agentpassport_adapters.mcp import McpAdapter
 
 
 def test_mcp_adapter_instantiable():

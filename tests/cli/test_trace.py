@@ -2,9 +2,8 @@ import json
 import tempfile
 from pathlib import Path
 
+from agentpassport.identity import did_from_public_key, generate_keypair, sign_delegation
 from agentpassport_cli.main import cli
-from agentpassport.identity import generate_keypair, did_from_public_key, sign_delegation
-from agentpassport.identity.signing import _decode_jwt_claims
 from click.testing import CliRunner
 
 

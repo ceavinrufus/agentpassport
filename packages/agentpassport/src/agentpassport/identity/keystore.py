@@ -4,7 +4,7 @@ import json
 import os
 from pathlib import Path
 
-from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.identity.did import did_from_public_key, generate_keypair
 
 
 class FileKeystore:

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Trust middleware for pre-execution scope verification.
 
 TrustMiddleware is wired automatically inside Agent.handle(). Users
@@ -21,8 +19,13 @@ Cross-deployment trust is out of scope for this refactor.
 # trust establishment between two parties' root signing keys.
 """
 
-from agentpassport.identity.signing import _decode_jwt_claims, _verify_jwt_signature
+from __future__ import annotations
+
+from datetime import UTC
+
 from nacl.exceptions import BadSignatureError
+
+from agentpassport.identity.signing import _decode_jwt_claims, _verify_jwt_signature
 
 
 class ScopeError(Exception):
@@ -41,10 +44,10 @@ def _chain_granted_scopes(
     included. Expired tokens are still skipped — this re-uses the same
     per-token logic as verify_auth_chain but returns scopes rather than bool.
     """
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     granted: set[str] = set()
-    now_ts = datetime.now(timezone.utc).timestamp()
+    now_ts = datetime.now(UTC).timestamp()
 
     for token in auth_chain:
         try:

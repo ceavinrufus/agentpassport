@@ -1,15 +1,13 @@
-import json
 import base64
+import json
 
 import pytest
-
-from agentpassport.identity.did import generate_keypair, did_from_public_key, parse_did
+from agentpassport.identity.did import did_from_public_key, generate_keypair, parse_did
 from agentpassport.identity.signing import (
+    _decode_jwt_claims,
     sign_delegation,
     verify_auth_chain,
-    _decode_jwt_claims,
 )
-
 
 # ---------------------------------------------------------------------------
 # DID helpers (carried forward from step 1)
@@ -87,7 +85,9 @@ def test_jwt_claims_are_correct():
     did_a = did_from_public_key(pub_a)
     did_b = did_from_public_key(pub_b)
 
-    token = sign_delegation(priv_a, did_a, did_b, ["read:db:customers"], ttl_seconds=3600, max_delegations=2)
+    token = sign_delegation(
+        priv_a, did_a, did_b, ["read:db:customers"], ttl_seconds=3600, max_delegations=2
+    )
     claims = _decode_jwt_claims(token)
 
     assert claims["iss"] == did_a

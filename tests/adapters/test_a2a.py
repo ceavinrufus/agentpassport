@@ -18,10 +18,9 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
-
 from agentpassport.agent import Agent
-from agentpassport.trust import ScopeError
-from agentpassport.types import AgentCard as APSAgentCard, Intent, TaskEnvelope
+from agentpassport.types import AgentCard as APSAgentCard
+from agentpassport.types import Intent, TaskEnvelope
 from agentpassport_adapters.a2a import (
     A2AClientAdapter,
     A2AServerAdapter,
@@ -647,7 +646,7 @@ SAMPLE_CARD = {
 
 class TestA2AClientAdapterHappyPath:
     async def test_successful_delegation_returns_result(self) -> None:
-        transport = _make_mock_transport([
+        _make_mock_transport([
             _json_resp(SAMPLE_CARD),  # card fetch
             _json_resp(_make_a2a_task_response()),  # message/send
         ])
@@ -663,7 +662,6 @@ class TestA2AClientAdapterHappyPath:
             mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
             mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            call_count = [0]
             async def fake_get(url: str, **kwargs: Any) -> httpx.Response:
                 return _json_resp(SAMPLE_CARD)
 
@@ -691,7 +689,9 @@ class TestA2AClientAdapterHappyPath:
             mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
             mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            async def fake_post(url: str, *, json: Any, headers: dict[str, str], **kwargs: Any) -> httpx.Response:
+            async def fake_post(
+                url: str, *, json: Any, headers: dict[str, str], **kwargs: Any
+            ) -> httpx.Response:
                 received_headers.append(dict(headers))
                 return _json_resp(_make_a2a_task_response())
 
@@ -715,7 +715,9 @@ class TestA2AClientAdapterHappyPath:
             mock_cls.return_value.__aenter__ = AsyncMock(return_value=mock_client)
             mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
-            async def fake_post(url: str, *, json: Any, headers: dict[str, str], **kwargs: Any) -> httpx.Response:
+            async def fake_post(
+                url: str, *, json: Any, headers: dict[str, str], **kwargs: Any
+            ) -> httpx.Response:
                 received_headers.append(dict(headers))
                 return _json_resp(_make_a2a_task_response())
 
@@ -787,7 +789,11 @@ class TestA2AClientAdapterErrors:
             mock_cls.return_value.__aexit__ = AsyncMock(return_value=False)
 
             async def fake_post(url: str, **kwargs: Any) -> httpx.Response:
-                return _json_resp({"jsonrpc": "2.0", "id": "r1", "error": {"code": -32000, "message": "Forbidden"}})
+                error_body = {
+                    "jsonrpc": "2.0", "id": "r1",
+                    "error": {"code": -32000, "message": "Forbidden"},
+                }
+                return _json_resp(error_body)
 
             mock_client.post = fake_post
 
@@ -796,7 +802,6 @@ class TestA2AClientAdapterErrors:
 
     async def test_timeout_raises_timeout_error(self) -> None:
         """If polling never reaches terminal state, TimeoutError is raised."""
-        import asyncio
 
         adapter = A2AClientAdapter(
             agent_card_url="http://remote.example.com/.well-known/agent-card.json",

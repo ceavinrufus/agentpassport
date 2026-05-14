@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import click
@@ -9,7 +8,6 @@ from agentpassport.identity.signing import _decode_jwt_claims, _verify_jwt_signa
 from agentpassport.types import ObservabilityEvent
 from nacl.exceptions import BadSignatureError
 from rich.console import Console
-from rich.table import Table
 from rich.tree import Tree
 
 console = Console()
@@ -88,7 +86,7 @@ def _abbrev_did(did: str, width: int = 24) -> str:
 
 
 def _fmt_ts(unix_ts: float) -> str:
-    dt = datetime.fromtimestamp(unix_ts, tz=timezone.utc)
+    dt = datetime.fromtimestamp(unix_ts, tz=UTC)
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -124,7 +122,7 @@ def _render_auth_chain(
         status_mark = "[green]✓[/green]" if verified else "[red]✗[/red]"
 
         # Expiry check
-        now_ts = datetime.now(timezone.utc).timestamp()
+        now_ts = datetime.now(UTC).timestamp()
         if exp_ts is not None and now_ts > exp_ts:
             expiry_label = f"[red]expired {_fmt_ts(exp_ts)}[/red]"
         elif exp_ts is not None:

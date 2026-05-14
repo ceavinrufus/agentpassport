@@ -1,5 +1,5 @@
-from agentpassport_adapters.cli import CliAdapter
 from agentpassport.types import Intent, TaskEnvelope
+from agentpassport_adapters.cli import CliAdapter
 
 
 async def test_cli_adapter_echo():

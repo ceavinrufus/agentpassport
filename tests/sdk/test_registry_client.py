@@ -1,7 +1,7 @@
-import pytest
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import httpx
-from unittest.mock import AsyncMock, patch, MagicMock
-from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.identity.did import did_from_public_key, generate_keypair
 from agentpassport.registry_client import RegistryClient
 from agentpassport.types import AgentCard, CostInfo
 

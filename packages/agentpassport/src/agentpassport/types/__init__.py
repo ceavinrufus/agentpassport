@@ -1,6 +1,6 @@
-from agentpassport.types.task import TaskEnvelope, TaskState, Intent, Constraints
 from agentpassport.types.agent_card import AgentCard, CostInfo
 from agentpassport.types.events import ObservabilityEvent
+from agentpassport.types.task import Constraints, Intent, TaskEnvelope, TaskState
 
 __all__ = [
     "TaskEnvelope",

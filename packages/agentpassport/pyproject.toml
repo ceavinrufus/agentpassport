@@ -3,6 +3,11 @@ name = "agentpassport"
 version = "0.2.0"
 description = "Trust and authorization layer for multi-agent systems"
 requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
 dependencies = [
     "pydantic>=2.0",
     "pynacl>=1.5.0",

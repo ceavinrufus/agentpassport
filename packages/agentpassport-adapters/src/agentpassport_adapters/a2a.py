@@ -28,10 +28,10 @@ import uuid
 from typing import Any
 
 import httpx
-
 from agentpassport.agent import Agent
 from agentpassport.trust import ScopeError
-from agentpassport.types import AgentCard as APSAgentCard, Intent, TaskEnvelope
+from agentpassport.types import AgentCard as APSAgentCard
+from agentpassport.types import Intent, TaskEnvelope
 
 from agentpassport_adapters.base import Adapter
 
@@ -41,24 +41,16 @@ logger = logging.getLogger(__name__)
 # Optional a2a-sdk import
 # ---------------------------------------------------------------------------
 try:
-    from google.protobuf.json_format import MessageToDict, ParseDict
     from a2a.types.a2a_pb2 import (
-        AgentCard as A2AAgentCard,
-        AgentCapabilities,
-        AgentInterface,
-        AgentSkill,
-        Message as A2AMessage,
-        Part as A2APart,
         ROLE_AGENT,
-        ROLE_USER,
-        SendMessageRequest,
-        Task as A2ATask,
-        TASK_STATE_CANCELED,
         TASK_STATE_COMPLETED,
         TASK_STATE_FAILED,
         TASK_STATE_SUBMITTED,
         TASK_STATE_WORKING,
     )
+    from a2a.types.a2a_pb2 import AgentCard as A2AAgentCard
+    from a2a.types.a2a_pb2 import Task as A2ATask
+    from google.protobuf.json_format import MessageToDict
 
     _A2A_SDK_AVAILABLE = True
 except ImportError:  # pragma: no cover
@@ -385,7 +377,9 @@ class A2AServerAdapter:
             body = await request.json()
         except Exception:
             return JSONResponse(
-                _jsonrpc_error(None, _JSONRPC_INTERNAL_ERROR, "Parse error: request body is not valid JSON"),
+                _jsonrpc_error(
+                    None, _JSONRPC_INTERNAL_ERROR, "Parse error: request body is not valid JSON"
+                ),
                 status_code=400,
             )
 
@@ -395,7 +389,11 @@ class A2AServerAdapter:
 
         if method not in ("message/send", "SendMessage"):
             return JSONResponse(
-                _jsonrpc_error(rpc_id, _JSONRPC_METHOD_NOT_FOUND, f"Method '{method}' not found.  This server supports: message/send"),
+                _jsonrpc_error(
+                    rpc_id,
+                    _JSONRPC_METHOD_NOT_FOUND,
+                    f"Method '{method}' not found.  This server supports: message/send",
+                ),
             )
 
         # Extract message from params
@@ -424,13 +422,16 @@ class A2AServerAdapter:
                     _jsonrpc_error(
                         rpc_id,
                         _JSONRPC_INVALID_PARAMS,
-                        f"No skill id provided and agent has multiple capabilities {registered!r}.  "
+                        f"No skill id provided and agent has "
+                        f"multiple capabilities {registered!r}.  "
                         "Set skillId in the message.",
                     )
                 )
             else:
                 return JSONResponse(
-                    _jsonrpc_error(rpc_id, _JSONRPC_INVALID_PARAMS, "No capabilities registered on this agent.")
+                    _jsonrpc_error(
+                        rpc_id, _JSONRPC_INVALID_PARAMS, "No capabilities registered on this agent."
+                    )
                 )
 
         if capability not in self._agent.capabilities:

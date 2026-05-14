@@ -4,7 +4,7 @@ server.py / create_agent_app removed in step 3. These tests verify the
 underlying verify_auth_chain logic directly — same coverage intent, no
 HTTP server dependency.
 """
-from agentpassport.identity import generate_keypair, did_from_public_key, sign_delegation
+from agentpassport.identity import did_from_public_key, generate_keypair, sign_delegation
 from agentpassport.identity.signing import verify_auth_chain
 
 

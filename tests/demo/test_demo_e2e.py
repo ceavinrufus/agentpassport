@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
-
 import pytest
-
 from agentpassport import Intent, TaskEnvelope
+
 from demo.orchestrator import orchestrator
 
 

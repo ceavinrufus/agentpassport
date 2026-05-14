@@ -6,10 +6,9 @@ failure, and backward compat for capabilities with no requires.
 """
 import pytest
 from agentpassport.agent import Agent
-from agentpassport.identity import generate_keypair, did_from_public_key, sign_delegation
+from agentpassport.identity import did_from_public_key, generate_keypair, sign_delegation
 from agentpassport.trust import ScopeError, TrustMiddleware
-from agentpassport.types.task import TaskEnvelope, Intent
-
+from agentpassport.types.task import Intent, TaskEnvelope
 
 # ---------------------------------------------------------------------------
 # Helpers

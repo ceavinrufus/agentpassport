@@ -9,7 +9,7 @@ from agentpassport.observability.emitter import EventEmitter
 from agentpassport.observability.sinks import StdoutSink
 from agentpassport.task.lifecycle import TaskLifecycle
 from agentpassport.transport.http import HttpTransport
-from agentpassport.trust import ScopeError, TrustMiddleware
+from agentpassport.trust import TrustMiddleware
 from agentpassport.types.agent_card import AgentCard
 from agentpassport.types.task import TaskEnvelope, TaskState
 

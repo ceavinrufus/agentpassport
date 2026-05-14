@@ -1,7 +1,8 @@
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
 from agentpassport import Agent, Intent, TaskEnvelope
-from agentpassport.identity import generate_keypair, did_from_public_key, sign_delegation
+from agentpassport.identity import did_from_public_key, generate_keypair, sign_delegation
 from agentpassport.identity.signing import _decode_jwt_claims
 
 

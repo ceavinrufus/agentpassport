@@ -1,9 +1,8 @@
-import uuid
-from agentpassport.identity.did import generate_keypair, did_from_public_key
-from agentpassport.identity.signing import sign_delegation, _decode_jwt_claims
-from agentpassport.types.task import TaskEnvelope, Intent, Constraints, TaskState
+from agentpassport.identity.did import did_from_public_key, generate_keypair
+from agentpassport.identity.signing import _decode_jwt_claims, sign_delegation
 from agentpassport.types.agent_card import AgentCard, CostInfo
 from agentpassport.types.events import ObservabilityEvent
+from agentpassport.types.task import Constraints, Intent, TaskEnvelope, TaskState
 
 
 def test_task_envelope_creation():

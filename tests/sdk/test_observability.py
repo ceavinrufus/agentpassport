@@ -1,4 +1,4 @@
-from agentpassport.identity.did import generate_keypair, did_from_public_key
+from agentpassport.identity.did import did_from_public_key, generate_keypair
 from agentpassport.observability.emitter import EventEmitter
 from agentpassport.observability.sinks import MemorySink
 

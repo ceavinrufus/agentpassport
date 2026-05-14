@@ -47,7 +47,7 @@ const singleHopToken = signDelegation({
   issuerDid: issuer.did,
   subjectDid: subject.did,
   scope: ["read:db:customers"],
-  ttlSeconds: 86400,
+  ttlSeconds: 3153600000,
 });
 
 // ---------------------------------------------------------------------------
@@ -63,21 +63,21 @@ const chainToken1 = signDelegation({
   issuerDid: root.did,
   subjectDid: hop1.did,
   scope: ["read:db:customers", "write:api:stripe"],
-  ttlSeconds: 86400,
+  ttlSeconds: 3153600000,
 });
 const chainToken2 = signDelegation({
   issuerPrivateKey: hop1.kp.privateKey,
   issuerDid: hop1.did,
   subjectDid: hop2.did,
   scope: ["read:db:customers", "write:api:stripe"],
-  ttlSeconds: 86400,
+  ttlSeconds: 3153600000,
 });
 const chainToken3 = signDelegation({
   issuerPrivateKey: hop2.kp.privateKey,
   issuerDid: hop2.did,
   subjectDid: leaf.did,
   scope: ["read:db:customers"],
-  ttlSeconds: 86400,
+  ttlSeconds: 3153600000,
 });
 
 const fixtures = {

@@ -1,6 +1,11 @@
-from agentpassport.identity.did import generate_keypair, did_from_public_key, parse_did
-from agentpassport.identity.signing import sign_delegation, verify_auth_chain, sign_agent_card, verify_agent_card
+from agentpassport.identity.did import did_from_public_key, generate_keypair, parse_did
 from agentpassport.identity.keystore import FileKeystore
+from agentpassport.identity.signing import (
+    sign_agent_card,
+    sign_delegation,
+    verify_agent_card,
+    verify_auth_chain,
+)
 
 __all__ = [
     "generate_keypair",

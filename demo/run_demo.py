@@ -19,9 +19,9 @@ import os
 import subprocess
 import sys
 import time
-import urllib.request
 import urllib.error
-from datetime import datetime, timezone
+import urllib.request
+from datetime import UTC, datetime
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -30,8 +30,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(REPO_ROOT / "packages" / "agentpassport" / "src"))
 
-from agentpassport.identity.did import generate_keypair, did_from_public_key
-from agentpassport.identity.signing import sign_delegation, _decode_jwt_claims
+from agentpassport.identity.did import did_from_public_key, generate_keypair  # noqa: E402
+from agentpassport.identity.signing import _decode_jwt_claims, sign_delegation  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Paths
@@ -174,8 +174,8 @@ def render_auth_chain(chain: list[str], known_keys: dict[str, bytes]) -> None:
         jti = str(claims.get("jti", ""))
         scope = claims.get("scope", [])
         exp_ts = claims.get("exp", 0)
-        exp_dt = datetime.fromtimestamp(float(exp_ts), tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        now_ts = datetime.now(timezone.utc).timestamp()
+        exp_dt = datetime.fromtimestamp(float(exp_ts), tz=UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
+        now_ts = datetime.now(UTC).timestamp()
         expired = float(exp_ts) < now_ts
 
         # Verify signature
@@ -250,7 +250,7 @@ def main() -> None:
         )
         claims = _decode_jwt_claims(delegation_jwt)
         jti = claims["jti"]
-        exp_dt = datetime.fromtimestamp(float(claims["exp"]), tz=timezone.utc).strftime(
+        exp_dt = datetime.fromtimestamp(float(claims["exp"]), tz=UTC).strftime(
             "%Y-%m-%dT%H:%M:%SZ"
         )
         info("scope", str(["read:db:customers"]))
@@ -279,7 +279,7 @@ def main() -> None:
         # --------------------------------------------------------------
         step(2, "Python → TS: queryCustomers (scope granted)")
         task = make_task("queryCustomers")
-        arrow("out", f"POST /task  (intent: queryCustomers)")
+        arrow("out", "POST /task  (intent: queryCustomers)")
         status, body = http_post(f"{base_url}/task", task)
         arrow("in", f"{status}  {json.dumps(body)}")
         if status == 200:

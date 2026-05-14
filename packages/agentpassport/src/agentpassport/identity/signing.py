@@ -3,14 +3,13 @@ from __future__ import annotations
 import base64
 import json
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from nacl.exceptions import BadSignatureError
 from nacl.signing import SigningKey, VerifyKey
 
 from agentpassport.revocation import RevocationRegistry
 from agentpassport.types.agent_card import AgentCard
-
 
 # ---------------------------------------------------------------------------
 # Internal JWT helpers (EdDSA / Ed25519, compact serialisation)
@@ -98,7 +97,7 @@ def sign_delegation(
         scope           — list of action:resource permission strings
         max_delegations — remaining delegation depth this token permits
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     exp = now + timedelta(seconds=ttl_seconds)
 
     claims = {
@@ -140,7 +139,7 @@ def verify_auth_chain(
     if not auth_chain:
         return False
 
-    now_ts = datetime.now(timezone.utc).timestamp()
+    now_ts = datetime.now(UTC).timestamp()
 
     for token in auth_chain:
         # --- resolve issuer public key from unverified claims first ---
@@ -175,9 +174,8 @@ def verify_auth_chain(
             return False
 
         # --- revocation check ---
-        if revocation_registry is not None:
-            if revocation_registry.is_revoked(claims["jti"]):
-                return False
+        if revocation_registry is not None and revocation_registry.is_revoked(claims["jti"]):
+            return False
 
     # --- final subject check ---
     try:

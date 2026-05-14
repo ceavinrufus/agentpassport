@@ -1,6 +1,11 @@
 """Tests for signed AgentCard (step 5)."""
 import pytest
-from agentpassport.identity import generate_keypair, did_from_public_key, sign_agent_card, verify_agent_card
+from agentpassport.identity import (
+    did_from_public_key,
+    generate_keypair,
+    sign_agent_card,
+    verify_agent_card,
+)
 from agentpassport.types.agent_card import AgentCard
 
 
@@ -101,9 +106,8 @@ def test_verify_fails_on_wrong_public_key():
 # Registry integration — publish_agent rejects invalid signature
 # ---------------------------------------------------------------------------
 
-import pytest
-from httpx import ASGITransport, AsyncClient
-from agentpassport_registry.app import create_app
+from agentpassport_registry.app import create_app  # noqa: E402
+from httpx import ASGITransport, AsyncClient  # noqa: E402
 
 
 @pytest.fixture

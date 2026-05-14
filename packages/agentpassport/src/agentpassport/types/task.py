@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import uuid
-from enum import Enum
-from typing import TYPE_CHECKING, Any
+from enum import StrEnum
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
 
-class TaskState(str, Enum):
+class TaskState(StrEnum):
     CREATED = "created"
     DELEGATED = "delegated"
     ACCEPTED = "accepted"
