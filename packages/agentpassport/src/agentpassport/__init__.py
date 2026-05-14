@@ -1,6 +1,7 @@
 from agentpassport.agent import Agent
 from agentpassport.identity import (
-    DomainBinding,
+    Binding,
+    BindingDocument,
     bind_domain,
     did_from_public_key,
     generate_keypair,
@@ -9,6 +10,7 @@ from agentpassport.identity import (
     sign_delegation,
     verify_agent_card,
     verify_auth_chain,
+    verify_binding_attestation,
     verify_domain_binding,
     verify_domain_binding_attestation,
 )
@@ -49,8 +51,10 @@ __all__ = [
     "verify_agent_card",
     "verify_auth_chain",
     # Binding
-    "DomainBinding",
+    "Binding",
+    "BindingDocument",
     "bind_domain",
+    "verify_binding_attestation",
     "verify_domain_binding",
     "verify_domain_binding_attestation",
     # Observability

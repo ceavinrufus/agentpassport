@@ -1,6 +1,8 @@
 from agentpassport.identity.binding import (
-    DomainBinding,
+    Binding,
+    BindingDocument,
     bind_domain,
+    verify_binding_attestation,
     verify_domain_binding,
     verify_domain_binding_attestation,
 )
@@ -22,8 +24,10 @@ __all__ = [
     "sign_agent_card",
     "verify_agent_card",
     "FileKeystore",
-    "DomainBinding",
+    "Binding",
+    "BindingDocument",
     "bind_domain",
+    "verify_binding_attestation",
     "verify_domain_binding",
     "verify_domain_binding_attestation",
 ]
