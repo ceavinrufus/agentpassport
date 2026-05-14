@@ -29,12 +29,13 @@ jobs:
 
       - name: Build ${{ matrix.package.name }}
         working-directory: ${{ matrix.package.dir }}
-        run: uv build --out-dir ../../dist/
+        run: uv build --out-dir dist/
 
       - name: Publish ${{ matrix.package.name }} to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist/
+          packages-dir: ${{ matrix.package.dir }}/dist/
+          skip-existing: true
 
   publish-npm:
     name: Publish @agentpassport/core to npm

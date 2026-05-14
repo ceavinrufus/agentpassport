@@ -65,7 +65,7 @@ dev = [
 
 [[package]]
 name = "agentpassport"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "packages/agentpassport" }
 dependencies = [
     { name = "anyio" },
@@ -105,7 +105,7 @@ provides-extras = ["otel", "dev"]
 
 [[package]]
 name = "agentpassport-adapters"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "packages/agentpassport-adapters" }
 dependencies = [
     { name = "agentpassport" },
@@ -120,7 +120,7 @@ requires-dist = [
 
 [[package]]
 name = "agentpassport-cli"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "packages/agentpassport-cli" }
 dependencies = [
     { name = "agentpassport" },
@@ -137,7 +137,7 @@ requires-dist = [
 
 [[package]]
 name = "agentpassport-registry"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "packages/agentpassport-registry" }
 dependencies = [
     { name = "agentpassport" },
