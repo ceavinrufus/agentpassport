@@ -2,17 +2,23 @@ from agentpassport.agent import Agent
 from agentpassport.identity import (
     Binding,
     BindingDocument,
+    Revocation,
     bind_domain,
+    bind_wallet,
     did_from_public_key,
     generate_keypair,
     parse_did,
+    revoke_wallet,
     sign_agent_card,
     sign_delegation,
+    validate_address,
     verify_agent_card,
     verify_auth_chain,
     verify_binding_attestation,
     verify_domain_binding,
     verify_domain_binding_attestation,
+    verify_revocation_attestation,
+    verify_wallet_binding,
 )
 from agentpassport.observability import EventEmitter, FileSink, MemorySink, OtelSink, StdoutSink
 from agentpassport.registry_client import RegistryClient
@@ -53,10 +59,16 @@ __all__ = [
     # Binding
     "Binding",
     "BindingDocument",
+    "Revocation",
     "bind_domain",
+    "bind_wallet",
+    "revoke_wallet",
+    "validate_address",
     "verify_binding_attestation",
+    "verify_revocation_attestation",
     "verify_domain_binding",
     "verify_domain_binding_attestation",
+    "verify_wallet_binding",
     # Observability
     "EventEmitter",
     "FileSink",
