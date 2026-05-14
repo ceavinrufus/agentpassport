@@ -142,6 +142,7 @@ worker.capability(
 | [Guide: Cross-SDK Interop](./guides/cross-sdk.md) | Python signs → TypeScript verifies, and vice versa |
 | [Guide: MCP Middleware](./guides/mcp.md) | Enforce passport and scope before MCP tool execution |
 | [Guide: A2A Integration](./guides/a2a.md) | Expose agentpassport agents as A2A servers; delegate to external A2A agents |
+| [Guide: Ownership Binding](./guides/ownership-binding.md) | Link your agent DID to a domain or wallet address |
 
 ---
 
