@@ -1,6 +1,6 @@
 [project]
 name = "agentpassport-cli"
-version = "0.2.0"
+version = "0.3.0"
 description = "CLI tools for agentpassport trace viewing and key management"
 requires-python = ">=3.11"
 dependencies = [

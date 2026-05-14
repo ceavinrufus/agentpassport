@@ -29,12 +29,13 @@ jobs:
 
       - name: Build ${{ matrix.package.name }}
         working-directory: ${{ matrix.package.dir }}
-        run: uv build --out-dir ../../dist/
+        run: uv build --out-dir dist/
 
       - name: Publish ${{ matrix.package.name }} to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: dist/
+          packages-dir: ${{ matrix.package.dir }}/dist/
+          skip-existing: true
 
   publish-npm:
     name: Publish @agentpassport/core to npm
@@ -59,6 +60,13 @@ jobs:
 
       - name: Publish to npm
         working-directory: packages/agentpassport-ts
-        run: npm publish --access public
+        run: |
+          CURRENT=$(node -p "require('./package.json').version")
+          PUBLISHED=$(npm view @agentpassport/core version 2>/dev/null || echo "none")
+          if [ "$CURRENT" = "$PUBLISHED" ]; then
+            echo "Version $CURRENT already published, skipping."
+          else
+            npm publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
