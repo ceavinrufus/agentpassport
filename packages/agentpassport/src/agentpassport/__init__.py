@@ -1,5 +1,7 @@
 from agentpassport.agent import Agent
 from agentpassport.identity import (
+    DomainBinding,
+    bind_domain,
     did_from_public_key,
     generate_keypair,
     parse_did,
@@ -7,6 +9,8 @@ from agentpassport.identity import (
     sign_delegation,
     verify_agent_card,
     verify_auth_chain,
+    verify_domain_binding,
+    verify_domain_binding_attestation,
 )
 from agentpassport.observability import EventEmitter, FileSink, MemorySink, OtelSink, StdoutSink
 from agentpassport.registry_client import RegistryClient
@@ -44,6 +48,11 @@ __all__ = [
     "sign_delegation",
     "verify_agent_card",
     "verify_auth_chain",
+    # Binding
+    "DomainBinding",
+    "bind_domain",
+    "verify_domain_binding",
+    "verify_domain_binding_attestation",
     # Observability
     "EventEmitter",
     "FileSink",

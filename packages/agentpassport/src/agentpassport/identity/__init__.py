@@ -1,3 +1,9 @@
+from agentpassport.identity.binding import (
+    DomainBinding,
+    bind_domain,
+    verify_domain_binding,
+    verify_domain_binding_attestation,
+)
 from agentpassport.identity.did import did_from_public_key, generate_keypair, parse_did
 from agentpassport.identity.keystore import FileKeystore
 from agentpassport.identity.signing import (
@@ -16,4 +22,8 @@ __all__ = [
     "sign_agent_card",
     "verify_agent_card",
     "FileKeystore",
+    "DomainBinding",
+    "bind_domain",
+    "verify_domain_binding",
+    "verify_domain_binding_attestation",
 ]
