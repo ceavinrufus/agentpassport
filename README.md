@@ -57,6 +57,8 @@ Right now you can't. Every framework just trusts. agentpassport proves it.
 
 ## Demo
 
+**Cross-SDK trust chain** — Python orchestrator delegates to TypeScript agent:
+
 ```bash
 git clone https://github.com/ceavinrufus/agentpassport
 cd agentpassport
@@ -90,6 +92,46 @@ uv run python -m demo.run_demo
     scope  ['read:db:customers']
     exp  2026-05-12T10:22:48Z
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**Ownership binding** — domain + wallet binding, offline verification, revocation:
+
+```bash
+uv run python -m demo.binding_demo
+```
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  agentpassport — Ownership Binding Demo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[STEP 1] Generate agent identity
+  DID:               did:key:z6Mkv4kj…
+  ✅  Agent identity created
+
+[STEP 2] Bind agent to domain 'rufus.dev'
+  ✅  Domain binding created
+
+[STEP 3] Bind agent to Ethereum wallet
+  ✅  Wallet binding created
+
+[STEP 4] Assemble binding document
+  Document (publish at https://rufus.dev/.well-known/agent-passport.json)
+
+[STEP 5] Verify signatures offline
+  ✅  Domain binding signature valid
+  ✅  Wallet binding signature valid
+  ✅  Tampered signature correctly rejected
+  ✅  Expired binding correctly rejected
+
+[STEP 6] Revoke wallet binding
+  ✅  Wallet binding is now revoked
+  ✅  Domain binding unaffected by wallet revocation
+
+[STEP 7] Final document state
+  binding  type=domain [active]
+  binding  type=wallet [REVOKED]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ## How It Works
@@ -195,9 +237,9 @@ cd packages/agentpassport-ts && npm install  # TypeScript SDK
 |---------|-------------|
 | [`agentpassport`](https://pypi.org/project/agentpassport/) [![PyPI](https://img.shields.io/pypi/v/agentpassport)](https://pypi.org/project/agentpassport/) | Python trust and authorization layer |
 | [`@agentpassport/core`](https://www.npmjs.com/package/@agentpassport/core) [![npm](https://img.shields.io/npm/v/@agentpassport/core)](https://www.npmjs.com/package/@agentpassport/core) | TypeScript SDK (wire-compatible) |
-| `agentpassport-registry` | Trusted agent registry with signature verification |
-| `agentpassport-adapters` | MCP, REST, and A2A adapters |
-| `agentpassport-cli` | CLI — keygen, trace viewer |
+| [`agentpassport-registry`](https://pypi.org/project/agentpassport-registry/) [![PyPI](https://img.shields.io/pypi/v/agentpassport-registry)](https://pypi.org/project/agentpassport-registry/) | Trusted agent registry with signature verification |
+| [`agentpassport-adapters`](https://pypi.org/project/agentpassport-adapters/) [![PyPI](https://img.shields.io/pypi/v/agentpassport-adapters)](https://pypi.org/project/agentpassport-adapters/) | MCP, REST, and A2A adapters |
+| [`agentpassport-cli`](https://pypi.org/project/agentpassport-cli/) [![PyPI](https://img.shields.io/pypi/v/agentpassport-cli)](https://pypi.org/project/agentpassport-cli/) | CLI — keygen, trace viewer |
 
 ## CLI
 
@@ -208,6 +250,44 @@ agentpass identity keygen --alias myagent
 # Inspect an auth chain from a trace
 agentpass trace show --id trace_abc --file traces.jsonl
 ```
+
+## Ownership Binding
+
+Agents can prove real-world ownership by publishing a signed binding document at `/.well-known/agent-passport.json`.
+
+```python
+from agentpassport import (
+    generate_keypair, did_from_public_key,
+    bind_domain, bind_wallet, BindingDocument,
+    verify_binding_attestation,
+)
+
+priv, pub = generate_keypair()
+did = did_from_public_key(pub)
+
+# Create bindings
+domain_binding = bind_domain(priv[:32], did, "rufus.dev")
+wallet_binding = bind_wallet(priv[:32], did, "ethereum", "0xYourAddress")
+
+# Assemble and publish
+doc = BindingDocument(version="1")
+doc.add(domain_binding)
+doc.add(wallet_binding)
+print(doc.to_json())  # publish at https://rufus.dev/.well-known/agent-passport.json
+
+# Verify offline
+ok = verify_binding_attestation(domain_binding)  # True
+```
+
+Or use the CLI:
+
+```bash
+agentpass identity bind-domain --alias myagent --domain rufus.dev --output ap.json
+agentpass identity bind-wallet --alias myagent --chain ethereum --address 0x... --output ap.json
+agentpass identity verify-domain --did <DID> --domain rufus.dev
+```
+
+See the [Ownership Binding guide](docs/guides/ownership-binding.md) for the full flow.
 
 ## Roadmap
 
@@ -222,8 +302,10 @@ agentpass trace show --id trace_abc --file traces.jsonl
 | | MCP middleware adapter | ✅ Done |
 | | A2A protocol adapter (inbound + outbound) | ✅ Done |
 | **AI Passport** | Identity revocation | ✅ Done |
-| | Ownership binding (domain → agent DID) | 🔜 Next |
+| | Domain ownership binding | ✅ Done |
+| | Wallet ownership binding (chain-agnostic) | ✅ Done |
 | | Decentralized agent discovery | 🔜 Planned |
+| | Merkle tree revocation (scalable, on-chain ready) | 🔜 Planned |
 | | Human-readable ownership declaration | 🔜 Planned |
 
 ## Development
