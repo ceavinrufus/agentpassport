@@ -2,9 +2,12 @@
 
 [![PyPI](https://img.shields.io/pypi/v/agentpassport)](https://pypi.org/project/agentpassport/)
 [![npm](https://img.shields.io/npm/v/@agentpassport/core)](https://www.npmjs.com/package/@agentpassport/core)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![CI](https://github.com/ceavinrufus/agentpassport/actions/workflows/ci.yml/badge.svg)](https://github.com/ceavinrufus/agentpassport/actions/workflows/ci.yml)
 
 **The AI passport layer.**
+
+> Cryptographic delegation for AI agents. Prove what an agent was authorized to do — across languages, frameworks, and trust boundaries.
 
 Agents are flooding the internet. They're sending emails, making purchases, running code — on your behalf, or someone else's. But there's no standard way to prove who an agent belongs to, what it's authorized to do, or whether it stayed within bounds.
 
@@ -18,6 +21,15 @@ agentpassport is building that. Starting with the authorization primitive — cr
          ↓
     ScopeError: requires [write:db:customers], granted [read:db:customers]  ✅
 ```
+
+## Why agentpassport?
+
+| | Without agentpassport | With agentpassport |
+|---|---|---|
+| Agent authorization | Trust by convention | Cryptographic proof |
+| Scope enforcement | Ad-hoc checks | Declared + verified before execution |
+| Revocation | Kill the process | Soft-stop by JTI, mid-flight safe |
+| Cross-language | Custom per integration | Wire-compatible out of the box |
 
 ## Install
 
@@ -181,8 +193,8 @@ cd packages/agentpassport-ts && npm install  # TypeScript SDK
 
 | Package | Description |
 |---------|-------------|
-| `agentpassport` | Python trust and authorization layer |
-| `@agentpassport/core` | TypeScript SDK (wire-compatible) |
+| [`agentpassport`](https://pypi.org/project/agentpassport/) [![PyPI](https://img.shields.io/pypi/v/agentpassport)](https://pypi.org/project/agentpassport/) | Python trust and authorization layer |
+| [`@agentpassport/core`](https://www.npmjs.com/package/@agentpassport/core) [![npm](https://img.shields.io/npm/v/@agentpassport/core)](https://www.npmjs.com/package/@agentpassport/core) | TypeScript SDK (wire-compatible) |
 | `agentpassport-registry` | Trusted agent registry with signature verification |
 | `agentpassport-adapters` | MCP, REST, and A2A adapters |
 | `agentpassport-cli` | CLI — keygen, trace viewer |
@@ -224,6 +236,10 @@ uv run python -m tests.cross-sdk.generate_fixtures && \
   cd tests/cross-sdk && npx tsx generate_ts_fixtures.ts  # cross-SDK fixtures
 ```
 
+## Contributing
+
+PRs welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
 ## License
 
-MIT
+Apache-2.0
