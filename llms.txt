@@ -1,0 +1,104 @@
+# agentpassport
+
+> The AI passport layer. Cryptographic identity and delegation for AI agents.
+
+## What It Is
+
+agentpassport gives AI agents a cryptographic identity and a provable authorization chain. When Agent A delegates work to Agent B, any verifier can prove what Agent B was authorized to do — across languages, frameworks, and trust boundaries.
+
+## Install
+
+```bash
+pip install agentpassport        # Python
+npm install @agentpassport/core  # TypeScript
+```
+
+## Core Concepts
+
+- **Identity:** Every agent has an Ed25519 keypair and a `did:key:` DID. No central registry.
+- **Delegation:** Signed JWTs form an auth chain. Scope can only narrow at each hop — never expand.
+- **Enforcement:** `verify_auth_chain()` and `TrustMiddleware` check before execution. Fail fast, no partial state.
+- **Revocation:** Soft-stop by JTI. In-flight actions complete; next action is blocked.
+- **Ownership binding:** Agents can prove domain or wallet ownership via `/.well-known/agent-passport.json`.
+
+## Key Functions
+
+### Python
+
+```python
+# Identity
+generate_keypair() -> (private_key, public_key)
+did_from_public_key(public_key) -> "did:key:z6Mk..."
+
+# Delegation
+sign_delegation(issuer_private_key, issuer_did, subject_did, scope, ttl_seconds) -> token
+verify_auth_chain(auth_chain, expected_subject, known_public_keys) -> bool
+
+# Ownership binding
+bind_domain(private_key, agent_did, domain) -> Binding
+bind_wallet(private_key, agent_did, chain, address) -> Binding
+revoke_wallet(private_key, agent_did, chain, address) -> Revocation
+verify_domain_binding(agent_did, domain) -> bool
+verify_wallet_binding(agent_did, chain, address, domain) -> bool
+
+# Revocation
+InMemoryRevocationRegistry()
+SqliteRevocationRegistry(db_path)
+```
+
+### TypeScript
+
+```typescript
+generateKeypair() -> { privateKey, publicKey }
+didFromPublicKey(publicKey) -> "did:key:z6Mk..."
+signDelegation({ issuerPrivateKey, issuerDid, subjectDid, scope, ttlSeconds }) -> token
+verifyAuthChain({ authChain, expectedSubject, knownPublicKeys }) -> boolean
+```
+
+## Wire Format
+
+Delegation tokens are compact EdDSA JWTs (Ed25519). Python and TypeScript SDKs are wire-compatible — a token signed by one can be verified by the other.
+
+## Ownership Binding
+
+Agents can prove real-world ownership by publishing a `BindingDocument` at `/.well-known/agent-passport.json`:
+
+```json
+{
+  "version": "1",
+  "bindings": [
+    {
+      "type": "domain",
+      "agent_did": "did:key:z6Mk...",
+      "claim": { "domain": "rufus.dev" },
+      "issued_at": 1778716471,
+      "expires_at": null,
+      "signature": "<ed25519 hex>"
+    },
+    {
+      "type": "wallet",
+      "agent_did": "did:key:z6Mk...",
+      "claim": { "chain": "ethereum", "address": "0x1234..." },
+      "issued_at": 1778716471,
+      "expires_at": null,
+      "signature": "<ed25519 hex>"
+    }
+  ],
+  "revocations": []
+}
+```
+
+## Packages
+
+- `agentpassport` — Python core SDK
+- `@agentpassport/core` — TypeScript SDK
+- `agentpassport-registry` — Trusted agent registry (FastAPI)
+- `agentpassport-adapters` — MCP, REST, A2A adapters
+- `agentpassport-cli` — CLI tooling
+
+## Source
+
+- GitHub: https://github.com/ceavinrufus/agentpassport
+- PyPI: https://pypi.org/project/agentpassport/
+- npm: https://www.npmjs.com/package/@agentpassport/core
+- License: Apache 2.0
