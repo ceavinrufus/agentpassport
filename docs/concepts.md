@@ -579,6 +579,8 @@ When creating a subtask with `create_subtask()`:
 - The subtask's `Constraints.budget_credits` is set to the allocated amount.
 - If the subtask completes with leftover budget, call `budget_tracker.return_unused(leftover)` to reclaim it.
 
+See the [Budget Tracking guide](guides/budget-tracking.md) for full API details and an orchestrator example.
+
 ---
 
 ## 13. Observability and Event Sinks
@@ -620,21 +622,61 @@ When creating a subtask with `create_subtask()`:
 | `task_completed` | Handler returned successfully |
 | `task_failed` | Handler raised an exception |
 
+See the [Observability guide](guides/observability.md) for configuration details, OtelSink setup, and Datadog integration.
+
 ---
 
 ## 14. Transport Layer
+
+Transports serialize and deliver `TaskEnvelope` objects between agents. AgentPassport ships two built-in transports and a `Transport` base class for custom implementations.
 
 ### HttpTransport
 
 `HttpTransport` serializes a `TaskEnvelope` to JSON and POSTs it to `<endpoint>/agentpassport/tasks`. It uses `httpx.AsyncClient` for async HTTP.
 
+```python
+from agentpassport.transport.http import HttpTransport
+
+transport = HttpTransport(base_url="https://my-agent.example.com", timeout=30.0)
+result = await transport.send(task, endpoint="/agentpassport/tasks")
+```
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `base_url` | `""` | Base URL prepended to relative endpoint strings |
+| `timeout` | `30.0` | HTTP request timeout in seconds |
+
 ### StdioTransport
 
-`StdioTransport` serializes tasks to newline-delimited JSON over stdin/stdout. Used for process-based agent communication.
+`StdioTransport` launches a subprocess and communicates with it via stdin/stdout. The task is written as a newline-terminated JSON line to the subprocess stdin, and the response is read from stdout.
+
+```python
+from agentpassport.transport.stdio import StdioTransport
+
+transport = StdioTransport(command=["python", "-m", "myagent"])
+result = await transport.send(task, endpoint="")
+```
+
+Use cases:
+
+- **Local subprocess agents** — invoke an agent packaged as a CLI tool without running an HTTP server.
+- **MCP-style tool invocation** — many tool servers use stdio as their transport.
+- **Testing** — spin up an agent in-process without networking.
+
+The subprocess must read one JSON line from stdin, process it, and write one JSON response line to stdout. A non-zero exit code raises `RuntimeError` with the stderr contents.
 
 ### Serialization format
 
 Both transports use `TaskEnvelope.model_dump_json()` (Pydantic v2) which produces compact JSON. The `auth_chain` is a JSON array of JWT strings.
+
+### Choosing a transport
+
+| Scenario | Transport |
+|----------|-----------|
+| Remote agent over HTTP/HTTPS | `HttpTransport` |
+| Local subprocess / CLI tool | `StdioTransport` |
+| MCP tool server | `StdioTransport` (via `McpAdapter`) |
+| Custom protocol | Subclass `Transport` and implement `serialize`, `deserialize`, `send` |
 
 ---
 

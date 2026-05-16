@@ -33,6 +33,8 @@ nav:
       - Ownership Binding: guides/ownership-binding.md
       - MCP Integration: guides/mcp.md
       - A2A Integration: guides/a2a.md
+      - Observability: guides/observability.md
+      - Budget Tracking: guides/budget-tracking.md
   - Python API:
       - API Reference: python/api-reference.md
       - Adapters: python/adapters.md
