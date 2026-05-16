@@ -138,6 +138,22 @@ uv run python -m demo.binding_demo
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
+### Verify domain ownership — live
+
+agentpassport.fyi publishes its own `/.well-known/agent-passport.json` — you can verify it right now:
+
+```bash
+$ agentpass identity verify-domain \
+    --did did:key:z6Mkh8UwkN88kwynM3mYke8yFXr9ax69jZKv2TCuwG7yPzbw \
+    --domain agentpassport.fyi
+```
+
+Output:
+```
+Checking https://agentpassport.fyi/.well-known/agent-passport.json ...
+✓ Valid domain binding: 'agentpassport.fyi' claims did:key:z6Mkh8UwkN88kwynM3mYke8yFXr9ax69jZKv2TCuwG7yPzbw
+```
+
 ## How It Works
 
 ### 1. Cryptographic Identity
