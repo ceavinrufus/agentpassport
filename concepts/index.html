@@ -1228,6 +1228,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#choosing-a-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a transport
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1548,6 +1559,62 @@
     
   
     A2A Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/observability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/budget-tracking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Budget Tracking
   
 
     
@@ -2623,6 +2690,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#choosing-a-transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing a transport
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3416,6 +3494,7 @@
 - <code>budget_tracker.allocate(budget_credits)</code> is called, reducing the parent's remaining budget.
 - The subtask's <code>Constraints.budget_credits</code> is set to the allocated amount.
 - If the subtask completes with leftover budget, call <code>budget_tracker.return_unused(leftover)</code> to reclaim it.</p>
+<p>See the <a href="../guides/budget-tracking/">Budget Tracking guide</a> for full API details and an orchestrator example.</p>
 <hr />
 <h2 id="13-observability-and-event-sinks">13. Observability and Event Sinks</h2>
 <h3 id="eventemitter">EventEmitter</h3>
@@ -3536,14 +3615,81 @@
 </tr>
 </tbody>
 </table>
+<p>See the <a href="../guides/observability/">Observability guide</a> for configuration details, OtelSink setup, and Datadog integration.</p>
 <hr />
 <h2 id="14-transport-layer">14. Transport Layer</h2>
+<p>Transports serialize and deliver <code>TaskEnvelope</code> objects between agents. AgentPassport ships two built-in transports and a <code>Transport</code> base class for custom implementations.</p>
 <h3 id="httptransport">HttpTransport</h3>
 <p><code>HttpTransport</code> serializes a <code>TaskEnvelope</code> to JSON and POSTs it to <code>&lt;endpoint&gt;/agentpassport/tasks</code>. It uses <code>httpx.AsyncClient</code> for async HTTP.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.transport.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpTransport</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">transport</span> <span class="o">=</span> <span class="n">HttpTransport</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://my-agent.example.com&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">)</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">transport</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/agentpassport/tasks&quot;</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base_url</code></td>
+<td><code>""</code></td>
+<td>Base URL prepended to relative endpoint strings</td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td><code>30.0</code></td>
+<td>HTTP request timeout in seconds</td>
+</tr>
+</tbody>
+</table>
 <h3 id="stdiotransport">StdioTransport</h3>
-<p><code>StdioTransport</code> serializes tasks to newline-delimited JSON over stdin/stdout. Used for process-based agent communication.</p>
+<p><code>StdioTransport</code> launches a subprocess and communicates with it via stdin/stdout. The task is written as a newline-terminated JSON line to the subprocess stdin, and the response is read from stdout.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.transport.stdio</span><span class="w"> </span><span class="kn">import</span> <span class="n">StdioTransport</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">transport</span> <span class="o">=</span> <span class="n">StdioTransport</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;myagent&quot;</span><span class="p">])</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">transport</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Use cases:</p>
+<ul>
+<li><strong>Local subprocess agents</strong> — invoke an agent packaged as a CLI tool without running an HTTP server.</li>
+<li><strong>MCP-style tool invocation</strong> — many tool servers use stdio as their transport.</li>
+<li><strong>Testing</strong> — spin up an agent in-process without networking.</li>
+</ul>
+<p>The subprocess must read one JSON line from stdin, process it, and write one JSON response line to stdout. A non-zero exit code raises <code>RuntimeError</code> with the stderr contents.</p>
 <h3 id="serialization-format">Serialization format</h3>
 <p>Both transports use <code>TaskEnvelope.model_dump_json()</code> (Pydantic v2) which produces compact JSON. The <code>auth_chain</code> is a JSON array of JWT strings.</p>
+<h3 id="choosing-a-transport">Choosing a transport</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Transport</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Remote agent over HTTP/HTTPS</td>
+<td><code>HttpTransport</code></td>
+</tr>
+<tr>
+<td>Local subprocess / CLI tool</td>
+<td><code>StdioTransport</code></td>
+</tr>
+<tr>
+<td>MCP tool server</td>
+<td><code>StdioTransport</code> (via <code>McpAdapter</code>)</td>
+</tr>
+<tr>
+<td>Custom protocol</td>
+<td>Subclass <code>Transport</code> and implement <code>serialize</code>, <code>deserialize</code>, <code>send</code></td>
+</tr>
+</tbody>
+</table>
 <hr />
 <h2 id="15-registry">15. Registry</h2>
 <p><code>RegistryClient</code> talks to the <code>agentpassport-registry</code> service — a central (but optional) directory of agent cards.</p>
@@ -3593,20 +3739,20 @@
 </tbody>
 </table>
 <h3 id="testing-cross-sdk">Testing cross-SDK</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Python: create a delegation token</span>
-<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_keypair</span><span class="p">,</span> <span class="n">did_from_public_key</span><span class="p">,</span> <span class="n">sign_delegation</span>
-<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">priv</span><span class="p">,</span> <span class="n">pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
-<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="n">did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
-<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="n">token</span> <span class="o">=</span> <span class="n">sign_delegation</span><span class="p">(</span><span class="n">priv</span><span class="p">,</span> <span class="n">did</span><span class="p">,</span> <span class="n">other_did</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;read:db&quot;</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Python: create a delegation token</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_keypair</span><span class="p">,</span> <span class="n">did_from_public_key</span><span class="p">,</span> <span class="n">sign_delegation</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="n">priv</span><span class="p">,</span> <span class="n">pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="n">did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="n">token</span> <span class="o">=</span> <span class="n">sign_delegation</span><span class="p">(</span><span class="n">priv</span><span class="p">,</span> <span class="n">did</span><span class="p">,</span> <span class="n">other_did</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;read:db&quot;</span><span class="p">])</span>
 </code></pre></div>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1">// TypeScript: verify that token</span>
-<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@agentpassport/core&quot;</span><span class="p">;</span>
-<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="p">({</span>
-<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="nx">chain</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">token</span><span class="p">],</span>
-<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span><span class="nx">expectedSubject</span><span class="o">:</span><span class="w"> </span><span class="kt">otherDid</span><span class="p">,</span>
-<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="nx">knownPublicKeys</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Map</span><span class="p">([[</span><span class="nx">issuerDid</span><span class="p">,</span><span class="w"> </span><span class="nx">issuerPubKey</span><span class="p">]]),</span>
-<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="p">});</span>
-<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="c1">// ok === true</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1">// TypeScript: verify that token</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@agentpassport/core&quot;</span><span class="p">;</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="p">({</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">  </span><span class="nx">chain</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">token</span><span class="p">],</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">  </span><span class="nx">expectedSubject</span><span class="o">:</span><span class="w"> </span><span class="kt">otherDid</span><span class="p">,</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">  </span><span class="nx">knownPublicKeys</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Map</span><span class="p">([[</span><span class="nx">issuerDid</span><span class="p">,</span><span class="w"> </span><span class="nx">issuerPubKey</span><span class="p">]]),</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="p">});</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="c1">// ok === true</span>
 </code></pre></div>
 
 
