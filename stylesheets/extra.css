@@ -1,12 +1,42 @@
 :root,
 [data-md-color-scheme="slate"] {
-  --md-primary-fg-color: #00e5a0;
-  --md-primary-fg-color--light: #33ebb3;
-  --md-primary-fg-color--dark: #00b87d;
+  --md-primary-fg-color: #111111;
+  --md-primary-fg-color--light: #1a1a1a;
+  --md-primary-fg-color--dark: #0a0a0a;
   --md-accent-fg-color: #00e5a0;
+  --md-accent-fg-color--transparent: rgba(0,229,160,0.1);
   --md-default-bg-color: #0a0a0a;
   --md-default-bg-color--light: #111111;
   --md-default-bg-color--lighter: #1a1a1a;
   --md-default-bg-color--lightest: #222222;
   --md-code-bg-color: #111111;
+  --md-typeset-a-color: #00e5a0;
+}
+
+/* Nav header — dark bg, green logo text */
+.md-header {
+  background-color: #0a0a0a;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Green accent on active nav items and links */
+.md-nav__link--active,
+.md-nav__link:hover {
+  color: #00e5a0 !important;
+}
+
+/* Sidebar active item */
+.md-nav__item--active > .md-nav__link {
+  color: #00e5a0 !important;
+}
+
+/* Search bar */
+.md-search__input {
+  background-color: #1a1a1a;
+}
+
+/* Code blocks */
+.md-typeset code {
+  background-color: #161616;
+  border: 1px solid rgba(255,255,255,0.06);
 }
