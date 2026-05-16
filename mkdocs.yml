@@ -41,6 +41,7 @@ nav:
       - Registry: python/registry.md
   - TypeScript API:
       - API Reference: typescript/api-reference.md
+  - CLI Reference: cli.md
 
 plugins:
   - search
