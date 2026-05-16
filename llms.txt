@@ -70,7 +70,7 @@ Agents can prove real-world ownership by publishing a `BindingDocument` at `/.we
     {
       "type": "domain",
       "agent_did": "did:key:z6Mk...",
-      "claim": { "domain": "rufus.dev" },
+      "claim": { "domain": "agentpassport.fyi" },
       "issued_at": 1778716471,
       "expires_at": null,
       "signature": "<ed25519 hex>"
@@ -96,8 +96,19 @@ Agents can prove real-world ownership by publishing a `BindingDocument` at `/.we
 - `agentpassport-adapters` — MCP, REST, A2A adapters
 - `agentpassport-cli` — CLI tooling
 
+## Live Domain
+
+The canonical domain for agentpassport is `agentpassport.fyi`. The ownership binding document is published at:
+
+```
+https://agentpassport.fyi/.well-known/agent-passport.json
+```
+
+This endpoint demonstrates a live domain binding and can be used to verify that the project DID is bound to `agentpassport.fyi`.
+
 ## Source
 
+- Site: https://agentpassport.fyi
 - GitHub: https://github.com/ceavinrufus/agentpassport
 - PyPI: https://pypi.org/project/agentpassport/
 - npm: https://www.npmjs.com/package/@agentpassport/core

@@ -113,14 +113,14 @@ uv run python -m demo.binding_demo
   DID:               did:key:z6Mkv4kj…
   ✅  Agent identity created
 
-[STEP 2] Bind agent to domain 'rufus.dev'
+[STEP 2] Bind agent to domain 'agentpassport.fyi'
   ✅  Domain binding created
 
 [STEP 3] Bind agent to Ethereum wallet
   ✅  Wallet binding created
 
 [STEP 4] Assemble binding document
-  Document (publish at https://rufus.dev/.well-known/agent-passport.json)
+  Document (publish at https://agentpassport.fyi/.well-known/agent-passport.json)
 
 [STEP 5] Verify signatures offline
   ✅  Domain binding signature valid
@@ -286,14 +286,14 @@ priv, pub = generate_keypair()
 did = did_from_public_key(pub)
 
 # Create bindings
-domain_binding = bind_domain(priv[:32], did, "rufus.dev")
+domain_binding = bind_domain(priv[:32], did, "agentpassport.fyi")
 wallet_binding = bind_wallet(priv[:32], did, "ethereum", "0xYourAddress")
 
 # Assemble and publish
 doc = BindingDocument(version="1")
 doc.add(domain_binding)
 doc.add(wallet_binding)
-print(doc.to_json())  # publish at https://rufus.dev/.well-known/agent-passport.json
+print(doc.to_json())  # publish at https://agentpassport.fyi/.well-known/agent-passport.json
 
 # Verify offline
 ok = verify_binding_attestation(domain_binding)  # True
@@ -302,9 +302,9 @@ ok = verify_binding_attestation(domain_binding)  # True
 Or use the CLI:
 
 ```bash
-agentpass identity bind-domain --alias myagent --domain rufus.dev --output ap.json
+agentpass identity bind-domain --alias myagent --domain agentpassport.fyi --output ap.json
 agentpass identity bind-wallet --alias myagent --chain ethereum --address 0x... --output ap.json
-agentpass identity verify-domain --did <DID> --domain rufus.dev
+agentpass identity verify-domain --did <DID> --domain agentpassport.fyi
 ```
 
 See the [Ownership Binding guide](docs/guides/ownership-binding.md) for the full flow.
