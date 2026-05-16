@@ -1,0 +1,54 @@
+site_name: agentpassport
+site_url: https://docs.agentpassport.fyi
+site_description: Cryptographic identity and authorization for AI agents
+repo_url: https://github.com/ceavinrufus/agentpassport
+
+docs_dir: docs
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: custom
+    accent: custom
+  font:
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+  extra_css:
+    - stylesheets/extra.css
+
+extra_css:
+  - stylesheets/extra.css
+
+nav:
+  - Home: index.md
+  - Concepts: concepts.md
+  - Guides:
+      - Python Quickstart: guides/python-quickstart.md
+      - TypeScript Quickstart: guides/typescript-quickstart.md
+      - Cross-SDK Compatibility: guides/cross-sdk.md
+      - Ownership Binding: guides/ownership-binding.md
+      - MCP Integration: guides/mcp.md
+      - A2A Integration: guides/a2a.md
+  - Python API:
+      - API Reference: python/api-reference.md
+      - Adapters: python/adapters.md
+      - Registry: python/registry.md
+  - TypeScript API:
+      - API Reference: typescript/api-reference.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
