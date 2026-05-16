@@ -1,0 +1,2402 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cryptographic identity and authorization for AI agents">
+      
+      
+      
+        <link rel="canonical" href="https://docs.agentpassport.fyi/guides/mcp/">
+      
+      
+        <link rel="prev" href="../ownership-binding/">
+      
+      
+        <link rel="next" href="../a2a/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>MCP Integration - agentpassport</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#guide-mcp-middleware-enforcing-passport-and-scope-before-tool-execution" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="agentpassport" class="md-header__button md-logo" aria-label="agentpassport" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            agentpassport
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MCP Integration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ceavinrufus/agentpassport" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../concepts/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Concepts
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../python-quickstart/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../python/api-reference/" class="md-tabs__link">
+          
+  
+  
+  Python API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../typescript/api-reference/" class="md-tabs__link">
+          
+  
+  
+  TypeScript API
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="agentpassport" class="md-nav__button md-logo" aria-label="agentpassport" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    agentpassport
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ceavinrufus/agentpassport" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typescript-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeScript Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cross-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-SDK Compatibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ownership-binding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ownership Binding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Integration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-problem-mcp-has-no-authorization-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The problem: MCP has no authorization layer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-solution-agentpassport-as-mcp-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The solution: agentpassport as MCP middleware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Architecture overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-pattern-a-agent-wraps-mcpadapter-with-scope-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Pattern A: Agent wraps McpAdapter with scope enforcement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Pattern A: Agent wraps McpAdapter with scope enforcement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sending-a-task-to-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sending a task to it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-pattern-b-http-proxy-enforce-passport-before-forwarding-to-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Pattern B: HTTP proxy — enforce passport before forwarding to MCP server
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pattern-c-inline-middleware-in-your-mcp-server-handler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Pattern C: Inline middleware in your MCP server handler
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-scope-design-for-mcp-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Scope design for MCP tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Scope design for MCP tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-resourceaction-or-resourcesubresourceaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended: resource:action or resource:subresource:action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grouping-tools-under-a-wildcard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grouping tools under a wildcard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-revocation-mid-flight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Revocation mid-flight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-full-runnable-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Full runnable example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-reference-mcpadapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Reference: McpAdapter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Reference: McpAdapter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructor-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executetask-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        execute(task) parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Returns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raises
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-rpc-request-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON-RPC request structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance note
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../a2a/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A2A Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Python API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../python/registry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeScript API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    TypeScript API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-problem-mcp-has-no-authorization-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The problem: MCP has no authorization layer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-the-solution-agentpassport-as-mcp-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The solution: agentpassport as MCP middleware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Architecture overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-pattern-a-agent-wraps-mcpadapter-with-scope-enforcement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Pattern A: Agent wraps McpAdapter with scope enforcement
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Pattern A: Agent wraps McpAdapter with scope enforcement">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sending-a-task-to-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sending a task to it
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-pattern-b-http-proxy-enforce-passport-before-forwarding-to-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Pattern B: HTTP proxy — enforce passport before forwarding to MCP server
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-pattern-c-inline-middleware-in-your-mcp-server-handler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Pattern C: Inline middleware in your MCP server handler
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-scope-design-for-mcp-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Scope design for MCP tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Scope design for MCP tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-resourceaction-or-resourcesubresourceaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended: resource:action or resource:subresource:action
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grouping-tools-under-a-wildcard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grouping tools under a wildcard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-revocation-mid-flight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Revocation mid-flight
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-full-runnable-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Full runnable example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-reference-mcpadapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Reference: McpAdapter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Reference: McpAdapter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructor-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#executetask-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        execute(task) parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Returns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raises
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-rpc-request-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON-RPC request structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-note" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance note
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="guide-mcp-middleware-enforcing-passport-and-scope-before-tool-execution">Guide: MCP Middleware — Enforcing Passport and Scope Before Tool Execution</h1>
+<p>This guide shows how to use agentpassport as a trust layer in front of MCP (Model Context Protocol) tool servers. Every tool call is gated by auth chain verification and scope checking before the MCP server sees the request.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-the-problem-mcp-has-no-authorization-layer">The problem: MCP has no authorization layer</a></li>
+<li><a href="#2-the-solution-agentpassport-as-mcp-middleware">The solution: agentpassport as MCP middleware</a></li>
+<li><a href="#3-architecture-overview">Architecture overview</a></li>
+<li><a href="#4-pattern-a-agent-wraps-mcpadapter-with-scope-enforcement">Pattern A: Agent wraps McpAdapter with scope enforcement</a></li>
+<li><a href="#5-pattern-b-http-proxy--enforce-passport-before-forwarding-to-mcp-server">Pattern B: HTTP proxy — enforce passport before forwarding to MCP server</a></li>
+<li><a href="#6-pattern-c-inline-middleware-in-your-mcp-server-handler">Pattern C: Inline middleware in your MCP server handler</a></li>
+<li><a href="#7-scope-design-for-mcp-tools">Scope design for MCP tools</a></li>
+<li><a href="#8-revocation-mid-flight">Revocation mid-flight</a></li>
+<li><a href="#9-full-runnable-example">Full runnable example</a></li>
+<li><a href="#10-reference-mcpadapter">Reference: McpAdapter</a></li>
+</ol>
+<hr />
+<h2 id="1-the-problem-mcp-has-no-authorization-layer">1. The problem: MCP has no authorization layer</h2>
+<p>MCP defines how AI models call tools via a JSON-RPC 2.0 protocol. What it doesn't define is <em>who</em> is allowed to call a tool or <em>whether they were authorized to</em>. Any client that can reach the MCP server can call any tool.</p>
+<p>In a multi-agent system this is a problem:
+- Agent A calls a tool on behalf of a user
+- Agent A delegates to Agent B, who calls the same tool
+- Neither the MCP server nor the caller has any proof that Agent B was authorized by the user to call that tool
+- There's no way to revoke Agent B's access without killing the whole session</p>
+<p>agentpassport fills this gap.</p>
+<hr />
+<h2 id="2-the-solution-agentpassport-as-mcp-middleware">2. The solution: agentpassport as MCP middleware</h2>
+<p>agentpassport sits in front of the MCP server and:</p>
+<ol>
+<li><strong>Verifies the auth chain</strong> — every JWT in the chain is cryptographically verified</li>
+<li><strong>Checks scope</strong> — the tool name is mapped to a required scope, and the chain must grant it</li>
+<li><strong>Checks revocation</strong> — if a token has been revoked, the call is rejected before the MCP server sees it</li>
+<li><strong>Forwards if valid</strong> — if all checks pass, the request is forwarded to the actual MCP server</li>
+</ol>
+<p>The MCP server itself never needs to be modified. The trust layer is entirely in the middleware.</p>
+<hr />
+<h2 id="3-architecture-overview">3. Architecture overview</h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Agent / LLM orchestrator
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  │  TaskEnvelope { intent.type=&quot;read_file&quot;, auth_chain=[JWT1, JWT2] }
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  ▼
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>agentpassport Agent (Python)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>  ├── TrustMiddleware.check(auth_chain, &quot;read_file&quot;)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>  │     ├── verify JWT1: iss=user, sub=orchestrator ✓
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>  │     ├── verify JWT2: iss=orchestrator, sub=this_agent ✓
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>  │     └── scope check: &quot;read_file&quot; requires [&quot;fs:read&quot;] → granted ✓
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>  ├── if check passes ──▶  McpAdapter.execute(task)
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>  │                           ├── spawn MCP server subprocess
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>  │                           ├── send: {&quot;method&quot;:&quot;tools/call&quot;,&quot;params&quot;:{&quot;name&quot;:&quot;read_file&quot;,...}}
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>  │                           └── return result
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>  │
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>  └── if check fails ──▶  ScopeError raised, MCP server never contacted
+</code></pre></div>
+<hr />
+<h2 id="4-pattern-a-agent-wraps-mcpadapter-with-scope-enforcement">4. Pattern A: Agent wraps McpAdapter with scope enforcement</h2>
+<p>The simplest pattern. Each capability in your Agent maps to one MCP tool, with required scope declared upfront.</p>
+<h3 id="install">Install</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>agentpassport<span class="w"> </span>agentpassport-adapters
+</code></pre></div>
+<h3 id="code">Code</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># mcp_gated_agent.py</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="sd">An agentpassport Agent that gates MCP tool calls behind scope enforcement.</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="sd">Each capability maps to a specific MCP tool.</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="sd">Auth chain must be valid and grant the required scope before the tool runs.</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">TaskEnvelope</span><span class="p">,</span> <span class="n">ScopeError</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport_adapters.mcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">McpAdapter</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="c1"># Setup</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="c1"># The agentpassport agent that will receive tasks</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s2">&quot;mcp-gateway&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="c1"># The MCP server to forward validated requests to</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="c1"># Replace with your actual MCP server command</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="n">mcp</span> <span class="o">=</span> <span class="n">McpAdapter</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;my_mcp_server&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="c1"># The orchestrator&#39;s DID and public key (established out-of-band)</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="c1"># In production, load these from config/env</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="n">ORCHESTRATOR_DID</span> <span class="o">=</span> <span class="s2">&quot;did:key:z6Mk...&quot;</span>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="n">ORCHESTRATOR_PUBKEY</span> <span class="o">=</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s2">&quot;abc123...&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="c1"># Trust the orchestrator</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="n">agent</span><span class="o">.</span><span class="n">trust_keys</span><span class="p">({</span><span class="n">ORCHESTRATOR_DID</span><span class="p">:</span> <span class="n">ORCHESTRATOR_PUBKEY</span><span class="p">})</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="c1"># Capabilities — each maps to an MCP tool with a required scope</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward to MCP read_file tool. Requires fs:read in auth chain.&quot;&quot;&quot;</span>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>    <span class="k">return</span> <span class="k">await</span> <span class="n">mcp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a>
+<a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a>
+<a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;write_file&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:write&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">write_file</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward to MCP write_file tool. Requires fs:write in auth chain.&quot;&quot;&quot;</span>
+<a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a>    <span class="k">return</span> <span class="k">await</span> <span class="n">mcp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>
+<a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a>
+<a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;execute_code&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;code:execute&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_code</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward to MCP execute_code tool. Requires code:execute in auth chain.&quot;&quot;&quot;</span>
+<a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a>    <span class="k">return</span> <span class="k">await</span> <span class="n">mcp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a>
+<a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a>
+<a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;query_database&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db:read&quot;</span><span class="p">])</span>
+<a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query_database</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Forward to MCP query_database tool. Requires db:read in auth chain.&quot;&quot;&quot;</span>
+<a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a>    <span class="k">return</span> <span class="k">await</span> <span class="n">mcp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a>
+<a id="__codelineno-2-59" name="__codelineno-2-59" href="#__codelineno-2-59"></a>
+<a id="__codelineno-2-60" name="__codelineno-2-60" href="#__codelineno-2-60"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-2-61" name="__codelineno-2-61" href="#__codelineno-2-61"></a><span class="c1"># HTTP server to receive tasks</span>
+<a id="__codelineno-2-62" name="__codelineno-2-62" href="#__codelineno-2-62"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-2-63" name="__codelineno-2-63" href="#__codelineno-2-63"></a>
+<a id="__codelineno-2-64" name="__codelineno-2-64" href="#__codelineno-2-64"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Request</span>
+<a id="__codelineno-2-65" name="__codelineno-2-65" href="#__codelineno-2-65"></a><span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
+<a id="__codelineno-2-66" name="__codelineno-2-66" href="#__codelineno-2-66"></a>
+<a id="__codelineno-2-67" name="__codelineno-2-67" href="#__codelineno-2-67"></a><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+<a id="__codelineno-2-68" name="__codelineno-2-68" href="#__codelineno-2-68"></a>
+<a id="__codelineno-2-69" name="__codelineno-2-69" href="#__codelineno-2-69"></a>
+<a id="__codelineno-2-70" name="__codelineno-2-70" href="#__codelineno-2-70"></a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/task&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-71" name="__codelineno-2-71" href="#__codelineno-2-71"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_task</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+<a id="__codelineno-2-72" name="__codelineno-2-72" href="#__codelineno-2-72"></a>    <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<a id="__codelineno-2-73" name="__codelineno-2-73" href="#__codelineno-2-73"></a>    <span class="n">task</span> <span class="o">=</span> <span class="n">TaskEnvelope</span><span class="p">(</span><span class="o">**</span><span class="n">body</span><span class="p">)</span>
+<a id="__codelineno-2-74" name="__codelineno-2-74" href="#__codelineno-2-74"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-2-75" name="__codelineno-2-75" href="#__codelineno-2-75"></a>        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">agent</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-2-76" name="__codelineno-2-76" href="#__codelineno-2-76"></a>        <span class="k">return</span> <span class="n">result</span>
+<a id="__codelineno-2-77" name="__codelineno-2-77" href="#__codelineno-2-77"></a>    <span class="k">except</span> <span class="n">ScopeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-2-78" name="__codelineno-2-78" href="#__codelineno-2-78"></a>        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">403</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<a id="__codelineno-2-79" name="__codelineno-2-79" href="#__codelineno-2-79"></a>    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-2-80" name="__codelineno-2-80" href="#__codelineno-2-80"></a>        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<a id="__codelineno-2-81" name="__codelineno-2-81" href="#__codelineno-2-81"></a>
+<a id="__codelineno-2-82" name="__codelineno-2-82" href="#__codelineno-2-82"></a>
+<a id="__codelineno-2-83" name="__codelineno-2-83" href="#__codelineno-2-83"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<a id="__codelineno-2-84" name="__codelineno-2-84" href="#__codelineno-2-84"></a>    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="sending-a-task-to-it">Sending a task to it</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># send_task.py</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">TaskEnvelope</span><span class="p">,</span> <span class="n">Intent</span><span class="p">,</span> <span class="n">Constraints</span><span class="p">,</span> <span class="n">sign_delegation</span><span class="p">,</span> <span class="n">did_from_public_key</span><span class="p">,</span> <span class="n">generate_keypair</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># Orchestrator identity</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">private_key</span><span class="p">,</span> <span class="n">public_key</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">orchestrator_did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">public_key</span><span class="p">)</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># MCP gateway agent&#39;s DID (get from the gateway at startup)</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">GATEWAY_DID</span> <span class="o">=</span> <span class="s2">&quot;did:key:z6Mk...&quot;</span>  <span class="c1"># from the gateway&#39;s agent.did</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c1"># Build the task</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="n">task</span> <span class="o">=</span> <span class="n">TaskEnvelope</span><span class="p">(</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="n">intent</span><span class="o">=</span><span class="n">Intent</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/tmp/report.txt&quot;</span><span class="p">}),</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    <span class="n">constraints</span><span class="o">=</span><span class="n">Constraints</span><span class="p">(</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>        <span class="n">budget_credits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>        <span class="n">max_delegations</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>        <span class="n">allowed_capabilities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;read_file&quot;</span><span class="p">],</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>        <span class="n">denied_capabilities</span><span class="o">=</span><span class="p">[],</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>    <span class="p">),</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>    <span class="n">auth_chain</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>        <span class="n">sign_delegation</span><span class="p">(</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>            <span class="n">issuer_private_key</span><span class="o">=</span><span class="n">private_key</span><span class="p">,</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>            <span class="n">issuer_did</span><span class="o">=</span><span class="n">orchestrator_did</span><span class="p">,</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>            <span class="n">subject_did</span><span class="o">=</span><span class="n">GATEWAY_DID</span><span class="p">,</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>            <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">],</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>            <span class="n">ttl_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>        <span class="p">)</span>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>    <span class="p">],</span>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="p">)</span>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>        <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>            <span class="s2">&quot;http://localhost:8000/task&quot;</span><span class="p">,</span>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>            <span class="n">json</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">),</span>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>        <span class="p">)</span>
+<a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a>        <span class="k">if</span> <span class="n">resp</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span><span class="p">:</span>
+<a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Rejected:&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;detail&quot;</span><span class="p">])</span>
+<a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a>        <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Result:&quot;</span><span class="p">,</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+<a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a>
+<a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+<hr />
+<h2 id="5-pattern-b-http-proxy-enforce-passport-before-forwarding-to-mcp-server">5. Pattern B: HTTP proxy — enforce passport before forwarding to MCP server</h2>
+<p>If you have an existing MCP server accessible over HTTP (e.g., a server-sent events endpoint), you can run agentpassport as a proxy in front of it without modifying the MCP server at all.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># mcp_proxy.py</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="sd">agentpassport HTTP proxy for an existing MCP server.</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="sd">Incoming request:</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="sd">  POST /tools/call</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="sd">  Header: X-Auth-Chain: &lt;jwt1&gt;,&lt;jwt2&gt;,...</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="sd">  Body: { &quot;name&quot;: &quot;read_file&quot;, &quot;arguments&quot;: { &quot;path&quot;: &quot;...&quot; } }</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="sd">agentpassport:</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="sd">1. Extracts auth chain from header</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="sd">2. Verifies all JWTs</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="sd">3. Maps tool name → required scope</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="sd">4. Forwards to backend MCP server if all checks pass</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="sd">5. Returns 403 with ScopeError message if checks fail</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.trust</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrustMiddleware</span><span class="p">,</span> <span class="n">ScopeError</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a><span class="c1"># Config</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="n">BACKEND_MCP_URL</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:9000&quot;</span>  <span class="c1"># Your existing MCP server</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="c1"># Map tool names to required agentpassport scopes</span>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="n">TOOL_SCOPE_MAP</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>    <span class="s2">&quot;read_file&quot;</span><span class="p">:</span>      <span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">],</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>    <span class="s2">&quot;write_file&quot;</span><span class="p">:</span>     <span class="p">[</span><span class="s2">&quot;fs:write&quot;</span><span class="p">],</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>    <span class="s2">&quot;list_directory&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">],</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>    <span class="s2">&quot;execute_bash&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="s2">&quot;code:execute&quot;</span><span class="p">],</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>    <span class="s2">&quot;query_db&quot;</span><span class="p">:</span>       <span class="p">[</span><span class="s2">&quot;db:read&quot;</span><span class="p">],</span>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>    <span class="s2">&quot;write_db&quot;</span><span class="p">:</span>       <span class="p">[</span><span class="s2">&quot;db:write&quot;</span><span class="p">],</span>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a>    <span class="c1"># Tools with no required scope are publicly accessible</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a><span class="p">}</span>
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="c1"># Trusted issuer public keys</span>
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a><span class="n">TRUSTED_KEYS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a>    <span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">:</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s2">&quot;abc123...&quot;</span><span class="p">),</span>  <span class="c1"># orchestrator</span>
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a><span class="p">}</span>
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a>
+<a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a><span class="c1"># The DID of this proxy agent (used for subject check)</span>
+<a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a><span class="n">PROXY_DID</span> <span class="o">=</span> <span class="s2">&quot;did:key:z6Mk...&quot;</span>  <span class="c1"># set this to your proxy agent&#39;s DID</span>
+<a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a>
+<a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a><span class="c1"># Proxy implementation</span>
+<a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a>
+<a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+<a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a>
+<a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a>
+<a id="__codelineno-4-59" name="__codelineno-4-59" href="#__codelineno-4-59"></a><span class="k">def</span><span class="w"> </span><span class="nf">check_auth</span><span class="p">(</span><span class="n">auth_chain_header</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">proxy_did</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-4-60" name="__codelineno-4-60" href="#__codelineno-4-60"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-4-61" name="__codelineno-4-61" href="#__codelineno-4-61"></a><span class="sd">    Verify auth chain from header and check scope for tool_name.</span>
+<a id="__codelineno-4-62" name="__codelineno-4-62" href="#__codelineno-4-62"></a><span class="sd">    Raises HTTPException(403) on any failure.</span>
+<a id="__codelineno-4-63" name="__codelineno-4-63" href="#__codelineno-4-63"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-4-64" name="__codelineno-4-64" href="#__codelineno-4-64"></a>    <span class="n">required_scope</span> <span class="o">=</span> <span class="n">TOOL_SCOPE_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tool_name</span><span class="p">)</span>
+<a id="__codelineno-4-65" name="__codelineno-4-65" href="#__codelineno-4-65"></a>    <span class="k">if</span> <span class="n">required_scope</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-4-66" name="__codelineno-4-66" href="#__codelineno-4-66"></a>        <span class="k">return</span>  <span class="c1"># Tool has no scope requirement — allow through</span>
+<a id="__codelineno-4-67" name="__codelineno-4-67" href="#__codelineno-4-67"></a>
+<a id="__codelineno-4-68" name="__codelineno-4-68" href="#__codelineno-4-68"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">auth_chain_header</span><span class="p">:</span>
+<a id="__codelineno-4-69" name="__codelineno-4-69" href="#__codelineno-4-69"></a>        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span>
+<a id="__codelineno-4-70" name="__codelineno-4-70" href="#__codelineno-4-70"></a>            <span class="n">status_code</span><span class="o">=</span><span class="mi">403</span><span class="p">,</span>
+<a id="__codelineno-4-71" name="__codelineno-4-71" href="#__codelineno-4-71"></a>            <span class="n">detail</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Tool &#39;</span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">&#39; requires scope </span><span class="si">{</span><span class="n">required_scope</span><span class="si">!r}</span><span class="s2"> but no X-Auth-Chain header was provided.&quot;</span>
+<a id="__codelineno-4-72" name="__codelineno-4-72" href="#__codelineno-4-72"></a>        <span class="p">)</span>
+<a id="__codelineno-4-73" name="__codelineno-4-73" href="#__codelineno-4-73"></a>
+<a id="__codelineno-4-74" name="__codelineno-4-74" href="#__codelineno-4-74"></a>    <span class="c1"># Parse comma-separated JWT list</span>
+<a id="__codelineno-4-75" name="__codelineno-4-75" href="#__codelineno-4-75"></a>    <span class="n">chain</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">auth_chain_header</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+<a id="__codelineno-4-76" name="__codelineno-4-76" href="#__codelineno-4-76"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">chain</span><span class="p">:</span>
+<a id="__codelineno-4-77" name="__codelineno-4-77" href="#__codelineno-4-77"></a>        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">403</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;X-Auth-Chain header is empty.&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-78" name="__codelineno-4-78" href="#__codelineno-4-78"></a>
+<a id="__codelineno-4-79" name="__codelineno-4-79" href="#__codelineno-4-79"></a>    <span class="c1"># Verify auth chain + scope in one step using TrustMiddleware</span>
+<a id="__codelineno-4-80" name="__codelineno-4-80" href="#__codelineno-4-80"></a>    <span class="n">tm</span> <span class="o">=</span> <span class="n">TrustMiddleware</span><span class="p">(</span>
+<a id="__codelineno-4-81" name="__codelineno-4-81" href="#__codelineno-4-81"></a>        <span class="n">agent_did</span><span class="o">=</span><span class="n">proxy_did</span><span class="p">,</span>
+<a id="__codelineno-4-82" name="__codelineno-4-82" href="#__codelineno-4-82"></a>        <span class="n">known_public_keys</span><span class="o">=</span><span class="n">TRUSTED_KEYS</span><span class="p">,</span>
+<a id="__codelineno-4-83" name="__codelineno-4-83" href="#__codelineno-4-83"></a>        <span class="n">capability_scopes</span><span class="o">=</span><span class="p">{</span><span class="n">tool_name</span><span class="p">:</span> <span class="n">required_scope</span><span class="p">},</span>
+<a id="__codelineno-4-84" name="__codelineno-4-84" href="#__codelineno-4-84"></a>    <span class="p">)</span>
+<a id="__codelineno-4-85" name="__codelineno-4-85" href="#__codelineno-4-85"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-4-86" name="__codelineno-4-86" href="#__codelineno-4-86"></a>        <span class="n">tm</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">chain</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">)</span>
+<a id="__codelineno-4-87" name="__codelineno-4-87" href="#__codelineno-4-87"></a>    <span class="k">except</span> <span class="n">ScopeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-4-88" name="__codelineno-4-88" href="#__codelineno-4-88"></a>        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">403</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<a id="__codelineno-4-89" name="__codelineno-4-89" href="#__codelineno-4-89"></a>
+<a id="__codelineno-4-90" name="__codelineno-4-90" href="#__codelineno-4-90"></a>
+<a id="__codelineno-4-91" name="__codelineno-4-91" href="#__codelineno-4-91"></a><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/tools/call&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-92" name="__codelineno-4-92" href="#__codelineno-4-92"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">proxy_tools_call</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+<a id="__codelineno-4-93" name="__codelineno-4-93" href="#__codelineno-4-93"></a>    <span class="n">body</span> <span class="o">=</span> <span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<a id="__codelineno-4-94" name="__codelineno-4-94" href="#__codelineno-4-94"></a>    <span class="n">tool_name</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-95" name="__codelineno-4-95" href="#__codelineno-4-95"></a>    <span class="n">auth_chain_header</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;X-Auth-Chain&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-96" name="__codelineno-4-96" href="#__codelineno-4-96"></a>
+<a id="__codelineno-4-97" name="__codelineno-4-97" href="#__codelineno-4-97"></a>    <span class="n">check_auth</span><span class="p">(</span><span class="n">auth_chain_header</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">,</span> <span class="n">PROXY_DID</span><span class="p">)</span>
+<a id="__codelineno-4-98" name="__codelineno-4-98" href="#__codelineno-4-98"></a>
+<a id="__codelineno-4-99" name="__codelineno-4-99" href="#__codelineno-4-99"></a>    <span class="c1"># Forward to backend MCP server</span>
+<a id="__codelineno-4-100" name="__codelineno-4-100" href="#__codelineno-4-100"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+<a id="__codelineno-4-101" name="__codelineno-4-101" href="#__codelineno-4-101"></a>        <span class="n">resp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+<a id="__codelineno-4-102" name="__codelineno-4-102" href="#__codelineno-4-102"></a>            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">BACKEND_MCP_URL</span><span class="si">}</span><span class="s2">/tools/call&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-103" name="__codelineno-4-103" href="#__codelineno-4-103"></a>            <span class="n">json</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+<a id="__codelineno-4-104" name="__codelineno-4-104" href="#__codelineno-4-104"></a>            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">},</span>
+<a id="__codelineno-4-105" name="__codelineno-4-105" href="#__codelineno-4-105"></a>        <span class="p">)</span>
+<a id="__codelineno-4-106" name="__codelineno-4-106" href="#__codelineno-4-106"></a>        <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+<a id="__codelineno-4-107" name="__codelineno-4-107" href="#__codelineno-4-107"></a>            <span class="n">content</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">content</span><span class="p">,</span>
+<a id="__codelineno-4-108" name="__codelineno-4-108" href="#__codelineno-4-108"></a>            <span class="n">status_code</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+<a id="__codelineno-4-109" name="__codelineno-4-109" href="#__codelineno-4-109"></a>            <span class="n">media_type</span><span class="o">=</span><span class="n">resp</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content-type&quot;</span><span class="p">,</span> <span class="s2">&quot;application/json&quot;</span><span class="p">),</span>
+<a id="__codelineno-4-110" name="__codelineno-4-110" href="#__codelineno-4-110"></a>        <span class="p">)</span>
+<a id="__codelineno-4-111" name="__codelineno-4-111" href="#__codelineno-4-111"></a>
+<a id="__codelineno-4-112" name="__codelineno-4-112" href="#__codelineno-4-112"></a>
+<a id="__codelineno-4-113" name="__codelineno-4-113" href="#__codelineno-4-113"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<a id="__codelineno-4-114" name="__codelineno-4-114" href="#__codelineno-4-114"></a>    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="6-pattern-c-inline-middleware-in-your-mcp-server-handler">6. Pattern C: Inline middleware in your MCP server handler</h2>
+<p>If you control the MCP server source, you can enforce agentpassport inline using <code>TrustMiddleware</code> directly.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># my_mcp_server.py</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="sd">MCP server with inline agentpassport trust enforcement.</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="sd">Reads auth chain from a custom JSON-RPC 2.0 extension field: params._auth_chain</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.trust</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrustMiddleware</span><span class="p">,</span> <span class="n">ScopeError</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="c1"># Trust configuration</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="n">TOOL_SCOPES</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    <span class="s2">&quot;read_file&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">],</span>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>    <span class="s2">&quot;write_file&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="s2">&quot;fs:write&quot;</span><span class="p">],</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>    <span class="s2">&quot;run_query&quot;</span><span class="p">:</span>   <span class="p">[</span><span class="s2">&quot;db:read&quot;</span><span class="p">],</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="p">}</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="n">MY_DID</span> <span class="o">=</span> <span class="s2">&quot;did:key:z6Mk...&quot;</span>  <span class="c1"># This server&#39;s agent DID</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="n">TRUSTED_KEYS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>    <span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">:</span> <span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="s2">&quot;...&quot;</span><span class="p">),</span>  <span class="c1"># known callers</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="p">}</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="n">trust</span> <span class="o">=</span> <span class="n">TrustMiddleware</span><span class="p">(</span>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>    <span class="n">agent_did</span><span class="o">=</span><span class="n">MY_DID</span><span class="p">,</span>
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>    <span class="n">known_public_keys</span><span class="o">=</span><span class="n">TRUSTED_KEYS</span><span class="p">,</span>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>    <span class="n">capability_scopes</span><span class="o">=</span><span class="n">TOOL_SCOPES</span><span class="p">,</span>
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="p">)</span>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a>
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="c1"># Tool implementations</span>
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a>
+<a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_read_file</span><span class="p">(</span><span class="n">arguments</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a>    <span class="n">path</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-39" name="__codelineno-5-39" href="#__codelineno-5-39"></a>    <span class="c1"># Read the file...</span>
+<a id="__codelineno-5-40" name="__codelineno-5-40" href="#__codelineno-5-40"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;contents of </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}</span>
+<a id="__codelineno-5-41" name="__codelineno-5-41" href="#__codelineno-5-41"></a>
+<a id="__codelineno-5-42" name="__codelineno-5-42" href="#__codelineno-5-42"></a>
+<a id="__codelineno-5-43" name="__codelineno-5-43" href="#__codelineno-5-43"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_write_file</span><span class="p">(</span><span class="n">arguments</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-5-44" name="__codelineno-5-44" href="#__codelineno-5-44"></a>    <span class="n">path</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-45" name="__codelineno-5-45" href="#__codelineno-5-45"></a>    <span class="n">content</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;content&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-46" name="__codelineno-5-46" href="#__codelineno-5-46"></a>    <span class="c1"># Write the file...</span>
+<a id="__codelineno-5-47" name="__codelineno-5-47" href="#__codelineno-5-47"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;written&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;bytes&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">content</span><span class="p">)}</span>
+<a id="__codelineno-5-48" name="__codelineno-5-48" href="#__codelineno-5-48"></a>
+<a id="__codelineno-5-49" name="__codelineno-5-49" href="#__codelineno-5-49"></a>
+<a id="__codelineno-5-50" name="__codelineno-5-50" href="#__codelineno-5-50"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">handle_run_query</span><span class="p">(</span><span class="n">arguments</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-5-51" name="__codelineno-5-51" href="#__codelineno-5-51"></a>    <span class="n">sql</span> <span class="o">=</span> <span class="n">arguments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sql&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-52" name="__codelineno-5-52" href="#__codelineno-5-52"></a>    <span class="c1"># Run query...</span>
+<a id="__codelineno-5-53" name="__codelineno-5-53" href="#__codelineno-5-53"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;rows&quot;</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">&quot;sql&quot;</span><span class="p">:</span> <span class="n">sql</span><span class="p">}</span>
+<a id="__codelineno-5-54" name="__codelineno-5-54" href="#__codelineno-5-54"></a>
+<a id="__codelineno-5-55" name="__codelineno-5-55" href="#__codelineno-5-55"></a>
+<a id="__codelineno-5-56" name="__codelineno-5-56" href="#__codelineno-5-56"></a><span class="n">TOOLS</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-5-57" name="__codelineno-5-57" href="#__codelineno-5-57"></a>    <span class="s2">&quot;read_file&quot;</span><span class="p">:</span>  <span class="n">handle_read_file</span><span class="p">,</span>
+<a id="__codelineno-5-58" name="__codelineno-5-58" href="#__codelineno-5-58"></a>    <span class="s2">&quot;write_file&quot;</span><span class="p">:</span> <span class="n">handle_write_file</span><span class="p">,</span>
+<a id="__codelineno-5-59" name="__codelineno-5-59" href="#__codelineno-5-59"></a>    <span class="s2">&quot;run_query&quot;</span><span class="p">:</span>  <span class="n">handle_run_query</span><span class="p">,</span>
+<a id="__codelineno-5-60" name="__codelineno-5-60" href="#__codelineno-5-60"></a><span class="p">}</span>
+<a id="__codelineno-5-61" name="__codelineno-5-61" href="#__codelineno-5-61"></a>
+<a id="__codelineno-5-62" name="__codelineno-5-62" href="#__codelineno-5-62"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-5-63" name="__codelineno-5-63" href="#__codelineno-5-63"></a><span class="c1"># MCP stdio handler</span>
+<a id="__codelineno-5-64" name="__codelineno-5-64" href="#__codelineno-5-64"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-5-65" name="__codelineno-5-65" href="#__codelineno-5-65"></a>
+<a id="__codelineno-5-66" name="__codelineno-5-66" href="#__codelineno-5-66"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<a id="__codelineno-5-67" name="__codelineno-5-67" href="#__codelineno-5-67"></a>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">:</span>
+<a id="__codelineno-5-68" name="__codelineno-5-68" href="#__codelineno-5-68"></a>        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<a id="__codelineno-5-69" name="__codelineno-5-69" href="#__codelineno-5-69"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+<a id="__codelineno-5-70" name="__codelineno-5-70" href="#__codelineno-5-70"></a>            <span class="k">continue</span>
+<a id="__codelineno-5-71" name="__codelineno-5-71" href="#__codelineno-5-71"></a>
+<a id="__codelineno-5-72" name="__codelineno-5-72" href="#__codelineno-5-72"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-5-73" name="__codelineno-5-73" href="#__codelineno-5-73"></a>            <span class="n">request</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<a id="__codelineno-5-74" name="__codelineno-5-74" href="#__codelineno-5-74"></a>        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-5-75" name="__codelineno-5-75" href="#__codelineno-5-75"></a>            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;jsonrpc&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">32700</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Parse error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+<a id="__codelineno-5-76" name="__codelineno-5-76" href="#__codelineno-5-76"></a>            <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-5-77" name="__codelineno-5-77" href="#__codelineno-5-77"></a>            <span class="k">continue</span>
+<a id="__codelineno-5-78" name="__codelineno-5-78" href="#__codelineno-5-78"></a>
+<a id="__codelineno-5-79" name="__codelineno-5-79" href="#__codelineno-5-79"></a>        <span class="n">req_id</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-80" name="__codelineno-5-80" href="#__codelineno-5-80"></a>        <span class="n">method</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;method&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-81" name="__codelineno-5-81" href="#__codelineno-5-81"></a>        <span class="n">params</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">{})</span>
+<a id="__codelineno-5-82" name="__codelineno-5-82" href="#__codelineno-5-82"></a>
+<a id="__codelineno-5-83" name="__codelineno-5-83" href="#__codelineno-5-83"></a>        <span class="k">if</span> <span class="n">method</span> <span class="o">!=</span> <span class="s2">&quot;tools/call&quot;</span><span class="p">:</span>
+<a id="__codelineno-5-84" name="__codelineno-5-84" href="#__codelineno-5-84"></a>            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;jsonrpc&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">req_id</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">32601</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Method not found: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+<a id="__codelineno-5-85" name="__codelineno-5-85" href="#__codelineno-5-85"></a>            <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-5-86" name="__codelineno-5-86" href="#__codelineno-5-86"></a>            <span class="k">continue</span>
+<a id="__codelineno-5-87" name="__codelineno-5-87" href="#__codelineno-5-87"></a>
+<a id="__codelineno-5-88" name="__codelineno-5-88" href="#__codelineno-5-88"></a>        <span class="n">tool_name</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-89" name="__codelineno-5-89" href="#__codelineno-5-89"></a>        <span class="n">arguments</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;arguments&quot;</span><span class="p">,</span> <span class="p">{})</span>
+<a id="__codelineno-5-90" name="__codelineno-5-90" href="#__codelineno-5-90"></a>
+<a id="__codelineno-5-91" name="__codelineno-5-91" href="#__codelineno-5-91"></a>        <span class="c1"># Extract auth chain from custom extension field</span>
+<a id="__codelineno-5-92" name="__codelineno-5-92" href="#__codelineno-5-92"></a>        <span class="n">auth_chain</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_auth_chain&quot;</span><span class="p">,</span> <span class="p">[])</span>
+<a id="__codelineno-5-93" name="__codelineno-5-93" href="#__codelineno-5-93"></a>
+<a id="__codelineno-5-94" name="__codelineno-5-94" href="#__codelineno-5-94"></a>        <span class="c1"># Trust check — runs before the tool handler</span>
+<a id="__codelineno-5-95" name="__codelineno-5-95" href="#__codelineno-5-95"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-5-96" name="__codelineno-5-96" href="#__codelineno-5-96"></a>            <span class="n">trust</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">auth_chain</span><span class="p">,</span> <span class="n">tool_name</span><span class="p">)</span>
+<a id="__codelineno-5-97" name="__codelineno-5-97" href="#__codelineno-5-97"></a>        <span class="k">except</span> <span class="n">ScopeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-5-98" name="__codelineno-5-98" href="#__codelineno-5-98"></a>            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-5-99" name="__codelineno-5-99" href="#__codelineno-5-99"></a>                <span class="s2">&quot;jsonrpc&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<a id="__codelineno-5-100" name="__codelineno-5-100" href="#__codelineno-5-100"></a>                <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">req_id</span><span class="p">,</span>
+<a id="__codelineno-5-101" name="__codelineno-5-101" href="#__codelineno-5-101"></a>                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">32603</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ScopeError&quot;</span><span class="p">}}</span>
+<a id="__codelineno-5-102" name="__codelineno-5-102" href="#__codelineno-5-102"></a>            <span class="p">}</span>
+<a id="__codelineno-5-103" name="__codelineno-5-103" href="#__codelineno-5-103"></a>            <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-5-104" name="__codelineno-5-104" href="#__codelineno-5-104"></a>            <span class="k">continue</span>
+<a id="__codelineno-5-105" name="__codelineno-5-105" href="#__codelineno-5-105"></a>
+<a id="__codelineno-5-106" name="__codelineno-5-106" href="#__codelineno-5-106"></a>        <span class="c1"># Dispatch to tool</span>
+<a id="__codelineno-5-107" name="__codelineno-5-107" href="#__codelineno-5-107"></a>        <span class="n">handler</span> <span class="o">=</span> <span class="n">TOOLS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">tool_name</span><span class="p">)</span>
+<a id="__codelineno-5-108" name="__codelineno-5-108" href="#__codelineno-5-108"></a>        <span class="k">if</span> <span class="n">handler</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-5-109" name="__codelineno-5-109" href="#__codelineno-5-109"></a>            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;jsonrpc&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">req_id</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">32601</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Unknown tool: </span><span class="si">{</span><span class="n">tool_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">}}</span>
+<a id="__codelineno-5-110" name="__codelineno-5-110" href="#__codelineno-5-110"></a>            <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-5-111" name="__codelineno-5-111" href="#__codelineno-5-111"></a>            <span class="k">continue</span>
+<a id="__codelineno-5-112" name="__codelineno-5-112" href="#__codelineno-5-112"></a>
+<a id="__codelineno-5-113" name="__codelineno-5-113" href="#__codelineno-5-113"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-5-114" name="__codelineno-5-114" href="#__codelineno-5-114"></a>            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">handler</span><span class="p">(</span><span class="n">arguments</span><span class="p">)</span>
+<a id="__codelineno-5-115" name="__codelineno-5-115" href="#__codelineno-5-115"></a>            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;jsonrpc&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">req_id</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">result</span><span class="p">}</span>
+<a id="__codelineno-5-116" name="__codelineno-5-116" href="#__codelineno-5-116"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-5-117" name="__codelineno-5-117" href="#__codelineno-5-117"></a>            <span class="n">response</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;jsonrpc&quot;</span><span class="p">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">req_id</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;code&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mi">32603</span><span class="p">,</span> <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}}</span>
+<a id="__codelineno-5-118" name="__codelineno-5-118" href="#__codelineno-5-118"></a>
+<a id="__codelineno-5-119" name="__codelineno-5-119" href="#__codelineno-5-119"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-5-120" name="__codelineno-5-120" href="#__codelineno-5-120"></a>
+<a id="__codelineno-5-121" name="__codelineno-5-121" href="#__codelineno-5-121"></a>
+<a id="__codelineno-5-122" name="__codelineno-5-122" href="#__codelineno-5-122"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+<hr />
+<h2 id="7-scope-design-for-mcp-tools">7. Scope design for MCP tools</h2>
+<p>There's no enforced naming convention — but a consistent scheme prevents confusion at scale.</p>
+<h3 id="recommended-resourceaction-or-resourcesubresourceaction">Recommended: <code>resource:action</code> or <code>resource:subresource:action</code></h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Recommended scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>read_file</code></td>
+<td><code>fs:read</code></td>
+</tr>
+<tr>
+<td><code>write_file</code></td>
+<td><code>fs:write</code></td>
+</tr>
+<tr>
+<td><code>list_directory</code></td>
+<td><code>fs:read</code></td>
+</tr>
+<tr>
+<td><code>delete_file</code></td>
+<td><code>fs:delete</code></td>
+</tr>
+<tr>
+<td><code>execute_bash</code></td>
+<td><code>code:execute</code></td>
+</tr>
+<tr>
+<td><code>query_database</code></td>
+<td><code>db:read</code></td>
+</tr>
+<tr>
+<td><code>write_database</code></td>
+<td><code>db:write</code></td>
+</tr>
+<tr>
+<td><code>send_email</code></td>
+<td><code>email:send</code></td>
+</tr>
+<tr>
+<td><code>read_email</code></td>
+<td><code>email:read</code></td>
+</tr>
+<tr>
+<td><code>call_stripe_api</code></td>
+<td><code>api:stripe</code></td>
+</tr>
+<tr>
+<td><code>call_openai_api</code></td>
+<td><code>api:openai</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="grouping-tools-under-a-wildcard">Grouping tools under a wildcard</h3>
+<p>If you want to grant access to all filesystem tools with a single scope string, use a broader scope and match it explicitly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Capability declared as requiring &quot;fs:read&quot;</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># Delegation grants &quot;fs:*&quot; — but agentpassport doesn&#39;t do glob matching by default</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Option 1: grant the exact scopes you need</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">,</span> <span class="s2">&quot;fs:write&quot;</span><span class="p">,</span> <span class="s2">&quot;fs:delete&quot;</span><span class="p">]</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Option 2: grant &quot;*&quot; for full access (use sparingly — means everything)</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;*&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>agentpassport scope matching is <strong>exact string match or <code>"*"</code> wildcard only</strong>. There is no glob/prefix matching built in. If you need prefix matching (e.g., <code>fs:*</code> covers <code>fs:read</code>), implement it in your <code>TrustMiddleware</code> subclass.</p>
+<hr />
+<h2 id="8-revocation-mid-flight">8. Revocation mid-flight</h2>
+<p>One of agentpassport's key features is the ability to revoke a delegation token while an agent is mid-task. The revocation takes effect before the <em>next</em> tool call — the current atomic action completes, but no further calls are permitted.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># revocation_demo.py</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">Agent</span><span class="p">,</span> <span class="n">TaskEnvelope</span><span class="p">,</span> <span class="n">Intent</span><span class="p">,</span> <span class="n">Constraints</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">InMemoryRevocationRegistry</span><span class="p">,</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">sign_delegation</span><span class="p">,</span> <span class="n">did_from_public_key</span><span class="p">,</span> <span class="n">generate_keypair</span><span class="p">,</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">verify_auth_chain</span><span class="p">,</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="p">)</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.identity.signing</span><span class="w"> </span><span class="kn">import</span> <span class="n">_decode_jwt_claims</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="c1"># Setup</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="n">revocation_registry</span> <span class="o">=</span> <span class="n">InMemoryRevocationRegistry</span><span class="p">()</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="c1"># Orchestrator</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="n">priv</span><span class="p">,</span> <span class="n">pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="n">orchestrator_did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="c1"># MCP gateway agent — uses the revocation registry</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="n">gateway</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s2">&quot;mcp-gateway&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="n">gateway</span><span class="o">.</span><span class="n">trust_keys</span><span class="p">({</span><span class="n">orchestrator_did</span><span class="p">:</span> <span class="n">pub</span><span class="p">})</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="c1"># Override trust middleware to use revocation registry</span>
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.trust</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrustMiddleware</span>
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="n">gateway</span><span class="o">.</span><span class="n">_trust_middleware</span> <span class="o">=</span> <span class="n">TrustMiddleware</span><span class="p">(</span>
+<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>    <span class="n">agent_did</span><span class="o">=</span><span class="n">gateway</span><span class="o">.</span><span class="n">did</span><span class="p">,</span>
+<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>    <span class="n">known_public_keys</span><span class="o">=</span><span class="p">{</span><span class="n">orchestrator_did</span><span class="p">:</span> <span class="n">pub</span><span class="p">},</span>
+<a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>    <span class="n">capability_scopes</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;read_file&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">]},</span>
+<a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a><span class="p">)</span>
+<a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a><span class="c1"># Note: to use revocation in TrustMiddleware.check(), pass registry at construction</span>
+<a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a><span class="c1"># or verify_auth_chain with revocation_registry parameter</span>
+<a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a>
+<a id="__codelineno-7-35" name="__codelineno-7-35" href="#__codelineno-7-35"></a>
+<a id="__codelineno-7-36" name="__codelineno-7-36" href="#__codelineno-7-36"></a><span class="n">call_count</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-7-37" name="__codelineno-7-37" href="#__codelineno-7-37"></a>
+<a id="__codelineno-7-38" name="__codelineno-7-38" href="#__codelineno-7-38"></a><span class="nd">@gateway</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">])</span>
+<a id="__codelineno-7-39" name="__codelineno-7-39" href="#__codelineno-7-39"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-7-40" name="__codelineno-7-40" href="#__codelineno-7-40"></a>    <span class="k">global</span> <span class="n">call_count</span>
+<a id="__codelineno-7-41" name="__codelineno-7-41" href="#__codelineno-7-41"></a>    <span class="n">call_count</span> <span class="o">+=</span> <span class="mi">1</span>
+<a id="__codelineno-7-42" name="__codelineno-7-42" href="#__codelineno-7-42"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;file data&quot;</span><span class="p">,</span> <span class="s2">&quot;call&quot;</span><span class="p">:</span> <span class="n">call_count</span><span class="p">}</span>
+<a id="__codelineno-7-43" name="__codelineno-7-43" href="#__codelineno-7-43"></a>
+<a id="__codelineno-7-44" name="__codelineno-7-44" href="#__codelineno-7-44"></a>
+<a id="__codelineno-7-45" name="__codelineno-7-45" href="#__codelineno-7-45"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-7-46" name="__codelineno-7-46" href="#__codelineno-7-46"></a><span class="c1"># Demo: revoke mid-scenario</span>
+<a id="__codelineno-7-47" name="__codelineno-7-47" href="#__codelineno-7-47"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-7-48" name="__codelineno-7-48" href="#__codelineno-7-48"></a>
+<a id="__codelineno-7-49" name="__codelineno-7-49" href="#__codelineno-7-49"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<a id="__codelineno-7-50" name="__codelineno-7-50" href="#__codelineno-7-50"></a>    <span class="c1"># Sign a delegation</span>
+<a id="__codelineno-7-51" name="__codelineno-7-51" href="#__codelineno-7-51"></a>    <span class="n">token</span> <span class="o">=</span> <span class="n">sign_delegation</span><span class="p">(</span>
+<a id="__codelineno-7-52" name="__codelineno-7-52" href="#__codelineno-7-52"></a>        <span class="n">issuer_private_key</span><span class="o">=</span><span class="n">priv</span><span class="p">,</span>
+<a id="__codelineno-7-53" name="__codelineno-7-53" href="#__codelineno-7-53"></a>        <span class="n">issuer_did</span><span class="o">=</span><span class="n">orchestrator_did</span><span class="p">,</span>
+<a id="__codelineno-7-54" name="__codelineno-7-54" href="#__codelineno-7-54"></a>        <span class="n">subject_did</span><span class="o">=</span><span class="n">gateway</span><span class="o">.</span><span class="n">did</span><span class="p">,</span>
+<a id="__codelineno-7-55" name="__codelineno-7-55" href="#__codelineno-7-55"></a>        <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">],</span>
+<a id="__codelineno-7-56" name="__codelineno-7-56" href="#__codelineno-7-56"></a>        <span class="n">ttl_seconds</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span>
+<a id="__codelineno-7-57" name="__codelineno-7-57" href="#__codelineno-7-57"></a>    <span class="p">)</span>
+<a id="__codelineno-7-58" name="__codelineno-7-58" href="#__codelineno-7-58"></a>
+<a id="__codelineno-7-59" name="__codelineno-7-59" href="#__codelineno-7-59"></a>    <span class="c1"># Extract the jti so we can revoke it later</span>
+<a id="__codelineno-7-60" name="__codelineno-7-60" href="#__codelineno-7-60"></a>    <span class="n">claims</span> <span class="o">=</span> <span class="n">_decode_jwt_claims</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<a id="__codelineno-7-61" name="__codelineno-7-61" href="#__codelineno-7-61"></a>    <span class="n">jti</span> <span class="o">=</span> <span class="n">claims</span><span class="p">[</span><span class="s2">&quot;jti&quot;</span><span class="p">]</span>
+<a id="__codelineno-7-62" name="__codelineno-7-62" href="#__codelineno-7-62"></a>
+<a id="__codelineno-7-63" name="__codelineno-7-63" href="#__codelineno-7-63"></a>    <span class="n">task</span> <span class="o">=</span> <span class="n">TaskEnvelope</span><span class="p">(</span>
+<a id="__codelineno-7-64" name="__codelineno-7-64" href="#__codelineno-7-64"></a>        <span class="n">intent</span><span class="o">=</span><span class="n">Intent</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/tmp/data.csv&quot;</span><span class="p">}),</span>
+<a id="__codelineno-7-65" name="__codelineno-7-65" href="#__codelineno-7-65"></a>        <span class="n">constraints</span><span class="o">=</span><span class="n">Constraints</span><span class="p">(</span><span class="n">budget_credits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_delegations</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<a id="__codelineno-7-66" name="__codelineno-7-66" href="#__codelineno-7-66"></a>                                <span class="n">allowed_capabilities</span><span class="o">=</span><span class="p">[],</span> <span class="n">denied_capabilities</span><span class="o">=</span><span class="p">[]),</span>
+<a id="__codelineno-7-67" name="__codelineno-7-67" href="#__codelineno-7-67"></a>        <span class="n">auth_chain</span><span class="o">=</span><span class="p">[</span><span class="n">token</span><span class="p">],</span>
+<a id="__codelineno-7-68" name="__codelineno-7-68" href="#__codelineno-7-68"></a>    <span class="p">)</span>
+<a id="__codelineno-7-69" name="__codelineno-7-69" href="#__codelineno-7-69"></a>
+<a id="__codelineno-7-70" name="__codelineno-7-70" href="#__codelineno-7-70"></a>    <span class="c1"># Call 1 — succeeds</span>
+<a id="__codelineno-7-71" name="__codelineno-7-71" href="#__codelineno-7-71"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-7-72" name="__codelineno-7-72" href="#__codelineno-7-72"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Call 1: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Call 1: {&#39;content&#39;: &#39;file data&#39;, &#39;call&#39;: 1}</span>
+<a id="__codelineno-7-73" name="__codelineno-7-73" href="#__codelineno-7-73"></a>
+<a id="__codelineno-7-74" name="__codelineno-7-74" href="#__codelineno-7-74"></a>    <span class="c1"># Revoke the token</span>
+<a id="__codelineno-7-75" name="__codelineno-7-75" href="#__codelineno-7-75"></a>    <span class="n">revocation_registry</span><span class="o">.</span><span class="n">revoke</span><span class="p">(</span><span class="n">jti</span><span class="p">)</span>
+<a id="__codelineno-7-76" name="__codelineno-7-76" href="#__codelineno-7-76"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Revoked token: </span><span class="si">{</span><span class="n">jti</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-77" name="__codelineno-7-77" href="#__codelineno-7-77"></a>
+<a id="__codelineno-7-78" name="__codelineno-7-78" href="#__codelineno-7-78"></a>    <span class="c1"># Call 2 — verify_auth_chain with revocation registry now rejects it</span>
+<a id="__codelineno-7-79" name="__codelineno-7-79" href="#__codelineno-7-79"></a>    <span class="n">is_valid</span> <span class="o">=</span> <span class="n">verify_auth_chain</span><span class="p">(</span>
+<a id="__codelineno-7-80" name="__codelineno-7-80" href="#__codelineno-7-80"></a>        <span class="n">auth_chain</span><span class="o">=</span><span class="p">[</span><span class="n">token</span><span class="p">],</span>
+<a id="__codelineno-7-81" name="__codelineno-7-81" href="#__codelineno-7-81"></a>        <span class="n">expected_subject</span><span class="o">=</span><span class="n">gateway</span><span class="o">.</span><span class="n">did</span><span class="p">,</span>
+<a id="__codelineno-7-82" name="__codelineno-7-82" href="#__codelineno-7-82"></a>        <span class="n">known_public_keys</span><span class="o">=</span><span class="p">{</span><span class="n">orchestrator_did</span><span class="p">:</span> <span class="n">pub</span><span class="p">},</span>
+<a id="__codelineno-7-83" name="__codelineno-7-83" href="#__codelineno-7-83"></a>        <span class="n">revocation_registry</span><span class="o">=</span><span class="n">revocation_registry</span><span class="p">,</span>
+<a id="__codelineno-7-84" name="__codelineno-7-84" href="#__codelineno-7-84"></a>    <span class="p">)</span>
+<a id="__codelineno-7-85" name="__codelineno-7-85" href="#__codelineno-7-85"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Chain valid after revocation: </span><span class="si">{</span><span class="n">is_valid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># False</span>
+<a id="__codelineno-7-86" name="__codelineno-7-86" href="#__codelineno-7-86"></a>
+<a id="__codelineno-7-87" name="__codelineno-7-87" href="#__codelineno-7-87"></a>    <span class="c1"># The agent&#39;s TrustMiddleware.check() also rejects it</span>
+<a id="__codelineno-7-88" name="__codelineno-7-88" href="#__codelineno-7-88"></a>    <span class="c1"># (wire it up to use the registry in production)</span>
+<a id="__codelineno-7-89" name="__codelineno-7-89" href="#__codelineno-7-89"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Token is now revoked — future calls will be rejected at auth chain verification.&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-90" name="__codelineno-7-90" href="#__codelineno-7-90"></a>
+<a id="__codelineno-7-91" name="__codelineno-7-91" href="#__codelineno-7-91"></a>
+<a id="__codelineno-7-92" name="__codelineno-7-92" href="#__codelineno-7-92"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+<hr />
+<h2 id="9-full-runnable-example">9. Full runnable example</h2>
+<p>A complete system: Python orchestrator + agentpassport MCP gateway + a toy MCP file server.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Install</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>pip<span class="w"> </span>install<span class="w"> </span>agentpassport<span class="w"> </span>agentpassport-adapters<span class="w"> </span>fastapi<span class="w"> </span>uvicorn<span class="w"> </span>httpx
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># full_mcp_demo.py</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="sd">Complete demo:</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="sd">  1. A toy MCP file server (runs as subprocess)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="sd">  2. An agentpassport agent that gates calls to it</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="sd">  3. An orchestrator that signs delegations and calls the agent</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="sd">Run: python full_mcp_demo.py</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>    <span class="n">Agent</span><span class="p">,</span> <span class="n">TaskEnvelope</span><span class="p">,</span> <span class="n">Intent</span><span class="p">,</span> <span class="n">Constraints</span><span class="p">,</span> <span class="n">ScopeError</span><span class="p">,</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>    <span class="n">generate_keypair</span><span class="p">,</span> <span class="n">did_from_public_key</span><span class="p">,</span> <span class="n">sign_delegation</span><span class="p">,</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="p">)</span>
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport_adapters.mcp</span><span class="w"> </span><span class="kn">import</span> <span class="n">McpAdapter</span>
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="c1"># Toy MCP file server — written inline as a subprocess script</span>
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>
+<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="n">MCP_SERVER_SCRIPT</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a><span class="s2">import json, sys</span>
+<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>
+<a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="s2">for line in sys.stdin:</span>
+<a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a><span class="s2">    line = line.strip()</span>
+<a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a><span class="s2">    if not line:</span>
+<a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a><span class="s2">        continue</span>
+<a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a><span class="s2">    try:</span>
+<a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a><span class="s2">        req = json.loads(line)</span>
+<a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a><span class="s2">    except:</span>
+<a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a><span class="s2">        continue</span>
+<a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a>
+<a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a><span class="s2">    tool = req.get(&quot;params&quot;, </span><span class="si">{}</span><span class="s2">).get(&quot;name&quot;, &quot;&quot;)</span>
+<a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a><span class="s2">    args = req.get(&quot;params&quot;, </span><span class="si">{}</span><span class="s2">).get(&quot;arguments&quot;, </span><span class="si">{}</span><span class="s2">)</span>
+<a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a><span class="s2">    req_id = req.get(&quot;id&quot;)</span>
+<a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a>
+<a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a><span class="s2">    if tool == &quot;read_file&quot;:</span>
+<a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a><span class="s2">        path = args.get(&quot;path&quot;, &quot;&quot;)</span>
+<a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a><span class="s2">        try:</span>
+<a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a><span class="s2">            with open(path) as f:</span>
+<a id="__codelineno-9-47" name="__codelineno-9-47" href="#__codelineno-9-47"></a><span class="s2">                content = f.read()</span>
+<a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a><span class="s2">            result = {&quot;content&quot;: content}</span>
+<a id="__codelineno-9-49" name="__codelineno-9-49" href="#__codelineno-9-49"></a><span class="s2">        except Exception as e:</span>
+<a id="__codelineno-9-50" name="__codelineno-9-50" href="#__codelineno-9-50"></a><span class="s2">            result = {&quot;error&quot;: str(e)}</span>
+<a id="__codelineno-9-51" name="__codelineno-9-51" href="#__codelineno-9-51"></a><span class="s2">        print(json.dumps({&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: req_id, &quot;result&quot;: result}), flush=True)</span>
+<a id="__codelineno-9-52" name="__codelineno-9-52" href="#__codelineno-9-52"></a>
+<a id="__codelineno-9-53" name="__codelineno-9-53" href="#__codelineno-9-53"></a><span class="s2">    elif tool == &quot;list_files&quot;:</span>
+<a id="__codelineno-9-54" name="__codelineno-9-54" href="#__codelineno-9-54"></a><span class="s2">        import os</span>
+<a id="__codelineno-9-55" name="__codelineno-9-55" href="#__codelineno-9-55"></a><span class="s2">        directory = args.get(&quot;directory&quot;, &quot;/tmp&quot;)</span>
+<a id="__codelineno-9-56" name="__codelineno-9-56" href="#__codelineno-9-56"></a><span class="s2">        try:</span>
+<a id="__codelineno-9-57" name="__codelineno-9-57" href="#__codelineno-9-57"></a><span class="s2">            files = os.listdir(directory)</span>
+<a id="__codelineno-9-58" name="__codelineno-9-58" href="#__codelineno-9-58"></a><span class="s2">            result = {&quot;files&quot;: files}</span>
+<a id="__codelineno-9-59" name="__codelineno-9-59" href="#__codelineno-9-59"></a><span class="s2">        except Exception as e:</span>
+<a id="__codelineno-9-60" name="__codelineno-9-60" href="#__codelineno-9-60"></a><span class="s2">            result = {&quot;error&quot;: str(e)}</span>
+<a id="__codelineno-9-61" name="__codelineno-9-61" href="#__codelineno-9-61"></a><span class="s2">        print(json.dumps({&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: req_id, &quot;result&quot;: result}), flush=True)</span>
+<a id="__codelineno-9-62" name="__codelineno-9-62" href="#__codelineno-9-62"></a>
+<a id="__codelineno-9-63" name="__codelineno-9-63" href="#__codelineno-9-63"></a><span class="s2">    else:</span>
+<a id="__codelineno-9-64" name="__codelineno-9-64" href="#__codelineno-9-64"></a><span class="s2">        print(json.dumps({&quot;jsonrpc&quot;: &quot;2.0&quot;, &quot;id&quot;: req_id,</span>
+<a id="__codelineno-9-65" name="__codelineno-9-65" href="#__codelineno-9-65"></a><span class="s2">                          &quot;error&quot;: {&quot;code&quot;: -32601, &quot;message&quot;: f&quot;Unknown tool: </span><span class="si">{tool}</span><span class="s2">&quot;}}), flush=True)</span>
+<a id="__codelineno-9-66" name="__codelineno-9-66" href="#__codelineno-9-66"></a><span class="s2">&quot;&quot;&quot;</span>
+<a id="__codelineno-9-67" name="__codelineno-9-67" href="#__codelineno-9-67"></a>
+<a id="__codelineno-9-68" name="__codelineno-9-68" href="#__codelineno-9-68"></a><span class="c1"># Write the MCP server script to a temp file</span>
+<a id="__codelineno-9-69" name="__codelineno-9-69" href="#__codelineno-9-69"></a><span class="n">mcp_script</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a id="__codelineno-9-70" name="__codelineno-9-70" href="#__codelineno-9-70"></a><span class="n">mcp_script</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">MCP_SERVER_SCRIPT</span><span class="p">)</span>
+<a id="__codelineno-9-71" name="__codelineno-9-71" href="#__codelineno-9-71"></a><span class="n">mcp_script</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<a id="__codelineno-9-72" name="__codelineno-9-72" href="#__codelineno-9-72"></a>
+<a id="__codelineno-9-73" name="__codelineno-9-73" href="#__codelineno-9-73"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-9-74" name="__codelineno-9-74" href="#__codelineno-9-74"></a><span class="c1"># agentpassport gateway agent</span>
+<a id="__codelineno-9-75" name="__codelineno-9-75" href="#__codelineno-9-75"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-9-76" name="__codelineno-9-76" href="#__codelineno-9-76"></a>
+<a id="__codelineno-9-77" name="__codelineno-9-77" href="#__codelineno-9-77"></a><span class="n">gateway</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="s2">&quot;mcp-gateway&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-78" name="__codelineno-9-78" href="#__codelineno-9-78"></a><span class="n">mcp</span> <span class="o">=</span> <span class="n">McpAdapter</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">mcp_script</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+<a id="__codelineno-9-79" name="__codelineno-9-79" href="#__codelineno-9-79"></a>
+<a id="__codelineno-9-80" name="__codelineno-9-80" href="#__codelineno-9-80"></a>
+<a id="__codelineno-9-81" name="__codelineno-9-81" href="#__codelineno-9-81"></a><span class="nd">@gateway</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">])</span>
+<a id="__codelineno-9-82" name="__codelineno-9-82" href="#__codelineno-9-82"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-9-83" name="__codelineno-9-83" href="#__codelineno-9-83"></a>    <span class="k">return</span> <span class="k">await</span> <span class="n">mcp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-9-84" name="__codelineno-9-84" href="#__codelineno-9-84"></a>
+<a id="__codelineno-9-85" name="__codelineno-9-85" href="#__codelineno-9-85"></a>
+<a id="__codelineno-9-86" name="__codelineno-9-86" href="#__codelineno-9-86"></a><span class="nd">@gateway</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;list_files&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">])</span>
+<a id="__codelineno-9-87" name="__codelineno-9-87" href="#__codelineno-9-87"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">list_files</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<a id="__codelineno-9-88" name="__codelineno-9-88" href="#__codelineno-9-88"></a>    <span class="k">return</span> <span class="k">await</span> <span class="n">mcp</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-9-89" name="__codelineno-9-89" href="#__codelineno-9-89"></a>
+<a id="__codelineno-9-90" name="__codelineno-9-90" href="#__codelineno-9-90"></a>
+<a id="__codelineno-9-91" name="__codelineno-9-91" href="#__codelineno-9-91"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-9-92" name="__codelineno-9-92" href="#__codelineno-9-92"></a><span class="c1"># Orchestrator</span>
+<a id="__codelineno-9-93" name="__codelineno-9-93" href="#__codelineno-9-93"></a><span class="c1"># ---------------------------------------------------------------------------</span>
+<a id="__codelineno-9-94" name="__codelineno-9-94" href="#__codelineno-9-94"></a>
+<a id="__codelineno-9-95" name="__codelineno-9-95" href="#__codelineno-9-95"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<a id="__codelineno-9-96" name="__codelineno-9-96" href="#__codelineno-9-96"></a>    <span class="c1"># Create a temp file to read</span>
+<a id="__codelineno-9-97" name="__codelineno-9-97" href="#__codelineno-9-97"></a>    <span class="n">test_file</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.txt&quot;</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a id="__codelineno-9-98" name="__codelineno-9-98" href="#__codelineno-9-98"></a>    <span class="n">test_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Hello from agentpassport MCP demo!&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-99" name="__codelineno-9-99" href="#__codelineno-9-99"></a>    <span class="n">test_file</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+<a id="__codelineno-9-100" name="__codelineno-9-100" href="#__codelineno-9-100"></a>
+<a id="__codelineno-9-101" name="__codelineno-9-101" href="#__codelineno-9-101"></a>    <span class="c1"># Orchestrator identity</span>
+<a id="__codelineno-9-102" name="__codelineno-9-102" href="#__codelineno-9-102"></a>    <span class="n">priv</span><span class="p">,</span> <span class="n">pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
+<a id="__codelineno-9-103" name="__codelineno-9-103" href="#__codelineno-9-103"></a>    <span class="n">orch_did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
+<a id="__codelineno-9-104" name="__codelineno-9-104" href="#__codelineno-9-104"></a>
+<a id="__codelineno-9-105" name="__codelineno-9-105" href="#__codelineno-9-105"></a>    <span class="c1"># Gateway trusts orchestrator</span>
+<a id="__codelineno-9-106" name="__codelineno-9-106" href="#__codelineno-9-106"></a>    <span class="n">gateway</span><span class="o">.</span><span class="n">trust_keys</span><span class="p">({</span><span class="n">orch_did</span><span class="p">:</span> <span class="n">pub</span><span class="p">})</span>
+<a id="__codelineno-9-107" name="__codelineno-9-107" href="#__codelineno-9-107"></a>
+<a id="__codelineno-9-108" name="__codelineno-9-108" href="#__codelineno-9-108"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">make_task</span><span class="p">(</span><span class="n">tool_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">TaskEnvelope</span><span class="p">:</span>
+<a id="__codelineno-9-109" name="__codelineno-9-109" href="#__codelineno-9-109"></a>        <span class="n">token</span> <span class="o">=</span> <span class="n">sign_delegation</span><span class="p">(</span>
+<a id="__codelineno-9-110" name="__codelineno-9-110" href="#__codelineno-9-110"></a>            <span class="n">issuer_private_key</span><span class="o">=</span><span class="n">priv</span><span class="p">,</span>
+<a id="__codelineno-9-111" name="__codelineno-9-111" href="#__codelineno-9-111"></a>            <span class="n">issuer_did</span><span class="o">=</span><span class="n">orch_did</span><span class="p">,</span>
+<a id="__codelineno-9-112" name="__codelineno-9-112" href="#__codelineno-9-112"></a>            <span class="n">subject_did</span><span class="o">=</span><span class="n">gateway</span><span class="o">.</span><span class="n">did</span><span class="p">,</span>
+<a id="__codelineno-9-113" name="__codelineno-9-113" href="#__codelineno-9-113"></a>            <span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span>
+<a id="__codelineno-9-114" name="__codelineno-9-114" href="#__codelineno-9-114"></a>            <span class="n">ttl_seconds</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+<a id="__codelineno-9-115" name="__codelineno-9-115" href="#__codelineno-9-115"></a>        <span class="p">)</span>
+<a id="__codelineno-9-116" name="__codelineno-9-116" href="#__codelineno-9-116"></a>        <span class="k">return</span> <span class="n">TaskEnvelope</span><span class="p">(</span>
+<a id="__codelineno-9-117" name="__codelineno-9-117" href="#__codelineno-9-117"></a>            <span class="n">intent</span><span class="o">=</span><span class="n">Intent</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">tool_name</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">),</span>
+<a id="__codelineno-9-118" name="__codelineno-9-118" href="#__codelineno-9-118"></a>            <span class="n">constraints</span><span class="o">=</span><span class="n">Constraints</span><span class="p">(</span><span class="n">budget_credits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_delegations</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<a id="__codelineno-9-119" name="__codelineno-9-119" href="#__codelineno-9-119"></a>                                    <span class="n">allowed_capabilities</span><span class="o">=</span><span class="p">[],</span> <span class="n">denied_capabilities</span><span class="o">=</span><span class="p">[]),</span>
+<a id="__codelineno-9-120" name="__codelineno-9-120" href="#__codelineno-9-120"></a>            <span class="n">auth_chain</span><span class="o">=</span><span class="p">[</span><span class="n">token</span><span class="p">],</span>
+<a id="__codelineno-9-121" name="__codelineno-9-121" href="#__codelineno-9-121"></a>        <span class="p">)</span>
+<a id="__codelineno-9-122" name="__codelineno-9-122" href="#__codelineno-9-122"></a>
+<a id="__codelineno-9-123" name="__codelineno-9-123" href="#__codelineno-9-123"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+<a id="__codelineno-9-124" name="__codelineno-9-124" href="#__codelineno-9-124"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  agentpassport MCP Demo&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-125" name="__codelineno-9-125" href="#__codelineno-9-125"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+<a id="__codelineno-9-126" name="__codelineno-9-126" href="#__codelineno-9-126"></a>
+<a id="__codelineno-9-127" name="__codelineno-9-127" href="#__codelineno-9-127"></a>    <span class="c1"># Test 1: read_file with correct scope</span>
+<a id="__codelineno-9-128" name="__codelineno-9-128" href="#__codelineno-9-128"></a>    <span class="n">task</span> <span class="o">=</span> <span class="n">make_task</span><span class="p">(</span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">test_file</span><span class="o">.</span><span class="n">name</span><span class="p">},</span> <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">])</span>
+<a id="__codelineno-9-129" name="__codelineno-9-129" href="#__codelineno-9-129"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-9-130" name="__codelineno-9-130" href="#__codelineno-9-130"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[✅] read_file (scope=fs:read): </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-131" name="__codelineno-9-131" href="#__codelineno-9-131"></a>
+<a id="__codelineno-9-132" name="__codelineno-9-132" href="#__codelineno-9-132"></a>    <span class="c1"># Test 2: list_files with correct scope</span>
+<a id="__codelineno-9-133" name="__codelineno-9-133" href="#__codelineno-9-133"></a>    <span class="n">task</span> <span class="o">=</span> <span class="n">make_task</span><span class="p">(</span><span class="s2">&quot;list_files&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;directory&quot;</span><span class="p">:</span> <span class="s2">&quot;/tmp&quot;</span><span class="p">},</span> <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;fs:read&quot;</span><span class="p">])</span>
+<a id="__codelineno-9-134" name="__codelineno-9-134" href="#__codelineno-9-134"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-9-135" name="__codelineno-9-135" href="#__codelineno-9-135"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[✅] list_files (scope=fs:read): </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;files&#39;</span><span class="p">,</span><span class="w"> </span><span class="p">[]))</span><span class="si">}</span><span class="s2"> files in /tmp&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-136" name="__codelineno-9-136" href="#__codelineno-9-136"></a>
+<a id="__codelineno-9-137" name="__codelineno-9-137" href="#__codelineno-9-137"></a>    <span class="c1"># Test 3: read_file with wrong scope — rejected</span>
+<a id="__codelineno-9-138" name="__codelineno-9-138" href="#__codelineno-9-138"></a>    <span class="n">task</span> <span class="o">=</span> <span class="n">make_task</span><span class="p">(</span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">test_file</span><span class="o">.</span><span class="n">name</span><span class="p">},</span> <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;db:read&quot;</span><span class="p">])</span>
+<a id="__codelineno-9-139" name="__codelineno-9-139" href="#__codelineno-9-139"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-9-140" name="__codelineno-9-140" href="#__codelineno-9-140"></a>        <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+<a id="__codelineno-9-141" name="__codelineno-9-141" href="#__codelineno-9-141"></a>    <span class="k">except</span> <span class="n">ScopeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-9-142" name="__codelineno-9-142" href="#__codelineno-9-142"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[✅] read_file (scope=db:read) rejected: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-143" name="__codelineno-9-143" href="#__codelineno-9-143"></a>
+<a id="__codelineno-9-144" name="__codelineno-9-144" href="#__codelineno-9-144"></a>    <span class="c1"># Test 4: no auth chain — rejected</span>
+<a id="__codelineno-9-145" name="__codelineno-9-145" href="#__codelineno-9-145"></a>    <span class="n">task_no_auth</span> <span class="o">=</span> <span class="n">TaskEnvelope</span><span class="p">(</span>
+<a id="__codelineno-9-146" name="__codelineno-9-146" href="#__codelineno-9-146"></a>        <span class="n">intent</span><span class="o">=</span><span class="n">Intent</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">test_file</span><span class="o">.</span><span class="n">name</span><span class="p">}),</span>
+<a id="__codelineno-9-147" name="__codelineno-9-147" href="#__codelineno-9-147"></a>        <span class="n">constraints</span><span class="o">=</span><span class="n">Constraints</span><span class="p">(</span><span class="n">budget_credits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">max_delegations</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+<a id="__codelineno-9-148" name="__codelineno-9-148" href="#__codelineno-9-148"></a>                                <span class="n">allowed_capabilities</span><span class="o">=</span><span class="p">[],</span> <span class="n">denied_capabilities</span><span class="o">=</span><span class="p">[]),</span>
+<a id="__codelineno-9-149" name="__codelineno-9-149" href="#__codelineno-9-149"></a>        <span class="n">auth_chain</span><span class="o">=</span><span class="p">[],</span>
+<a id="__codelineno-9-150" name="__codelineno-9-150" href="#__codelineno-9-150"></a>    <span class="p">)</span>
+<a id="__codelineno-9-151" name="__codelineno-9-151" href="#__codelineno-9-151"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-9-152" name="__codelineno-9-152" href="#__codelineno-9-152"></a>        <span class="k">await</span> <span class="n">gateway</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">task_no_auth</span><span class="p">)</span>
+<a id="__codelineno-9-153" name="__codelineno-9-153" href="#__codelineno-9-153"></a>    <span class="k">except</span> <span class="n">ScopeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-9-154" name="__codelineno-9-154" href="#__codelineno-9-154"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">[✅] read_file (no auth chain) rejected: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-155" name="__codelineno-9-155" href="#__codelineno-9-155"></a>
+<a id="__codelineno-9-156" name="__codelineno-9-156" href="#__codelineno-9-156"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+<a id="__codelineno-9-157" name="__codelineno-9-157" href="#__codelineno-9-157"></a>
+<a id="__codelineno-9-158" name="__codelineno-9-158" href="#__codelineno-9-158"></a>    <span class="c1"># Cleanup</span>
+<a id="__codelineno-9-159" name="__codelineno-9-159" href="#__codelineno-9-159"></a>    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">test_file</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<a id="__codelineno-9-160" name="__codelineno-9-160" href="#__codelineno-9-160"></a>    <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">mcp_script</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<a id="__codelineno-9-161" name="__codelineno-9-161" href="#__codelineno-9-161"></a>
+<a id="__codelineno-9-162" name="__codelineno-9-162" href="#__codelineno-9-162"></a>
+<a id="__codelineno-9-163" name="__codelineno-9-163" href="#__codelineno-9-163"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+<p>Expected output:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>============================================================
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  agentpassport MCP Demo
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>============================================================
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>[✅] read_file (scope=fs:read): {&#39;content&#39;: &#39;Hello from agentpassport MCP demo!&#39;}
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>[✅] list_files (scope=fs:read): 12 files in /tmp
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>[✅] read_file (scope=db:read) rejected: Capability &#39;read_file&#39; requires scope [&#39;fs:read&#39;]
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>     not granted by the auth chain. Granted: [&#39;db:read&#39;]
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>[✅] read_file (no auth chain) rejected: Capability &#39;read_file&#39; requires scope [&#39;fs:read&#39;]
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>     but the task carries no auth chain.
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>============================================================
+</code></pre></div></p>
+<hr />
+<h2 id="10-reference-mcpadapter">10. Reference: McpAdapter</h2>
+<p><strong>Package:</strong> <code>agentpassport-adapters</code>
+<strong>Module:</strong> <code>agentpassport_adapters.mcp</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">McpAdapter</span><span class="p">(</span><span class="n">Adapter</span><span class="p">):</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="constructor-parameters">Constructor parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>command</code></td>
+<td><code>list[str]</code></td>
+<td>Yes</td>
+<td>Subprocess command to launch the MCP server. Each element is a separate argument — do not pass a shell string. Example: <code>["python", "-m", "my_mcp_server"]</code> or <code>["npx", "my-mcp-server"]</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="executetask-parameters"><code>execute(task)</code> parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>task</code></td>
+<td><code>TaskEnvelope</code></td>
+<td>The task to execute. <code>task.intent.type</code> becomes the MCP tool name. <code>task.intent.params</code> becomes the tool arguments.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="returns">Returns</h3>
+<p><code>dict[str, Any]</code> — the <code>result</code> field from the MCP server's JSON-RPC 2.0 response.</p>
+<h3 id="raises">Raises</h3>
+<table>
+<thead>
+<tr>
+<th>Exception</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>RuntimeError</code></td>
+<td>MCP server subprocess exits with non-zero return code. Message includes stderr.</td>
+</tr>
+<tr>
+<td><code>RuntimeError</code></td>
+<td>MCP server returns a response with an <code>"error"</code> key. Message includes the error object.</td>
+</tr>
+<tr>
+<td><code>json.JSONDecodeError</code></td>
+<td>MCP server returns non-JSON output on stdout.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="json-rpc-request-structure">JSON-RPC request structure</h3>
+<p>The request written to the MCP server's stdin:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="nt">&quot;jsonrpc&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;task.id as string&gt;&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tools/call&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&lt;task.intent.type&gt;&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="nt">&quot;arguments&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="err">...</span><span class="kc">tas</span><span class="err">k.i</span><span class="kc">ntent</span><span class="err">.params</span><span class="w"> </span><span class="p">}</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Note:</strong> The auth chain is <strong>not</strong> forwarded to the MCP server. Trust enforcement happens in the agentpassport agent before <code>McpAdapter.execute()</code> is called. The MCP server sees only the tool call — it never needs to know about agentpassport.</p>
+<h3 id="performance-note">Performance note</h3>
+<p><code>McpAdapter.execute()</code> launches a <strong>fresh subprocess for each call</strong> via <code>asyncio.create_subprocess_exec</code>. For MCP servers with negligible startup time (pure Python, no heavy imports) this is fine. For servers with significant startup cost:</p>
+<ul>
+<li>Keep a persistent subprocess and use a connection pool</li>
+<li>Use a long-running HTTP MCP server instead (Pattern B proxy)</li>
+<li>Use <code>asyncio.Lock</code> to serialize calls to a single persistent process</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

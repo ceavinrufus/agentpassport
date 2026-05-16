@@ -1,0 +1,2264 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cryptographic identity and authorization for AI agents">
+      
+      
+      
+        <link rel="canonical" href="https://docs.agentpassport.fyi/python/registry/">
+      
+      
+        <link rel="prev" href="../adapters/">
+      
+      
+        <link rel="next" href="../../typescript/api-reference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Registry - agentpassport</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#agentpassport-registry-api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="agentpassport" class="md-header__button md-logo" aria-label="agentpassport" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            agentpassport
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Registry
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ceavinrufus/agentpassport" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../concepts/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Concepts
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/python-quickstart/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  Python API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../typescript/api-reference/" class="md-tabs__link">
+          
+  
+  
+  TypeScript API
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="agentpassport" class="md-nav__button md-logo" aria-label="agentpassport" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    agentpassport
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ceavinrufus/agentpassport" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/python-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/typescript-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeScript Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/cross-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-SDK Compatibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/ownership-binding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ownership Binding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/mcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/a2a/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A2A Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Python API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registry
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Registry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running the Registry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker (example)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HTTP API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/agents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1agentsquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/agents/query
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1agentsdid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/agents/{did}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-v1agentsdid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DELETE /v1/agents/{did}
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python-internals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python internals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python internals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-create_app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function: create_app()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abstract-class-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Abstract class: Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-sqlitestorage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class: SqliteStorage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-queryengine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class: QueryEngine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate limiting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#registryclient-python-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegistryClient (Python SDK)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RegistryClient (Python SDK)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registryclientpublish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegistryClient.publish()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registryclientget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegistryClient.get()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registryclientsearch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegistryClient.search()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-integration-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full integration example
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeScript API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    TypeScript API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../typescript/api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-the-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Registry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running the Registry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Install
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker (example)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HTTP API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#post-v1agents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        POST /v1/agents
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1agentsquery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/agents/query
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get-v1agentsdid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GET /v1/agents/{did}
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete-v1agentsdid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DELETE /v1/agents/{did}
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#python-internals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Python internals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Python internals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#function-create_app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Function: create_app()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abstract-class-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Abstract class: Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-sqlitestorage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class: SqliteStorage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#class-queryengine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Class: QueryEngine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rate limiting
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#registryclient-python-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegistryClient (Python SDK)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RegistryClient (Python SDK)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constructor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constructor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registryclientpublish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegistryClient.publish()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registryclientget" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegistryClient.get()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#registryclientsearch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RegistryClient.search()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#full-integration-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Full integration example
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="agentpassport-registry-api-reference">AgentPassport Registry — API Reference</h1>
+<p>Complete reference for the <code>agentpassport-registry</code> service and its HTTP API.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#overview">Overview</a></li>
+<li><a href="#running-the-registry">Running the Registry</a></li>
+<li><a href="#http-api">HTTP API</a></li>
+<li><a href="#get-health">GET /health</a></li>
+<li><a href="#post-v1agents">POST /v1/agents</a></li>
+<li><a href="#get-v1agentsquery">GET /v1/agents/query</a></li>
+<li><a href="#get-v1agentsdid">GET /v1/agents/{did}</a></li>
+<li><a href="#delete-v1agentsdid">DELETE /v1/agents/{did}</a></li>
+<li><a href="#python-internals">Python internals</a></li>
+<li><a href="#function-create_app">Function: <code>create_app()</code></a></li>
+<li><a href="#abstract-class-storage">Abstract class: <code>Storage</code></a></li>
+<li><a href="#class-sqlitestorage">Class: <code>SqliteStorage</code></a></li>
+<li><a href="#class-queryengine">Class: <code>QueryEngine</code></a></li>
+<li><a href="#rate-limiting">Rate limiting</a></li>
+<li><a href="#registryclient-python-sdk">RegistryClient (Python SDK)</a></li>
+<li><a href="#full-integration-example">Full integration example</a></li>
+</ul>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>The AgentPassport Registry is an optional central directory where agents publish their <code>AgentCard</code> and orchestrators discover agents by capability. It is a FastAPI service backed by SQLite.</p>
+<p><strong>What it provides:</strong>
+- Publish an <code>AgentCard</code> (with optional signature verification)
+- Look up an agent by DID
+- Query agents by capability, cost, and latency constraints
+- Ranked results (cheapest first, then by latency)</p>
+<p><strong>What it does NOT provide:</strong>
+- Authentication/authorization (use network-level controls or add your own middleware)
+- Consensus or federation (single instance)
+- Real-time push notifications</p>
+<hr />
+<h2 id="running-the-registry">Running the Registry</h2>
+<h3 id="install">Install</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>agentpassport-registry<span class="w"> </span>uvicorn
+</code></pre></div>
+<h3 id="start">Start</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>uvicorn<span class="w"> </span>agentpassport_registry.app:create_app<span class="w"> </span>--factory<span class="w"> </span>--port<span class="w"> </span><span class="m">8000</span>
+</code></pre></div>
+<p>Or from Python:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport_registry.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">(</span><span class="n">db_path</span><span class="o">=</span><span class="s2">&quot;/var/lib/agentpassport/registry.db&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="docker-example">Docker (example)</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12-slim</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>agentpassport-registry<span class="w"> </span>uvicorn
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;uvicorn&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;agentpassport_registry.app:create_app&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--factory&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--host&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--port&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;8000&quot;</span><span class="p">]</span>
+</code></pre></div>
+<hr />
+<h2 id="http-api">HTTP API</h2>
+<p>All endpoints return JSON. All error responses follow FastAPI's default format:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;message or structured object&quot;</span><span class="p">}</span>
+</code></pre></div></p>
+<hr />
+<h3 id="get-health">GET /health</h3>
+<p>Check service health.</p>
+<p><strong>Request:</strong> No parameters.</p>
+<p><strong>Response 200:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ok&quot;</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>curl<span class="w"> </span>http://localhost:8000/health
+</code></pre></div></p>
+<hr />
+<h3 id="post-v1agents">POST /v1/agents</h3>
+<p>Publish or update an <code>AgentCard</code> in the registry.</p>
+<p><strong>Rate limit:</strong> 10 requests per minute per client IP.</p>
+<p><strong>Request body:</strong> <code>AgentCard</code> JSON object.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="p">{</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">&quot;did&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;summarizer&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">  </span><span class="nt">&quot;capabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;extract_keywords&quot;</span><span class="p">],</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">  </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://summarizer.internal:8080&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">  </span><span class="nt">&quot;cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;currency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;credits&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;per_task&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.5</span><span class="p">},</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">  </span><span class="nt">&quot;latency_p99_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1500</span><span class="p">,</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">  </span><span class="nt">&quot;transports&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;http&quot;</span><span class="p">],</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">  </span><span class="nt">&quot;signature&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;abc123...&quot;</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="p">}</span>
+</code></pre></div>
+<p><strong>Behavior:</strong>
+- If <code>signature</code> is <code>null</code> or absent: card is accepted without verification.
+- If <code>signature</code> is present: the registry verifies it against <code>card.canonical_payload()</code> using the public key derived from <code>card.did</code>. If verification fails, returns 422.
+- Uses <code>INSERT OR REPLACE</code> — existing entries for the same DID are overwritten.</p>
+<p><strong>Response 201:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="p">{</span><span class="nt">&quot;status&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;registered&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;did&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Response 422 — Invalid DID:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Invalid DID: Invalid did:key DID (expected did:key:z...): ...&quot;</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Response 422 — Bad signature:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AgentCard signature verification failed&quot;</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Response 429 — Rate limited:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span><span class="nt">&quot;error&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Rate limit exceeded: 10 per 1 minute&quot;</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8000/v1/agents<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="s1">    &quot;did&quot;: &quot;did:key:z6Mk...&quot;,</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="s1">    &quot;name&quot;: &quot;my-agent&quot;,</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="s1">    &quot;capabilities&quot;: [&quot;summarize&quot;],</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="s1">    &quot;endpoint&quot;: &quot;http://localhost:8001&quot;</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="s1">  }&#39;</span>
+</code></pre></div></p>
+<hr />
+<h3 id="get-v1agentsquery">GET /v1/agents/query</h3>
+<p>Query agents by capability, with optional cost and latency filters.</p>
+<p><strong>Rate limit:</strong> 60 requests per minute per client IP.</p>
+<p><strong>Query parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>capability</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>Capability name to filter by. Only agents with this exact string in their <code>capabilities</code> list are returned.</td>
+</tr>
+<tr>
+<td><code>max_cost</code></td>
+<td><code>float</code></td>
+<td>No</td>
+<td><code>null</code></td>
+<td>If provided, exclude agents whose <code>cost.per_task &gt; max_cost</code>.</td>
+</tr>
+<tr>
+<td><code>max_latency_ms</code></td>
+<td><code>int</code></td>
+<td>No</td>
+<td><code>null</code></td>
+<td>If provided, exclude agents whose <code>latency_p99_ms &gt; max_latency_ms</code>. Agents with no latency info are not excluded.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response 200:</strong> Array of <code>AgentCard</code> JSON objects, sorted by <code>cost.per_task</code> ascending, then <code>latency_p99_ms</code> ascending.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">[</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">  </span><span class="p">{</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">    </span><span class="nt">&quot;did&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;fast-summarizer&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="nt">&quot;capabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">],</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">    </span><span class="nt">&quot;cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;currency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;credits&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;per_task&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span><span class="p">},</span>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="nt">&quot;latency_p99_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">500</span><span class="p">,</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">    </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://fast:8080&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">    </span><span class="err">...</span>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">  </span><span class="p">{</span>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">    </span><span class="nt">&quot;did&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;good-summarizer&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">    </span><span class="nt">&quot;capabilities&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">],</span>
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">    </span><span class="nt">&quot;cost&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;currency&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;credits&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;per_task&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">2.5</span><span class="p">},</span>
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="w">    </span><span class="nt">&quot;latency_p99_ms&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1500</span><span class="p">,</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">    </span><span class="nt">&quot;endpoint&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://good:8081&quot;</span><span class="p">,</span>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="w">    </span><span class="err">...</span>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="p">]</span>
+</code></pre></div>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Find all agents that can summarize, costing at most 2 credits, within 2 seconds</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8000/v1/agents/query?capability=summarize&amp;max_cost=2.0&amp;max_latency_ms=2000&quot;</span>
+</code></pre></div></p>
+<hr />
+<h3 id="get-v1agentsdid">GET /v1/agents/{did}</h3>
+<p>Look up a specific agent by DID.</p>
+<p><strong>Rate limit:</strong> 60 requests per minute per client IP.</p>
+<p><strong>Path parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>did</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>The agent's full DID (URL-encoded if necessary). Uses <code>{did:path}</code> routing so slashes in the DID are allowed.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Response 200:</strong> The <code>AgentCard</code> JSON object.</p>
+<p><strong>Response 404:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="p">{</span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Agent not found&quot;</span><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8000/v1/agents/did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK&quot;</span>
+</code></pre></div></p>
+<hr />
+<h3 id="delete-v1agentsdid">DELETE /v1/agents/{did}</h3>
+<p>Remove an agent from the registry.</p>
+<p><strong>Note:</strong> No authentication — add your own middleware if you need delete protection.</p>
+<p><strong>Path parameters:</strong> Same as GET.</p>
+<p><strong>Response 204:</strong> No content. Idempotent — deleting a non-existent DID succeeds silently.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span><span class="s2">&quot;http://localhost:8000/v1/agents/did:key:z6Mk...&quot;</span>
+</code></pre></div></p>
+<hr />
+<h2 id="python-internals">Python internals</h2>
+<h3 id="function-create_app">Function: <code>create_app()</code></h3>
+<p><strong>Module:</strong> <code>agentpassport_registry.app</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">create_app</span><span class="p">(</span><span class="n">db_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agentpassport_registry.db&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FastAPI</span>
+</code></pre></div>
+<p>Factory function that creates and configures the FastAPI application.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>db_path</code></td>
+<td><code>str</code></td>
+<td><code>"agentpassport_registry.db"</code></td>
+<td>Path to the SQLite database file. Created if it doesn't exist.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> Configured <code>FastAPI</code> instance.</p>
+<p><strong>Side effects:</strong>
+- Creates a <code>SqliteStorage</code> and calls <code>initialize()</code> (creates the table if needed).
+- Sets up the rate limiter exception handler.
+- Registers the router.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport_registry.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_app</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">uvicorn</span>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Development</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">()</span>  <span class="c1"># in-memory or local db</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="c1"># Production</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">(</span><span class="n">db_path</span><span class="o">=</span><span class="s2">&quot;/data/registry.db&quot;</span><span class="p">)</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">)</span>
+</code></pre></div></p>
+<hr />
+<h3 id="abstract-class-storage">Abstract class: <code>Storage</code></h3>
+<p><strong>Module:</strong> <code>agentpassport_registry.storage.base</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Storage</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>    <span class="nd">@abstractmethod</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>    <span class="nd">@abstractmethod</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">:</span> <span class="n">AgentCard</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>    <span class="nd">@abstractmethod</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">did</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AgentCard</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>    <span class="nd">@abstractmethod</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">did</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>    <span class="nd">@abstractmethod</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">list_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AgentCard</span><span class="p">]:</span> <span class="o">...</span>
+</code></pre></div>
+<p>Abstract base for storage backends. Implement this to use a different database (PostgreSQL, Redis, etc.).</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>initialize()</code></td>
+<td>Create tables/indexes. Called at startup. Safe to call multiple times.</td>
+</tr>
+<tr>
+<td><code>register(card)</code></td>
+<td>Upsert an agent card. Must be idempotent for the same DID.</td>
+</tr>
+<tr>
+<td><code>get(did)</code></td>
+<td>Return the <code>AgentCard</code> for the given DID, or <code>None</code> if not found.</td>
+</tr>
+<tr>
+<td><code>delete(did)</code></td>
+<td>Remove the card for the given DID. Idempotent.</td>
+</tr>
+<tr>
+<td><code>list_all()</code></td>
+<td>Return all registered agent cards.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example: Custom storage backend</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport_registry.storage.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Storage</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentCard</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">InMemoryStorage</span><span class="p">(</span><span class="n">Storage</span><span class="p">):</span>
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">AgentCard</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>        <span class="k">pass</span>  <span class="c1"># Nothing to do for in-memory</span>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">:</span> <span class="n">AgentCard</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="p">[</span><span class="n">card</span><span class="o">.</span><span class="n">did</span><span class="p">]</span> <span class="o">=</span> <span class="n">card</span>
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>
+<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">did</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AgentCard</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">did</span><span class="p">)</span>
+<a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>
+<a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">did</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">did</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a>
+<a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">list_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AgentCard</span><span class="p">]:</span>
+<a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a>        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cards</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+</code></pre></div></p>
+<hr />
+<h3 id="class-sqlitestorage">Class: <code>SqliteStorage</code></h3>
+<p><strong>Module:</strong> <code>agentpassport_registry.storage.sqlite</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">SqliteStorage</span><span class="p">(</span><span class="n">Storage</span><span class="p">):</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">db_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agentpassport_registry.db&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">:</span> <span class="n">AgentCard</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">did</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AgentCard</span> <span class="o">|</span> <span class="kc">None</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">did</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">list_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AgentCard</span><span class="p">]</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</code></pre></div>
+<p>SQLite-backed storage. Uses <code>INSERT OR REPLACE</code> for upserts. Serializes <code>AgentCard</code> as JSON.</p>
+<p><strong>Constructor:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>db_path</code></td>
+<td><code>str</code></td>
+<td><code>"agentpassport_registry.db"</code></td>
+<td>SQLite database file path.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Schema:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="k">IF</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">EXISTS</span><span class="w"> </span><span class="n">agent_cards</span><span class="w"> </span><span class="p">(</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">    </span><span class="n">did</span><span class="w">  </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">    </span><span class="k">data</span><span class="w"> </span><span class="nb">TEXT</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="p">);</span>
+</code></pre></div></p>
+<p><strong>Thread safety:</strong> Uses <code>check_same_thread=False</code>. Safe for single-threaded async use (FastAPI with a single worker). For multi-process deployments, use a separate DB per process or switch to PostgreSQL.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport_registry.storage.sqlite</span><span class="w"> </span><span class="kn">import</span> <span class="n">SqliteStorage</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentCard</span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="n">storage</span> <span class="o">=</span> <span class="n">SqliteStorage</span><span class="p">(</span><span class="n">db_path</span><span class="o">=</span><span class="s2">&quot;/tmp/test.db&quot;</span><span class="p">)</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="n">storage</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="n">card</span> <span class="o">=</span> <span class="n">AgentCard</span><span class="p">(</span>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>    <span class="n">did</span><span class="o">=</span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;test-agent&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>    <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ping&quot;</span><span class="p">],</span>
+<a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a>    <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;http://localhost:8001&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a><span class="p">)</span>
+<a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a><span class="n">storage</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">card</span><span class="p">)</span>
+<a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a>
+<a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a><span class="n">retrieved</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">)</span>
+<a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a><span class="k">assert</span> <span class="n">retrieved</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+<a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a><span class="k">assert</span> <span class="n">retrieved</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;test-agent&quot;</span>
+<a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a>
+<a id="__codelineno-24-19" name="__codelineno-24-19" href="#__codelineno-24-19"></a><span class="n">all_cards</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">list_all</span><span class="p">()</span>
+<a id="__codelineno-24-20" name="__codelineno-24-20" href="#__codelineno-24-20"></a><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">all_cards</span><span class="p">))</span>  <span class="c1"># 1</span>
+<a id="__codelineno-24-21" name="__codelineno-24-21" href="#__codelineno-24-21"></a>
+<a id="__codelineno-24-22" name="__codelineno-24-22" href="#__codelineno-24-22"></a><span class="n">storage</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">)</span>
+<a id="__codelineno-24-23" name="__codelineno-24-23" href="#__codelineno-24-23"></a><span class="k">assert</span> <span class="n">storage</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+</code></pre></div></p>
+<hr />
+<h3 id="class-queryengine">Class: <code>QueryEngine</code></h3>
+<p><strong>Module:</strong> <code>agentpassport_registry.query</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">QueryEngine</span><span class="p">:</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">query</span><span class="p">(</span>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>        <span class="n">cards</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">AgentCard</span><span class="p">],</span>
+<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>        <span class="n">capability</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>        <span class="n">max_cost_per_task</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>        <span class="n">max_latency_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AgentCard</span><span class="p">]</span>
+</code></pre></div>
+<p>Stateless query and ranking engine. Operates on a list of <code>AgentCard</code> objects.</p>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cards</code></td>
+<td><code>list[AgentCard]</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>All agent cards to filter</td>
+</tr>
+<tr>
+<td><code>capability</code></td>
+<td><code>str</code></td>
+<td>Yes</td>
+<td>—</td>
+<td>Exact capability name to match</td>
+</tr>
+<tr>
+<td><code>max_cost_per_task</code></td>
+<td><code>float \| None</code></td>
+<td>No</td>
+<td><code>None</code></td>
+<td>Exclude agents with <code>cost.per_task &gt; max_cost_per_task</code></td>
+</tr>
+<tr>
+<td><code>max_latency_ms</code></td>
+<td><code>int \| None</code></td>
+<td>No</td>
+<td><code>None</code></td>
+<td>Exclude agents with <code>latency_p99_ms &gt; max_latency_ms</code>. Agents with <code>latency_p99_ms = None</code> are <strong>not</strong> excluded.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong> <code>list[AgentCard]</code> — filtered and sorted list, cheapest first, then by latency ascending.</p>
+<p><strong>Matching:</strong> <code>capability</code> must be an <strong>exact string match</strong> in <code>card.capabilities</code>. No partial matching.</p>
+<p><strong>Ranking:</strong>
+1. Primary: <code>cost.per_task</code> ascending (agents with no cost info rank last with <code>float("inf")</code>)
+2. Secondary: <code>latency_p99_ms</code> ascending (agents with no latency info rank first with <code>0</code>)</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport_registry.query</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueryEngine</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">AgentCard</span><span class="p">,</span> <span class="n">CostInfo</span>
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="n">engine</span> <span class="o">=</span> <span class="n">QueryEngine</span><span class="p">()</span>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="n">cards</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>    <span class="n">AgentCard</span><span class="p">(</span><span class="n">did</span><span class="o">=</span><span class="s2">&quot;did:key:z1&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;expensive&quot;</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">],</span>
+<a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>              <span class="n">cost</span><span class="o">=</span><span class="n">CostInfo</span><span class="p">(</span><span class="n">per_task</span><span class="o">=</span><span class="mf">10.0</span><span class="p">),</span> <span class="n">latency_p99_ms</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;http://a&quot;</span><span class="p">),</span>
+<a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>    <span class="n">AgentCard</span><span class="p">(</span><span class="n">did</span><span class="o">=</span><span class="s2">&quot;did:key:z2&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cheap-slow&quot;</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">],</span>
+<a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a>              <span class="n">cost</span><span class="o">=</span><span class="n">CostInfo</span><span class="p">(</span><span class="n">per_task</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">latency_p99_ms</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;http://b&quot;</span><span class="p">),</span>
+<a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a>    <span class="n">AgentCard</span><span class="p">(</span><span class="n">did</span><span class="o">=</span><span class="s2">&quot;did:key:z3&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cheap-fast&quot;</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">],</span>
+<a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a>              <span class="n">cost</span><span class="o">=</span><span class="n">CostInfo</span><span class="p">(</span><span class="n">per_task</span><span class="o">=</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">latency_p99_ms</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;http://c&quot;</span><span class="p">),</span>
+<a id="__codelineno-26-13" name="__codelineno-26-13" href="#__codelineno-26-13"></a>    <span class="n">AgentCard</span><span class="p">(</span><span class="n">did</span><span class="o">=</span><span class="s2">&quot;did:key:z4&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;other&quot;</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;translate&quot;</span><span class="p">],</span>
+<a id="__codelineno-26-14" name="__codelineno-26-14" href="#__codelineno-26-14"></a>              <span class="n">cost</span><span class="o">=</span><span class="n">CostInfo</span><span class="p">(</span><span class="n">per_task</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;http://d&quot;</span><span class="p">),</span>
+<a id="__codelineno-26-15" name="__codelineno-26-15" href="#__codelineno-26-15"></a><span class="p">]</span>
+<a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a>
+<a id="__codelineno-26-17" name="__codelineno-26-17" href="#__codelineno-26-17"></a><span class="c1"># No filters — returns all with &quot;summarize&quot;, cheapest first then by latency</span>
+<a id="__codelineno-26-18" name="__codelineno-26-18" href="#__codelineno-26-18"></a><span class="n">results</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cards</span><span class="p">,</span> <span class="n">capability</span><span class="o">=</span><span class="s2">&quot;summarize&quot;</span><span class="p">)</span>
+<a id="__codelineno-26-19" name="__codelineno-26-19" href="#__codelineno-26-19"></a><span class="nb">print</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+<a id="__codelineno-26-20" name="__codelineno-26-20" href="#__codelineno-26-20"></a><span class="c1"># [&#39;cheap-fast&#39;, &#39;cheap-slow&#39;, &#39;expensive&#39;]</span>
+<a id="__codelineno-26-21" name="__codelineno-26-21" href="#__codelineno-26-21"></a>
+<a id="__codelineno-26-22" name="__codelineno-26-22" href="#__codelineno-26-22"></a><span class="c1"># Cost filter</span>
+<a id="__codelineno-26-23" name="__codelineno-26-23" href="#__codelineno-26-23"></a><span class="n">results</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cards</span><span class="p">,</span> <span class="n">capability</span><span class="o">=</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span> <span class="n">max_cost_per_task</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<a id="__codelineno-26-24" name="__codelineno-26-24" href="#__codelineno-26-24"></a><span class="nb">print</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+<a id="__codelineno-26-25" name="__codelineno-26-25" href="#__codelineno-26-25"></a><span class="c1"># [&#39;cheap-fast&#39;, &#39;cheap-slow&#39;]</span>
+<a id="__codelineno-26-26" name="__codelineno-26-26" href="#__codelineno-26-26"></a>
+<a id="__codelineno-26-27" name="__codelineno-26-27" href="#__codelineno-26-27"></a><span class="c1"># Cost + latency filter</span>
+<a id="__codelineno-26-28" name="__codelineno-26-28" href="#__codelineno-26-28"></a><span class="n">results</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">cards</span><span class="p">,</span> <span class="n">capability</span><span class="o">=</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span> <span class="n">max_cost_per_task</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">max_latency_ms</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<a id="__codelineno-26-29" name="__codelineno-26-29" href="#__codelineno-26-29"></a><span class="nb">print</span><span class="p">([</span><span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">results</span><span class="p">])</span>
+<a id="__codelineno-26-30" name="__codelineno-26-30" href="#__codelineno-26-30"></a><span class="c1"># [&#39;cheap-fast&#39;]</span>
+</code></pre></div></p>
+<hr />
+<h2 id="rate-limiting">Rate limiting</h2>
+<p>The registry uses <code>slowapi</code> (a Starlette/FastAPI port of Flask-Limiter) backed by in-memory storage.</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /v1/agents</code></td>
+<td>10 per minute per IP</td>
+</tr>
+<tr>
+<td><code>GET /v1/agents/query</code></td>
+<td>60 per minute per IP</td>
+</tr>
+<tr>
+<td><code>GET /v1/agents/{did}</code></td>
+<td>60 per minute per IP</td>
+</tr>
+</tbody>
+</table>
+<p>When a limit is exceeded, the response is <code>429 Too Many Requests</code> with a <code>Retry-After</code> header.</p>
+<p>To change limits, modify the <code>PUBLISH_RATE</code> and <code>QUERY_RATE</code> constants in <code>agentpassport_registry.routes</code>.</p>
+<hr />
+<h2 id="registryclient-python-sdk">RegistryClient (Python SDK)</h2>
+<p><strong>Module:</strong> <code>agentpassport.registry_client</code></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">RegistryClient</span><span class="p">:</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">card</span><span class="p">:</span> <span class="n">AgentCard</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">did</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AgentCard</span> <span class="o">|</span> <span class="kc">None</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>        <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>        <span class="n">capability</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>        <span class="n">max_cost</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>        <span class="n">max_latency_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">AgentCard</span><span class="p">]</span>
+</code></pre></div>
+<p>Client for the registry service, used from the agent SDK.</p>
+<h3 id="constructor">Constructor</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base_url</code></td>
+<td><code>str</code></td>
+<td>required</td>
+<td>Registry service base URL</td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td><code>float</code></td>
+<td><code>10.0</code></td>
+<td>HTTP request timeout in seconds</td>
+</tr>
+</tbody>
+</table>
+<h3 id="registryclientpublish"><code>RegistryClient.publish()</code></h3>
+<p>Publish an <code>AgentCard</code> to the registry.</p>
+<p><strong>Returns:</strong> <code>dict</code> — <code>{"status": "registered", "did": "..."}</code> on success.</p>
+<p><strong>Raises:</strong> <code>httpx.HTTPStatusError</code> on non-2xx.</p>
+<h3 id="registryclientget"><code>RegistryClient.get()</code></h3>
+<p>Look up an agent by DID.</p>
+<p><strong>Returns:</strong> <code>AgentCard | None</code> — <code>None</code> if not found (404).</p>
+<h3 id="registryclientsearch"><code>RegistryClient.search()</code></h3>
+<p>Query agents by capability and optional constraints.</p>
+<p><strong>Returns:</strong> <code>list[AgentCard]</code> — matching agents, sorted by cost then latency.</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">AgentCard</span><span class="p">,</span> <span class="n">CostInfo</span><span class="p">,</span> <span class="n">sign_agent_card</span><span class="p">,</span> <span class="n">RegistryClient</span><span class="p">,</span> <span class="n">generate_keypair</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="n">agent_priv</span><span class="p">,</span> <span class="n">agent_pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;my-agent&quot;</span><span class="p">,</span> <span class="n">private_key</span><span class="o">=</span><span class="n">agent_priv</span><span class="p">)</span>
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="n">client</span> <span class="o">=</span> <span class="n">RegistryClient</span><span class="p">(</span><span class="s2">&quot;http://registry:8000&quot;</span><span class="p">)</span>
+<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>
+<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="c1"># Build and publish a signed card</span>
+<a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="n">card</span> <span class="o">=</span> <span class="n">AgentCard</span><span class="p">(</span>
+<a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>    <span class="n">did</span><span class="o">=</span><span class="n">agent</span><span class="o">.</span><span class="n">did</span><span class="p">,</span>
+<a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a>    <span class="n">name</span><span class="o">=</span><span class="n">agent</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a>    <span class="n">capabilities</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">],</span>
+<a id="__codelineno-28-12" name="__codelineno-28-12" href="#__codelineno-28-12"></a>    <span class="n">cost</span><span class="o">=</span><span class="n">CostInfo</span><span class="p">(</span><span class="n">per_task</span><span class="o">=</span><span class="mf">2.0</span><span class="p">),</span>
+<a id="__codelineno-28-13" name="__codelineno-28-13" href="#__codelineno-28-13"></a>    <span class="n">latency_p99_ms</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span>
+<a id="__codelineno-28-14" name="__codelineno-28-14" href="#__codelineno-28-14"></a>    <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;http://my-agent:8080&quot;</span><span class="p">,</span>
+<a id="__codelineno-28-15" name="__codelineno-28-15" href="#__codelineno-28-15"></a><span class="p">)</span>
+<a id="__codelineno-28-16" name="__codelineno-28-16" href="#__codelineno-28-16"></a><span class="n">signed</span> <span class="o">=</span> <span class="n">sign_agent_card</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">agent_priv</span><span class="p">)</span>
+<a id="__codelineno-28-17" name="__codelineno-28-17" href="#__codelineno-28-17"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">signed</span><span class="p">)</span>
+<a id="__codelineno-28-18" name="__codelineno-28-18" href="#__codelineno-28-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># {&#39;status&#39;: &#39;registered&#39;, &#39;did&#39;: &#39;did:key:z6Mk...&#39;}</span>
+<a id="__codelineno-28-19" name="__codelineno-28-19" href="#__codelineno-28-19"></a>
+<a id="__codelineno-28-20" name="__codelineno-28-20" href="#__codelineno-28-20"></a><span class="c1"># Discover agents for delegation</span>
+<a id="__codelineno-28-21" name="__codelineno-28-21" href="#__codelineno-28-21"></a><span class="n">candidates</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+<a id="__codelineno-28-22" name="__codelineno-28-22" href="#__codelineno-28-22"></a>    <span class="n">capability</span><span class="o">=</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span>
+<a id="__codelineno-28-23" name="__codelineno-28-23" href="#__codelineno-28-23"></a>    <span class="n">max_cost</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+<a id="__codelineno-28-24" name="__codelineno-28-24" href="#__codelineno-28-24"></a>    <span class="n">max_latency_ms</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span>
+<a id="__codelineno-28-25" name="__codelineno-28-25" href="#__codelineno-28-25"></a><span class="p">)</span>
+<a id="__codelineno-28-26" name="__codelineno-28-26" href="#__codelineno-28-26"></a><span class="k">if</span> <span class="n">candidates</span><span class="p">:</span>
+<a id="__codelineno-28-27" name="__codelineno-28-27" href="#__codelineno-28-27"></a>    <span class="n">best</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># cheapest and fastest</span>
+<a id="__codelineno-28-28" name="__codelineno-28-28" href="#__codelineno-28-28"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Best agent: </span><span class="si">{</span><span class="n">best</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">best</span><span class="o">.</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<hr />
+<h2 id="full-integration-example">Full integration example</h2>
+<p>A complete example showing registry-driven agent discovery and delegation.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># registry_integration.py</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>    <span class="n">Agent</span><span class="p">,</span> <span class="n">AgentCard</span><span class="p">,</span> <span class="n">CostInfo</span><span class="p">,</span>
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>    <span class="n">sign_agent_card</span><span class="p">,</span> <span class="n">verify_agent_card</span><span class="p">,</span> <span class="n">parse_did</span><span class="p">,</span>
+<a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a>    <span class="n">RegistryClient</span><span class="p">,</span> <span class="n">TaskEnvelope</span><span class="p">,</span> <span class="n">Intent</span><span class="p">,</span> <span class="n">Constraints</span><span class="p">,</span>
+<a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>    <span class="n">generate_keypair</span><span class="p">,</span>
+<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a><span class="p">)</span>
+<a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a>
+<a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a><span class="n">REGISTRY_URL</span> <span class="o">=</span> <span class="s2">&quot;http://localhost:8000&quot;</span>
+<a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a>
+<a id="__codelineno-29-13" name="__codelineno-29-13" href="#__codelineno-29-13"></a><span class="c1"># ── Publisher agent (runs at startup) ─────────────────────────────────────────</span>
+<a id="__codelineno-29-14" name="__codelineno-29-14" href="#__codelineno-29-14"></a>
+<a id="__codelineno-29-15" name="__codelineno-29-15" href="#__codelineno-29-15"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">publish_agents</span><span class="p">():</span>
+<a id="__codelineno-29-16" name="__codelineno-29-16" href="#__codelineno-29-16"></a>    <span class="n">client</span> <span class="o">=</span> <span class="n">RegistryClient</span><span class="p">(</span><span class="n">REGISTRY_URL</span><span class="p">)</span>
+<a id="__codelineno-29-17" name="__codelineno-29-17" href="#__codelineno-29-17"></a>    <span class="n">agents_config</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-29-18" name="__codelineno-29-18" href="#__codelineno-29-18"></a>        <span class="p">(</span><span class="s2">&quot;fast-summarizer&quot;</span><span class="p">,</span>  <span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">],</span>        <span class="mf">1.0</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span>  <span class="s2">&quot;http://fast:8080&quot;</span><span class="p">),</span>
+<a id="__codelineno-29-19" name="__codelineno-29-19" href="#__codelineno-29-19"></a>        <span class="p">(</span><span class="s2">&quot;good-summarizer&quot;</span><span class="p">,</span>  <span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">],</span>        <span class="mf">2.5</span><span class="p">,</span> <span class="mi">1500</span><span class="p">,</span> <span class="s2">&quot;http://good:8081&quot;</span><span class="p">),</span>
+<a id="__codelineno-29-20" name="__codelineno-29-20" href="#__codelineno-29-20"></a>        <span class="p">(</span><span class="s2">&quot;multi-tool-agent&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span> <span class="s2">&quot;search&quot;</span><span class="p">],</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="s2">&quot;http://multi:8082&quot;</span><span class="p">),</span>
+<a id="__codelineno-29-21" name="__codelineno-29-21" href="#__codelineno-29-21"></a>    <span class="p">]</span>
+<a id="__codelineno-29-22" name="__codelineno-29-22" href="#__codelineno-29-22"></a>
+<a id="__codelineno-29-23" name="__codelineno-29-23" href="#__codelineno-29-23"></a>    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">caps</span><span class="p">,</span> <span class="n">cost</span><span class="p">,</span> <span class="n">latency</span><span class="p">,</span> <span class="n">endpoint</span> <span class="ow">in</span> <span class="n">agents_config</span><span class="p">:</span>
+<a id="__codelineno-29-24" name="__codelineno-29-24" href="#__codelineno-29-24"></a>        <span class="n">agent_priv</span><span class="p">,</span> <span class="n">agent_pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
+<a id="__codelineno-29-25" name="__codelineno-29-25" href="#__codelineno-29-25"></a>        <span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">private_key</span><span class="o">=</span><span class="n">agent_priv</span><span class="p">)</span>
+<a id="__codelineno-29-26" name="__codelineno-29-26" href="#__codelineno-29-26"></a>        <span class="n">card</span> <span class="o">=</span> <span class="n">AgentCard</span><span class="p">(</span>
+<a id="__codelineno-29-27" name="__codelineno-29-27" href="#__codelineno-29-27"></a>            <span class="n">did</span><span class="o">=</span><span class="n">agent</span><span class="o">.</span><span class="n">did</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">capabilities</span><span class="o">=</span><span class="n">caps</span><span class="p">,</span>
+<a id="__codelineno-29-28" name="__codelineno-29-28" href="#__codelineno-29-28"></a>            <span class="n">cost</span><span class="o">=</span><span class="n">CostInfo</span><span class="p">(</span><span class="n">per_task</span><span class="o">=</span><span class="n">cost</span><span class="p">),</span> <span class="n">latency_p99_ms</span><span class="o">=</span><span class="n">latency</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint</span><span class="p">,</span>
+<a id="__codelineno-29-29" name="__codelineno-29-29" href="#__codelineno-29-29"></a>        <span class="p">)</span>
+<a id="__codelineno-29-30" name="__codelineno-29-30" href="#__codelineno-29-30"></a>        <span class="n">signed</span> <span class="o">=</span> <span class="n">sign_agent_card</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">agent_priv</span><span class="p">)</span>
+<a id="__codelineno-29-31" name="__codelineno-29-31" href="#__codelineno-29-31"></a>        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">signed</span><span class="p">)</span>
+<a id="__codelineno-29-32" name="__codelineno-29-32" href="#__codelineno-29-32"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Published: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> (cost=</span><span class="si">{</span><span class="n">cost</span><span class="si">}</span><span class="s2">, latency=</span><span class="si">{</span><span class="n">latency</span><span class="si">}</span><span class="s2">ms)&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-33" name="__codelineno-29-33" href="#__codelineno-29-33"></a>
+<a id="__codelineno-29-34" name="__codelineno-29-34" href="#__codelineno-29-34"></a>
+<a id="__codelineno-29-35" name="__codelineno-29-35" href="#__codelineno-29-35"></a><span class="c1"># ── Orchestrator that discovers and delegates ──────────────────────────────────</span>
+<a id="__codelineno-29-36" name="__codelineno-29-36" href="#__codelineno-29-36"></a>
+<a id="__codelineno-29-37" name="__codelineno-29-37" href="#__codelineno-29-37"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">orchestrate</span><span class="p">():</span>
+<a id="__codelineno-29-38" name="__codelineno-29-38" href="#__codelineno-29-38"></a>    <span class="n">client</span> <span class="o">=</span> <span class="n">RegistryClient</span><span class="p">(</span><span class="n">REGISTRY_URL</span><span class="p">)</span>
+<a id="__codelineno-29-39" name="__codelineno-29-39" href="#__codelineno-29-39"></a>
+<a id="__codelineno-29-40" name="__codelineno-29-40" href="#__codelineno-29-40"></a>    <span class="c1"># Find the best summarizer (cheapest, under 1 second latency)</span>
+<a id="__codelineno-29-41" name="__codelineno-29-41" href="#__codelineno-29-41"></a>    <span class="n">candidates</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">search</span><span class="p">(</span>
+<a id="__codelineno-29-42" name="__codelineno-29-42" href="#__codelineno-29-42"></a>        <span class="n">capability</span><span class="o">=</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span>
+<a id="__codelineno-29-43" name="__codelineno-29-43" href="#__codelineno-29-43"></a>        <span class="n">max_cost</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
+<a id="__codelineno-29-44" name="__codelineno-29-44" href="#__codelineno-29-44"></a>        <span class="n">max_latency_ms</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<a id="__codelineno-29-45" name="__codelineno-29-45" href="#__codelineno-29-45"></a>    <span class="p">)</span>
+<a id="__codelineno-29-46" name="__codelineno-29-46" href="#__codelineno-29-46"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span><span class="si">}</span><span class="s2"> candidate(s)&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-47" name="__codelineno-29-47" href="#__codelineno-29-47"></a>    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+<a id="__codelineno-29-48" name="__codelineno-29-48" href="#__codelineno-29-48"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: cost=</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">cost</span><span class="o">.</span><span class="n">per_task</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">c</span><span class="o">.</span><span class="n">cost</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="si">}</span><span class="s2">, latency=</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="n">latency_p99_ms</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-49" name="__codelineno-29-49" href="#__codelineno-29-49"></a>
+<a id="__codelineno-29-50" name="__codelineno-29-50" href="#__codelineno-29-50"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">candidates</span><span class="p">:</span>
+<a id="__codelineno-29-51" name="__codelineno-29-51" href="#__codelineno-29-51"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No suitable agent found!&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-52" name="__codelineno-29-52" href="#__codelineno-29-52"></a>        <span class="k">return</span>
+<a id="__codelineno-29-53" name="__codelineno-29-53" href="#__codelineno-29-53"></a>
+<a id="__codelineno-29-54" name="__codelineno-29-54" href="#__codelineno-29-54"></a>    <span class="n">best</span> <span class="o">=</span> <span class="n">candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<a id="__codelineno-29-55" name="__codelineno-29-55" href="#__codelineno-29-55"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected: </span><span class="si">{</span><span class="n">best</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">best</span><span class="o">.</span><span class="n">endpoint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-56" name="__codelineno-29-56" href="#__codelineno-29-56"></a>
+<a id="__codelineno-29-57" name="__codelineno-29-57" href="#__codelineno-29-57"></a>    <span class="c1"># Verify the card&#39;s signature before trusting it</span>
+<a id="__codelineno-29-58" name="__codelineno-29-58" href="#__codelineno-29-58"></a>    <span class="n">pub_key</span> <span class="o">=</span> <span class="n">parse_did</span><span class="p">(</span><span class="n">best</span><span class="o">.</span><span class="n">did</span><span class="p">)</span>
+<a id="__codelineno-29-59" name="__codelineno-29-59" href="#__codelineno-29-59"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">verify_agent_card</span><span class="p">(</span><span class="n">best</span><span class="p">,</span> <span class="n">pub_key</span><span class="p">):</span>
+<a id="__codelineno-29-60" name="__codelineno-29-60" href="#__codelineno-29-60"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING: Card signature invalid!&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-61" name="__codelineno-29-61" href="#__codelineno-29-61"></a>        <span class="k">return</span>
+<a id="__codelineno-29-62" name="__codelineno-29-62" href="#__codelineno-29-62"></a>
+<a id="__codelineno-29-63" name="__codelineno-29-63" href="#__codelineno-29-63"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Card signature verified.&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-64" name="__codelineno-29-64" href="#__codelineno-29-64"></a>
+<a id="__codelineno-29-65" name="__codelineno-29-65" href="#__codelineno-29-65"></a>    <span class="c1"># Create orchestrator identity and delegate</span>
+<a id="__codelineno-29-66" name="__codelineno-29-66" href="#__codelineno-29-66"></a>    <span class="n">orchestrator</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;orchestrator&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-67" name="__codelineno-29-67" href="#__codelineno-29-67"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">orchestrator</span><span class="o">.</span><span class="n">delegate</span><span class="p">(</span>
+<a id="__codelineno-29-68" name="__codelineno-29-68" href="#__codelineno-29-68"></a>        <span class="n">task</span><span class="o">=</span><span class="n">TaskEnvelope</span><span class="p">(</span>
+<a id="__codelineno-29-69" name="__codelineno-29-69" href="#__codelineno-29-69"></a>            <span class="n">intent</span><span class="o">=</span><span class="n">Intent</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;Hello, world!&quot;</span><span class="p">}),</span>
+<a id="__codelineno-29-70" name="__codelineno-29-70" href="#__codelineno-29-70"></a>            <span class="n">constraints</span><span class="o">=</span><span class="n">Constraints</span><span class="p">(</span><span class="n">budget_credits</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">max_delegations</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<a id="__codelineno-29-71" name="__codelineno-29-71" href="#__codelineno-29-71"></a>        <span class="p">),</span>
+<a id="__codelineno-29-72" name="__codelineno-29-72" href="#__codelineno-29-72"></a>        <span class="n">target_did</span><span class="o">=</span><span class="n">best</span><span class="o">.</span><span class="n">did</span><span class="p">,</span>
+<a id="__codelineno-29-73" name="__codelineno-29-73" href="#__codelineno-29-73"></a>        <span class="n">endpoint</span><span class="o">=</span><span class="n">best</span><span class="o">.</span><span class="n">endpoint</span><span class="p">,</span>
+<a id="__codelineno-29-74" name="__codelineno-29-74" href="#__codelineno-29-74"></a>        <span class="n">scope</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoke:llm&quot;</span><span class="p">],</span>
+<a id="__codelineno-29-75" name="__codelineno-29-75" href="#__codelineno-29-75"></a>    <span class="p">)</span>
+<a id="__codelineno-29-76" name="__codelineno-29-76" href="#__codelineno-29-76"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Result: </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-77" name="__codelineno-29-77" href="#__codelineno-29-77"></a>
+<a id="__codelineno-29-78" name="__codelineno-29-78" href="#__codelineno-29-78"></a>
+<a id="__codelineno-29-79" name="__codelineno-29-79" href="#__codelineno-29-79"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<a id="__codelineno-29-80" name="__codelineno-29-80" href="#__codelineno-29-80"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=== Publishing agents ===&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-81" name="__codelineno-29-81" href="#__codelineno-29-81"></a>    <span class="k">await</span> <span class="n">publish_agents</span><span class="p">()</span>
+<a id="__codelineno-29-82" name="__codelineno-29-82" href="#__codelineno-29-82"></a>
+<a id="__codelineno-29-83" name="__codelineno-29-83" href="#__codelineno-29-83"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">=== Orchestrating via registry ===&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-84" name="__codelineno-29-84" href="#__codelineno-29-84"></a>    <span class="k">await</span> <span class="n">orchestrate</span><span class="p">()</span>
+<a id="__codelineno-29-85" name="__codelineno-29-85" href="#__codelineno-29-85"></a>
+<a id="__codelineno-29-86" name="__codelineno-29-86" href="#__codelineno-29-86"></a>
+<a id="__codelineno-29-87" name="__codelineno-29-87" href="#__codelineno-29-87"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

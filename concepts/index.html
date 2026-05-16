@@ -1,0 +1,3667 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Cryptographic identity and authorization for AI agents">
+      
+      
+      
+        <link rel="canonical" href="https://docs.agentpassport.fyi/concepts/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../guides/python-quickstart/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Concepts - agentpassport</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#agentpassport-core-concepts" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="agentpassport" class="md-header__button md-logo" aria-label="agentpassport" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            agentpassport
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Concepts
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ceavinrufus/agentpassport" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Concepts
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../guides/python-quickstart/" class="md-tabs__link">
+          
+  
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../python/api-reference/" class="md-tabs__link">
+          
+  
+  
+  Python API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../typescript/api-reference/" class="md-tabs__link">
+          
+  
+  
+  TypeScript API
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="agentpassport" class="md-nav__button md-logo" aria-label="agentpassport" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    agentpassport
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ceavinrufus/agentpassport" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-is-agentpassport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What is AgentPassport?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-decentralized-identifiers-dids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Decentralized Identifiers (DIDs)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Decentralized Identifiers (DIDs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encoding-a-public-key-into-a-did" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Encoding a public key into a DID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-base58btc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why base58btc?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deriving-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deriving identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ascii-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-ed25519-keypairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Ed25519 Keypairs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Ed25519 Keypairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-ed25519" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Ed25519?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-agentcard-agent-identity-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. AgentCard — Agent Identity Document
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. AgentCard — Agent Identity Document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canonical-payload-and-signing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical payload and signing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-taskenvelope-the-unit-of-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. TaskEnvelope — The Unit of Work
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. TaskEnvelope — The Unit of Work">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-tasks-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How tasks flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-delegation-and-the-auth-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Delegation and the Auth Chain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Delegation and the Auth Chain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-solution-chained-jwts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Solution: Chained JWTs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ascii-sequence-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII sequence diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scope-narrowing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope narrowing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-jwt-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. JWT Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. JWT Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Header
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payload-delegation-claims" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Payload (delegation claims)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key sorting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wire-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wire example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-scope-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Scope Semantics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Scope Semantics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wildcard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wildcard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matching-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matching rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-scopes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple scopes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declaring-required-scopes-on-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declaring required scopes on capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-trust-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Trust Middleware
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Trust Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scopeerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ScopeError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-required-scope-always-allowed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No required scope = always allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-revocation-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Revocation Mechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Revocation Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-revocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why revocation?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revocationregistry-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RevocationRegistry implementations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ascii-revocation-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII revocation sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revocation-and-ttl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revocation and TTL
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-task-lifecycle-state-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Task Lifecycle State Machine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Task Lifecycle State Machine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#allowed-transitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Allowed transitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ascii-state-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII state diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#invalidtransitionerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InvalidTransitionError
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-budget-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Budget Tracking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Budget Tracking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#credits-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Credits model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread safety
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#budgetexceedederror" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BudgetExceededError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#budget-in-subtask-chains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Budget in subtask chains
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-observability-and-event-sinks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Observability and Event Sinks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Observability and Event Sinks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eventemitter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EventEmitter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observabilityevent-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ObservabilityEvent fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-sinks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in sinks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#events-emitted-by-agenthandle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Events emitted by Agent.handle()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-transport-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Transport Layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Transport Layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#httptransport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HttpTransport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stdiotransport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StdioTransport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialization-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serialization format
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Registry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-adapters-mcp-rest-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Adapters — MCP, REST, CLI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="16. Adapters — MCP, REST, CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcpadapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        McpAdapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restadapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RestAdapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cliadapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CliAdapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-multi-sdk-wire-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. Multi-SDK Wire Compatibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="17. Multi-SDK Wire Compatibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compatibility-guarantees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility guarantees
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-cross-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing cross-SDK
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/python-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/typescript-quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeScript Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/cross-sdk/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cross-SDK Compatibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/ownership-binding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ownership Binding
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/mcp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MCP Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../guides/a2a/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A2A Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Python API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python/api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python/adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Adapters
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../python/registry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TypeScript API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    TypeScript API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../typescript/api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-what-is-agentpassport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. What is AgentPassport?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-decentralized-identifiers-dids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Decentralized Identifiers (DIDs)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Decentralized Identifiers (DIDs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#encoding-a-public-key-into-a-did" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Encoding a public key into a DID
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-base58btc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why base58btc?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#deriving-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deriving identity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ascii-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-ed25519-keypairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Ed25519 Keypairs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Ed25519 Keypairs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-ed25519" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Ed25519?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-layout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key layout
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-agentcard-agent-identity-document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. AgentCard — Agent Identity Document
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. AgentCard — Agent Identity Document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#canonical-payload-and-signing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Canonical payload and signing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-taskenvelope-the-unit-of-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. TaskEnvelope — The Unit of Work
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. TaskEnvelope — The Unit of Work">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fields_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-tasks-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How tasks flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-delegation-and-the-auth-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Delegation and the Auth Chain
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Delegation and the Auth Chain">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-solution-chained-jwts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Solution: Chained JWTs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verification-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ascii-sequence-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII sequence diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scope-narrowing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope narrowing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-jwt-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. JWT Structure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. JWT Structure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Header
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payload-delegation-claims" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Payload (delegation claims)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signature
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-sorting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key sorting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wire-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wire example
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-scope-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Scope Semantics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Scope Semantics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wildcard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wildcard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matching-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matching rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multiple-scopes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multiple scopes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declaring-required-scopes-on-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Declaring required scopes on capabilities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-trust-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Trust Middleware
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Trust Middleware">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scopeerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ScopeError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-required-scope-always-allowed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No required scope = always allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-revocation-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Revocation Mechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Revocation Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-revocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why revocation?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-it-works_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revocationregistry-implementations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RevocationRegistry implementations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ascii-revocation-sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII revocation sequence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#revocation-and-ttl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Revocation and TTL
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-task-lifecycle-state-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Task Lifecycle State Machine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Task Lifecycle State Machine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#allowed-transitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Allowed transitions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ascii-state-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ASCII state diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#invalidtransitionerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InvalidTransitionError
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-budget-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Budget Tracking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Budget Tracking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#credits-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Credits model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thread-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Thread safety
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#budgetexceedederror" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BudgetExceededError
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#budget-in-subtask-chains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Budget in subtask chains
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-observability-and-event-sinks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Observability and Event Sinks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="13. Observability and Event Sinks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eventemitter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EventEmitter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observabilityevent-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ObservabilityEvent fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-sinks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in sinks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#events-emitted-by-agenthandle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Events emitted by Agent.handle()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-transport-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Transport Layer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Transport Layer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#httptransport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HttpTransport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stdiotransport" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StdioTransport
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serialization-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serialization format
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. Registry
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#16-adapters-mcp-rest-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        16. Adapters — MCP, REST, CLI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="16. Adapters — MCP, REST, CLI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcpadapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        McpAdapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restadapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RestAdapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cliadapter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CliAdapter
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#17-multi-sdk-wire-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        17. Multi-SDK Wire Compatibility
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="17. Multi-SDK Wire Compatibility">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#compatibility-guarantees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Compatibility guarantees
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-cross-sdk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing cross-SDK
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="agentpassport-core-concepts">AgentPassport — Core Concepts</h1>
+<p>This document explains the foundational ideas behind AgentPassport: what it does, why each piece exists, and how the pieces fit together. Read this before the API reference.</p>
+<hr />
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#1-what-is-agentpassport">What is AgentPassport?</a></li>
+<li><a href="#2-decentralized-identifiers-dids">Decentralized Identifiers (DIDs)</a></li>
+<li><a href="#3-ed25519-keypairs">Ed25519 Keypairs</a></li>
+<li><a href="#4-agentcard--agent-identity-document">AgentCard — Agent Identity Document</a></li>
+<li><a href="#5-taskenvelope--the-unit-of-work">TaskEnvelope — The Unit of Work</a></li>
+<li><a href="#6-delegation-and-the-auth-chain">Delegation and the Auth Chain</a></li>
+<li><a href="#7-jwt-structure">JWT Structure</a></li>
+<li><a href="#8-scope-semantics">Scope Semantics</a></li>
+<li><a href="#9-trust-middleware">Trust Middleware</a></li>
+<li><a href="#10-revocation-mechanics">Revocation Mechanics</a></li>
+<li><a href="#11-task-lifecycle-state-machine">Task Lifecycle State Machine</a></li>
+<li><a href="#12-budget-tracking">Budget Tracking</a></li>
+<li><a href="#13-observability-and-event-sinks">Observability and Event Sinks</a></li>
+<li><a href="#14-transport-layer">Transport Layer</a></li>
+<li><a href="#15-registry">Registry</a></li>
+<li><a href="#16-adapters--mcp-rest-cli">Adapters — MCP, REST, CLI</a></li>
+<li><a href="#17-multi-sdk-wire-compatibility">Multi-SDK Wire Compatibility</a></li>
+</ol>
+<hr />
+<h2 id="1-what-is-agentpassport">1. What is AgentPassport?</h2>
+<p>AgentPassport is a protocol and SDK for giving AI agents <strong>cryptographically verifiable identities</strong> and for expressing <strong>who authorized whom to do what</strong> as tasks flow between agents.</p>
+<p>Without AgentPassport, when Agent B receives a task from Agent A saying "please read the customer database," there is no way for B to verify:
+- That A is who it claims to be
+- That A was itself authorized to delegate this task
+- That the permission hasn't been revoked</p>
+<p>AgentPassport solves this with three interlocking mechanisms:</p>
+<ol>
+<li><strong>DID-based identity</strong> — Every agent has a globally unique, self-certifying identifier derived from its public key. No central authority needed.</li>
+<li><strong>JWT delegation chains</strong> — Each time a task is delegated, the delegating agent cryptographically signs a token that records who it is, who it's delegating to, what scopes are granted, and when it expires.</li>
+<li><strong>Pre-execution scope checks</strong> — Before any capability handler runs, the receiving agent verifies the full chain of custody and checks that the required permissions are present.</li>
+</ol>
+<hr />
+<h2 id="2-decentralized-identifiers-dids">2. Decentralized Identifiers (DIDs)</h2>
+<h3 id="format">Format</h3>
+<p>AgentPassport uses the <code>did:key</code> DID method defined by the W3C. A DID looks like:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>did:key:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK
+</code></pre></div>
+<p>Breaking it down:
+- <code>did:</code> — the DID scheme prefix
+- <code>key:</code> — the DID method (self-certifying: the key <em>is</em> the identifier)
+- <code>z</code> — the multibase prefix for base58btc encoding
+- The rest — a base58btc-encoded blob that encodes both the key type and the key material</p>
+<h3 id="encoding-a-public-key-into-a-did">Encoding a public key into a DID</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Ed25519 public key (32 bytes)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    → Prepend multicodec prefix 0xed 0x01 (2 bytes) → 34 bytes total
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    → Base58btc encode
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    → Prepend &quot;z&quot; (multibase prefix for base58btc)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    → Prepend &quot;did:key:&quot;
+</code></pre></div>
+<p>The multicodec prefix <code>0xed01</code> is a varint-encoded identifier that means "Ed25519 public key" in the multicodec registry. This prefix allows future support for other key types without changing the DID method.</p>
+<h3 id="why-base58btc">Why base58btc?</h3>
+<p>Base58btc (the Bitcoin/IPFS variant) omits characters that are visually ambiguous (<code>0</code>, <code>O</code>, <code>I</code>, <code>l</code>) and avoids URL-unsafe characters. It's URL-safe and human-readable enough to appear in logs.</p>
+<h3 id="deriving-identity">Deriving identity</h3>
+<p>Because the DID is derived from the public key, <strong>generating a keypair is the same as creating an identity</strong>. There's no registration step and no central authority. Any agent that holds the private key corresponding to the DID is definitionally that agent.</p>
+<h3 id="ascii-diagram">ASCII diagram</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>generate_keypair()
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    ↓
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  private key (32-byte Ed25519 seed)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  public key  (32-byte Ed25519 verify key)
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    ↓
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>did_from_public_key(public_key)
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    ↓
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  [0xED, 0x01] + public_key bytes
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    ↓ base58btc encode
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  z6Mk...
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    ↓
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  &quot;did:key:z6Mk...&quot;
+</code></pre></div>
+<hr />
+<h2 id="3-ed25519-keypairs">3. Ed25519 Keypairs</h2>
+<p>AgentPassport uses <strong>Ed25519</strong> (Edwards-curve Digital Signature Algorithm) for all signing operations.</p>
+<h3 id="why-ed25519">Why Ed25519?</h3>
+<ul>
+<li><strong>Small keys</strong>: 32-byte private keys, 32-byte public keys, 64-byte signatures</li>
+<li><strong>Fast</strong>: signing and verification are faster than RSA-2048 and comparable to ECDSA P-256</li>
+<li><strong>Secure</strong>: resists side-channel attacks; deterministic signatures avoid random-number bugs</li>
+<li><strong>Standardized</strong>: used in TLS 1.3, SSH, Signal, and the W3C DID ecosystem</li>
+</ul>
+<h3 id="key-layout">Key layout</h3>
+<p>AgentPassport represents a keypair as two separate byte strings:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Length</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>private_key</code></td>
+<td>64 bytes</td>
+<td>First 32 bytes: Ed25519 seed. Last 32 bytes: public key bytes (mirror of public_key).</td>
+</tr>
+<tr>
+<td><code>public_key</code></td>
+<td>32 bytes</td>
+<td>Ed25519 verify key</td>
+</tr>
+</tbody>
+</table>
+<p>The 64-byte layout matches PyNaCl's convention and is mirrored in the TypeScript SDK for wire compatibility.</p>
+<p>When signing, only the first 32 bytes of <code>private_key</code> (the seed) are passed to the signing function. The seed deterministically derives the full Ed25519 scalar.</p>
+<hr />
+<h2 id="4-agentcard-agent-identity-document">4. AgentCard — Agent Identity Document</h2>
+<p>An <code>AgentCard</code> is a signed, shareable document describing an agent: what it can do, where it lives, and what it costs.</p>
+<h3 id="fields">Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>did</code></td>
+<td><code>str</code></td>
+<td>Yes</td>
+<td>The agent's DID, derived from its public key</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td><code>str</code></td>
+<td>Yes</td>
+<td>Human-readable agent name</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td><code>str</code></td>
+<td>No (default <code>"0.1.0"</code>)</td>
+<td>Agent version string</td>
+</tr>
+<tr>
+<td><code>capabilities</code></td>
+<td><code>list[str]</code></td>
+<td>Yes</td>
+<td>List of capability names the agent handles</td>
+</tr>
+<tr>
+<td><code>input_schema</code></td>
+<td><code>dict</code></td>
+<td>No</td>
+<td>JSON Schema for task input params</td>
+</tr>
+<tr>
+<td><code>output_schema</code></td>
+<td><code>dict</code></td>
+<td>No</td>
+<td>JSON Schema for task output</td>
+</tr>
+<tr>
+<td><code>cost</code></td>
+<td><code>CostInfo</code></td>
+<td>No</td>
+<td>Pricing metadata</td>
+</tr>
+<tr>
+<td><code>latency_p99_ms</code></td>
+<td><code>int \| None</code></td>
+<td>No</td>
+<td>99th-percentile latency hint</td>
+</tr>
+<tr>
+<td><code>trust_requirements</code></td>
+<td><code>list[str]</code></td>
+<td>No</td>
+<td>Scope strings the agent requires callers to hold</td>
+</tr>
+<tr>
+<td><code>transports</code></td>
+<td><code>list[str]</code></td>
+<td>No (default <code>["http"]</code>)</td>
+<td>Supported transport protocols</td>
+</tr>
+<tr>
+<td><code>endpoint</code></td>
+<td><code>str</code></td>
+<td>Yes</td>
+<td>URL where the agent accepts tasks</td>
+</tr>
+<tr>
+<td><code>signature</code></td>
+<td><code>str \| None</code></td>
+<td>No</td>
+<td>Hex-encoded Ed25519 signature over <code>canonical_payload()</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="canonical-payload-and-signing">Canonical payload and signing</h3>
+<p>The signature covers a deterministic SHA-256 hash of a compact JSON object containing four fields: <code>name</code>, <code>did</code>, <code>capabilities</code> (sorted), and <code>endpoint</code>. Mutable metadata like <code>cost</code>, <code>version</code>, and <code>latency</code> are intentionally excluded so they can be updated without invalidating the identity claim.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>canonical_payload() =
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  SHA-256(
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    JSON.stringify(
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>      { capabilities: sorted(capabilities), did, endpoint, name },
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>      { sort_keys: true, separators: (&#39;,&#39;, &#39;:&#39;) }
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    )
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  )
+</code></pre></div>
+<p>This means two parties can independently agree on the binding between an agent's name, its DID, its endpoint, and its capabilities — without trusting the transmission medium.</p>
+<hr />
+<h2 id="5-taskenvelope-the-unit-of-work">5. TaskEnvelope — The Unit of Work</h2>
+<p>A <code>TaskEnvelope</code> is the container passed between agents. It carries the intent, constraints, authorization chain, and lifecycle state.</p>
+<h3 id="fields_1">Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>version</code></td>
+<td><code>str</code></td>
+<td><code>"1.0"</code></td>
+<td>Protocol version</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td><code>str</code></td>
+<td>auto UUID</td>
+<td>Unique task identifier (e.g. <code>task_a3f9...</code>)</td>
+</tr>
+<tr>
+<td><code>parent_id</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>ID of parent task (for subtask chains)</td>
+</tr>
+<tr>
+<td><code>intent</code></td>
+<td><code>Intent</code></td>
+<td>required</td>
+<td>What to do and with what parameters</td>
+</tr>
+<tr>
+<td><code>constraints</code></td>
+<td><code>Constraints</code></td>
+<td>default</td>
+<td>Budget, deadline, and delegation limits</td>
+</tr>
+<tr>
+<td><code>auth_chain</code></td>
+<td><code>list[str]</code></td>
+<td><code>[]</code></td>
+<td>Ordered list of delegation JWT strings</td>
+</tr>
+<tr>
+<td><code>result_schema</code></td>
+<td><code>dict \| None</code></td>
+<td><code>None</code></td>
+<td>Expected output JSON Schema</td>
+</tr>
+<tr>
+<td><code>trace_id</code></td>
+<td><code>str</code></td>
+<td>auto UUID</td>
+<td>Trace identifier for distributed tracing</td>
+</tr>
+<tr>
+<td><code>transport</code></td>
+<td><code>str</code></td>
+<td><code>"http"</code></td>
+<td>Transport hint</td>
+</tr>
+<tr>
+<td><code>state</code></td>
+<td><code>TaskState</code></td>
+<td><code>CREATED</code></td>
+<td>Current lifecycle state</td>
+</tr>
+</tbody>
+</table>
+<h3 id="intent">Intent</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Intent</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>           <span class="c1"># The capability name to invoke</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span>        <span class="c1"># Parameters passed to the handler</span>
+</code></pre></div>
+<h3 id="constraints">Constraints</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Constraints</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">budget_credits</span><span class="p">:</span> <span class="nb">float</span>       <span class="c1"># Total credit budget (default 100.0, must be &gt;= 0)</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">deadline_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span>     <span class="c1"># Deadline timestamp in milliseconds since epoch</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">max_delegations</span><span class="p">:</span> <span class="nb">int</span>        <span class="c1"># Maximum delegation depth remaining (default 10)</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">allowed_capabilities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>   <span class="c1"># Whitelist of allowed capability names</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">denied_capabilities</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>    <span class="c1"># Blacklist of denied capability names</span>
+</code></pre></div>
+<p>The <code>max_delegations</code> field decrements by 1 each time a subtask is created via <code>create_subtask()</code>. When it reaches 0, further delegation is rejected. This prevents runaway delegation chains.</p>
+<h3 id="how-tasks-flow">How tasks flow</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Orchestrator creates TaskEnvelope
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    → Orchestrator signs delegation JWT, appends to auth_chain
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    → Orchestrator sends task to Agent A
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>        → Agent A verifies auth_chain
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        → Agent A runs capability handler
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>        → (Optional) Agent A creates subtask with reduced budget
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>            → Agent A signs delegation JWT, appends to auth_chain
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>            → Agent A sends subtask to Agent B
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>                → Agent B verifies auth_chain
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>                → Agent B runs capability handler
+</code></pre></div>
+<hr />
+<h2 id="6-delegation-and-the-auth-chain">6. Delegation and the Auth Chain</h2>
+<h3 id="the-problem">The Problem</h3>
+<p>When Agent C receives a task that was originally created by User U and has passed through Agents A and B, how does C know:
+- That U authorized A to start this workflow?
+- That A authorized B to delegate further?
+- That B authorized C for the specific capability being invoked?</p>
+<h3 id="the-solution-chained-jwts">The Solution: Chained JWTs</h3>
+<p>Each delegation hop produces one JWT. The <code>auth_chain</code> field of a <code>TaskEnvelope</code> is a list of these JWTs in order:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>auth_chain = [
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    JWT(iss=U, sub=A, scope=[&quot;*&quot;]),         # U delegated to A
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    JWT(iss=A, sub=B, scope=[&quot;read:db&quot;]),   # A delegated to B (narrowed scope)
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    JWT(iss=B, sub=C, scope=[&quot;read:db&quot;]),   # B delegated to C
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>]
+</code></pre></div>
+<h3 id="verification-rules">Verification rules</h3>
+<p><code>verify_auth_chain()</code> checks every token in the chain:</p>
+<ol>
+<li><strong>Structural validity</strong>: The JWT must have exactly 3 parts (header.payload.signature).</li>
+<li><strong>Algorithm check</strong>: The header must declare <code>alg: EdDSA</code>.</li>
+<li><strong>Issuer resolution</strong>: The <code>iss</code> claim must be in <code>known_public_keys</code>.</li>
+<li><strong>Cryptographic verification</strong>: The signature must be valid under the issuer's public key.</li>
+<li><strong>Temporal validity</strong>: <code>iat &lt;= now &lt;= exp</code>.</li>
+<li><strong>JTI presence</strong>: The <code>jti</code> claim must be non-empty (required for revocation).</li>
+<li><strong>Revocation check</strong>: If a <code>RevocationRegistry</code> is provided, <code>jti</code> must not be revoked.</li>
+<li><strong>Subject check</strong>: The last token's <code>sub</code> must equal <code>expected_subject</code> (the receiving agent's DID).</li>
+</ol>
+<h3 id="ascii-sequence-diagram">ASCII sequence diagram</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>User (U)                Agent A               Agent B               Agent C
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  |                        |                     |                     |
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  |-- creates task -------&gt;|                     |                     |
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>  |   auth_chain=[]        |                     |                     |
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>  |                        |                     |                     |
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>  |                        |-- sign_delegation--&gt;|                     |
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  |                        |   iss=U.did         |                     |
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  |                        |   sub=A.did         |                     |
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>  |                        |   scope=[&quot;*&quot;]       |                     |
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>  |                        |                     |                     |
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>  |                        |-- send task -------&gt;|                     |
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>  |                        |   auth_chain=[JWT1] |                     |
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>  |                        |                     |                     |
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>  |                        |                     |-- verify chain --   |
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>  |                        |                     |   JWT1 ok           |
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>  |                        |                     |                     |
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>  |                        |                     |-- sign_delegation--&gt;|
+<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>  |                        |                     |   iss=A.did         |
+<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>  |                        |                     |   sub=B.did         |
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>  |                        |                     |   scope=[&quot;read:db&quot;] |
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>  |                        |                     |                     |
+<a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>  |                        |                     |-- send subtask ----&gt;|
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>  |                        |                     |   auth_chain=       |
+<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>  |                        |                     |   [JWT1, JWT2]      |
+<a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>  |                        |                     |                     |
+<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>  |                        |                     |                     |-- verify chain
+<a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>  |                        |                     |                     |   JWT1: U-&gt;A ok
+<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>  |                        |                     |                     |   JWT2: A-&gt;B ok
+<a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>  |                        |                     |                     |   sub=B.did ✓
+</code></pre></div>
+<h3 id="scope-narrowing">Scope narrowing</h3>
+<p>A key property: <strong>scope can only narrow, never expand, as it travels down the chain</strong>. If JWT1 grants <code>scope=["read:db"]</code>, then B cannot create a token with <code>scope=["write:db"]</code> and have it be useful — C would reject it because C checks that the chain grants the required scope, and the chain would not contain <code>write:db</code> from the root.</p>
+<p>AgentPassport's scope check (<code>TrustMiddleware.check()</code>) operates on the union of scopes across all tokens whose subject is the agent being checked. This means a narrowed scope in the final hop is what C actually sees.</p>
+<hr />
+<h2 id="7-jwt-structure">7. JWT Structure</h2>
+<p>AgentPassport uses compact JWTs with the EdDSA algorithm profile. The format is identical between the Python and TypeScript SDKs.</p>
+<h3 id="header">Header</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span><span class="nt">&quot;alg&quot;</span><span class="p">:</span><span class="s2">&quot;EdDSA&quot;</span><span class="p">,</span><span class="nt">&quot;crv&quot;</span><span class="p">:</span><span class="s2">&quot;Ed25519&quot;</span><span class="p">}</span>
+</code></pre></div>
+<p>This is constant. It does not contain a <code>kid</code> (key ID) because the issuer DID in the payload serves as the key reference.</p>
+<h3 id="payload-delegation-claims">Payload (delegation claims)</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">&quot;iss&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="nt">&quot;sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">&quot;iat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1717123456</span><span class="p">,</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="nt">&quot;exp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1717127056</span><span class="p">,</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span><span class="nt">&quot;jti&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="nt">&quot;scope&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;read:db:customers&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;write:cache&quot;</span><span class="p">],</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="nt">&quot;max_delegations&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Claim</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>iss</code></td>
+<td>string</td>
+<td>Issuer DID — the agent signing this delegation</td>
+</tr>
+<tr>
+<td><code>sub</code></td>
+<td>string</td>
+<td>Subject DID — the agent being authorized</td>
+</tr>
+<tr>
+<td><code>iat</code></td>
+<td>integer</td>
+<td>Issued-at Unix timestamp (seconds)</td>
+</tr>
+<tr>
+<td><code>exp</code></td>
+<td>integer</td>
+<td>Expiry Unix timestamp (seconds)</td>
+</tr>
+<tr>
+<td><code>jti</code></td>
+<td>string</td>
+<td>UUID4 unique token ID (required for revocation)</td>
+</tr>
+<tr>
+<td><code>scope</code></td>
+<td>array of strings</td>
+<td>Permissions granted by this hop</td>
+</tr>
+<tr>
+<td><code>max_delegations</code></td>
+<td>integer</td>
+<td>How many further delegation hops the subject may make</td>
+</tr>
+</tbody>
+</table>
+<h3 id="signature">Signature</h3>
+<p>The signature is computed over the bytes of <code>&lt;base64url(header)&gt;.&lt;base64url(payload)&gt;</code> using the issuer's Ed25519 private key. The signature is then base64url-encoded without padding.</p>
+<h3 id="key-sorting">Key sorting</h3>
+<p>The payload JSON is serialized with <strong>sorted keys</strong> (<code>sort_keys=True</code> in Python, <code>Object.keys().sort()</code> in TypeScript). This is essential for wire compatibility: both SDKs produce identical payloads for identical claims.</p>
+<h3 id="wire-example">Wire example</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>eyJhbGciOiJFZERTQSIsImNydiI6IkVkMjU1MTkifQ
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>.
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>eyJleHAiOjE3MTcxMjcwNTYsImlzcyI6ImRpZDprZXk6ejZNay4uLiIsIml
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>hdCI6MTcxNzEyMzQ1NiwianRpIjoiNTUwZTg0MDAtZTI5Yi00MWQ0LWE3MTY
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>tNDQ2NjU1NDQwMDAwIiwibWF4X2RlbGVnYXRpb25zIjozLCJzY29wZSI6WyJ
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>yZWFkOmRiOmN1c3RvbWVycyJdLCJzdWIiOiJkaWQ6a2V5OnooTk1rLi4uIn0
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>.
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>&lt;64-byte Ed25519 signature, base64url-encoded&gt;
+</code></pre></div>
+<hr />
+<h2 id="8-scope-semantics">8. Scope Semantics</h2>
+<p>Scopes are simple strings. AgentPassport imposes minimal structure so teams can adopt any naming convention that works for them.</p>
+<h3 id="recommended-format">Recommended format</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>action:resource[:sub-resource]
+</code></pre></div>
+<p>Examples:
+- <code>read:db</code> — read any database
+- <code>write:db:customers</code> — write the customers table
+- <code>read:cache</code> — read the cache
+- <code>invoke:llm:gpt-4</code> — call GPT-4</p>
+<h3 id="wildcard">Wildcard</h3>
+<p>The special scope string <code>"*"</code> grants permission to any scope. A token with <code>scope: ["*"]</code> grants the subject all permissions.</p>
+<h3 id="matching-rules">Matching rules</h3>
+<p>Matching is <strong>exact or wildcard only</strong>. There are no glob patterns, no prefix matching, no hierarchy:</p>
+<table>
+<thead>
+<tr>
+<th>Granted</th>
+<th>Required</th>
+<th>Match?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*</code></td>
+<td>anything</td>
+<td>✓ Yes</td>
+</tr>
+<tr>
+<td><code>read:db</code></td>
+<td><code>read:db</code></td>
+<td>✓ Yes</td>
+</tr>
+<tr>
+<td><code>read:db</code></td>
+<td><code>read:db:customers</code></td>
+<td>✗ No</td>
+</tr>
+<tr>
+<td><code>read:db:customers</code></td>
+<td><code>read:db</code></td>
+<td>✗ No</td>
+</tr>
+<tr>
+<td><code>read:db</code></td>
+<td><code>write:db</code></td>
+<td>✗ No</td>
+</tr>
+</tbody>
+</table>
+<p>This strict matching is intentional: it forces issuers to be explicit about what they grant. Implicit scope inheritance through prefix matching would make it easy to accidentally grant too much.</p>
+<h3 id="multiple-scopes">Multiple scopes</h3>
+<p>A token can grant multiple scopes: <code>scope: ["read:db", "write:cache", "invoke:llm"]</code>. The receiving agent's granted scopes are the <strong>union</strong> of all scopes across all valid tokens in the chain whose subject is that agent.</p>
+<h3 id="declaring-required-scopes-on-capabilities">Declaring required scopes on capabilities</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoke:llm&quot;</span><span class="p">,</span> <span class="s2">&quot;read:docs&quot;</span><span class="p">])</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="o">...</span>
+</code></pre></div>
+<p>If the auth chain grants <code>["*"]</code> or contains both <code>"invoke:llm"</code> and <code>"read:docs"</code>, the check passes. If either is missing, <code>ScopeError</code> is raised before the handler is called.</p>
+<hr />
+<h2 id="9-trust-middleware">9. Trust Middleware</h2>
+<p><code>TrustMiddleware</code> is the pre-execution gate that enforces scope declarations. It is wired automatically inside <code>Agent.handle()</code>.</p>
+<h3 id="how-it-works">How it works</h3>
+<p>When <code>Agent.handle(task)</code> is called:</p>
+<ol>
+<li>Look up the capability handler by <code>task.intent.type</code>.</li>
+<li>Call <code>TrustMiddleware.check(task.auth_chain, capability_name)</code>.</li>
+<li>If the capability declared <code>requires=[...]</code>:
+   a. If <code>auth_chain</code> is empty → raise <code>ScopeError</code>.
+   b. Iterate each token in <code>auth_chain</code>:<ul>
+<li>Skip tokens whose <code>sub</code> is not this agent's DID.</li>
+<li>Skip tokens whose issuer is not in <code>known_public_keys</code>.</li>
+<li>Verify the signature.</li>
+<li>Skip expired tokens.</li>
+<li>Accumulate valid scopes into a granted set.
+   c. If <code>"*"</code> is in granted → pass.
+   d. If any required scope is missing from granted → raise <code>ScopeError</code> with details.</li>
+</ul>
+</li>
+<li>If check passes, call the capability handler.</li>
+</ol>
+<h3 id="scopeerror">ScopeError</h3>
+<p><code>ScopeError</code> is a subclass of <code>Exception</code>. When raised, it carries:
+- The capability name
+- The required scopes
+- The granted scopes (for debugging)
+- A human-readable message</p>
+<p><code>Agent.handle()</code> does <strong>not</strong> catch <code>ScopeError</code> — it propagates to the caller. The caller (e.g. an HTTP server wrapping the agent) should catch it and return a <code>403 Forbidden</code> response.</p>
+<h3 id="no-required-scope-always-allowed">No required scope = always allowed</h3>
+<p>If a capability is registered without <code>requires=</code>, the middleware is a no-op for that capability. This allows unguarded capabilities for public or trusted-network-only deployments.</p>
+<hr />
+<h2 id="10-revocation-mechanics">10. Revocation Mechanics</h2>
+<h3 id="why-revocation">Why revocation?</h3>
+<p>JWTs are stateless: once issued, a valid JWT is accepted until it expires. If a delegation should be stopped before expiry (agent compromised, task cancelled, user revoked consent), there must be a way to reject the token.</p>
+<p>AgentPassport implements <strong>soft revocation</strong>: the agent completes its current atomic operation and stops before accepting new tasks. This is the standard model for stateless JWT revocation.</p>
+<h3 id="how-it-works_1">How it works</h3>
+<p>Every delegation JWT carries a <code>jti</code> (JWT ID) claim — a UUID4. To revoke a delegation:</p>
+<ol>
+<li>Obtain the <code>jti</code> from the JWT (decode without verifying: <code>_decode_jwt_claims(token)["jti"]</code>).</li>
+<li>Call <code>registry.revoke(jti)</code>.</li>
+<li>On the next call to <code>verify_auth_chain(...)</code>, the revocation registry is checked for each token's <code>jti</code>. If revoked, <code>verify_auth_chain</code> returns <code>False</code>.</li>
+</ol>
+<h3 id="revocationregistry-implementations">RevocationRegistry implementations</h3>
+<p><strong>InMemoryRevocationRegistry</strong>: State lives in a Python set. Lost on restart. Good for testing and short-lived agents.</p>
+<p><strong>SqliteRevocationRegistry</strong>: Persists to a SQLite database. Survives restarts. Suitable for production.</p>
+<h3 id="ascii-revocation-sequence">ASCII revocation sequence</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Orchestrator                  Registry                Agent B
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>     |                            |                      |
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>     |-- registry.revoke(jti) --&gt;|                      |
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>     |                            |-- INSERT jti ------&gt;|
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>     |                            |   (persisted)        |
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>     |                            |                      |
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>     |                     [later]|                      |
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>     |                            |                      |
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>  Agent A                         |                      |
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>     |                            |                      |
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>     |-- send task to B ---------------------------&gt;    |
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>     |   (auth_chain contains revoked jti)              |
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>     |                            |                      |
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>     |                            |          verify_auth_chain()
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>     |                            |&lt;-- is_revoked(jti) --|
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>     |                            |-- True -------------&gt;|
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>     |                            |                      |
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>     |                      &lt;-- task rejected (returns False) --|
+</code></pre></div>
+<h3 id="revocation-and-ttl">Revocation and TTL</h3>
+<p>Revocation is complementary to short-lived tokens. Best practice:
+- Use short <code>ttl_seconds</code> (e.g. 3600 = 1 hour) to minimize the window during which a revocation is necessary.
+- Use revocation for immediate stop when a token must be invalidated before its natural expiry.</p>
+<hr />
+<h2 id="11-task-lifecycle-state-machine">11. Task Lifecycle State Machine</h2>
+<p>Every task has a <code>state</code> field that follows a strict finite state machine.</p>
+<h3 id="states">States</h3>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CREATED</code></td>
+<td>Task just created, not yet sent</td>
+</tr>
+<tr>
+<td><code>DELEGATED</code></td>
+<td>Task has been signed and dispatched to another agent</td>
+</tr>
+<tr>
+<td><code>ACCEPTED</code></td>
+<td>Receiving agent has verified the auth chain and accepted the task</td>
+</tr>
+<tr>
+<td><code>RUNNING</code></td>
+<td>Capability handler is executing</td>
+</tr>
+<tr>
+<td><code>COMPLETED</code></td>
+<td>Handler returned successfully</td>
+</tr>
+<tr>
+<td><code>FAILED</code></td>
+<td>Handler raised an exception</td>
+</tr>
+<tr>
+<td><code>CANCELLED</code></td>
+<td>Task was cancelled before completion</td>
+</tr>
+</tbody>
+</table>
+<h3 id="allowed-transitions">Allowed transitions</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>CREATED → DELEGATED, CANCELLED
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>DELEGATED → ACCEPTED, FAILED, CANCELLED
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>ACCEPTED → RUNNING, FAILED, CANCELLED
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>RUNNING → COMPLETED, FAILED, CANCELLED
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>COMPLETED → (terminal — no transitions)
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>FAILED → (terminal — no transitions)
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>CANCELLED → (terminal — no transitions)
+</code></pre></div>
+<h3 id="ascii-state-diagram">ASCII state diagram</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>         ┌──────────┐
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>         │  CREATED │
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>         └────┬─────┘
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>              │         ┌──────────────┐
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>              ├─────────→  DELEGATED   │
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>              │         └──────┬───────┘
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>              │                │         ┌─────────┐
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>              │                ├─────────→ ACCEPTED │
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>              │                │         └────┬─────┘
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>              │                │              │
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>              │                │              ├────────────────┐
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>              │                │              │                │
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>              │                │         ┌───▼────┐     ┌─────▼──────┐
+<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a>              │                │         │ RUNNING│     │  FAILED    │
+<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a>              │                │         └───┬────┘     └────────────┘
+<a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a>              │                │             │
+<a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a>              │                │       ┌─────▼───────┐
+<a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a>              │                │       │  COMPLETED  │
+<a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a>              │                │       └─────────────┘
+<a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a>              │                │
+<a id="__codelineno-16-21" name="__codelineno-16-21" href="#__codelineno-16-21"></a>              └────────────────┴─────────────→ CANCELLED (from any non-terminal)
+</code></pre></div>
+<h3 id="invalidtransitionerror">InvalidTransitionError</h3>
+<p>Attempting a disallowed state transition raises <code>InvalidTransitionError</code> (from <code>task.lifecycle</code>). This is primarily an internal guard — <code>Agent.handle()</code> uses <code>TaskLifecycle</code> internally and will raise this if the lifecycle is manipulated incorrectly.</p>
+<hr />
+<h2 id="12-budget-tracking">12. Budget Tracking</h2>
+<p><code>BudgetTracker</code> enforces credit limits on task execution and subtask creation.</p>
+<h3 id="credits-model">Credits model</h3>
+<p>Credits are an abstract unit. The caller sets a <code>budget_credits</code> in <code>Constraints</code>. As the agent performs work (calling LLMs, querying databases, etc.), it calls <code>tracker.spend(amount)</code> to deduct from the budget. When a subtask is created, <code>allocate(amount)</code> reserves that portion of the budget.</p>
+<h3 id="thread-safety">Thread safety</h3>
+<p>The async variants (<code>async_spend</code>, <code>async_allocate</code>, <code>async_return_unused</code>) acquire an <code>asyncio.Lock()</code> before modifying the <code>spent</code> counter. The synchronous variants are not thread-safe by themselves.</p>
+<h3 id="budgetexceedederror">BudgetExceededError</h3>
+<p>Raised when a <code>spend()</code> or <code>allocate()</code> call would take <code>spent &gt; total_credits</code>. Contains <code>requested</code> and <code>remaining</code> float fields.</p>
+<h3 id="budget-in-subtask-chains">Budget in subtask chains</h3>
+<p>When creating a subtask with <code>create_subtask()</code>:
+- <code>budget_tracker.allocate(budget_credits)</code> is called, reducing the parent's remaining budget.
+- The subtask's <code>Constraints.budget_credits</code> is set to the allocated amount.
+- If the subtask completes with leftover budget, call <code>budget_tracker.return_unused(leftover)</code> to reclaim it.</p>
+<hr />
+<h2 id="13-observability-and-event-sinks">13. Observability and Event Sinks</h2>
+<h3 id="eventemitter">EventEmitter</h3>
+<p><code>EventEmitter</code> is a simple fan-out event bus. Agents emit structured <code>ObservabilityEvent</code> objects that are written to all registered sinks.</p>
+<h3 id="observabilityevent-fields">ObservabilityEvent fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>trace_id</code></td>
+<td><code>str</code></td>
+<td>Trace identifier for distributed tracing correlation</td>
+</tr>
+<tr>
+<td><code>task_id</code></td>
+<td><code>str</code></td>
+<td>Task that produced this event</td>
+</tr>
+<tr>
+<td><code>event</code></td>
+<td><code>str</code></td>
+<td>Event name (e.g. <code>task_accepted</code>, <code>task_completed</code>, <code>state_change</code>)</td>
+</tr>
+<tr>
+<td><code>from_state</code></td>
+<td><code>str \| None</code></td>
+<td>Previous state (for <code>state_change</code> events)</td>
+</tr>
+<tr>
+<td><code>to_state</code></td>
+<td><code>str \| None</code></td>
+<td>New state (for <code>state_change</code> events)</td>
+</tr>
+<tr>
+<td><code>agent</code></td>
+<td><code>str</code></td>
+<td>DID of the agent emitting the event</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td><code>str</code></td>
+<td>ISO 8601 UTC timestamp</td>
+</tr>
+<tr>
+<td><code>cost_used</code></td>
+<td><code>float</code></td>
+<td>Credits spent so far</td>
+</tr>
+<tr>
+<td><code>budget_remaining</code></td>
+<td><code>float</code></td>
+<td>Credits remaining</td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td><code>dict</code></td>
+<td>Arbitrary key-value pairs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="built-in-sinks">Built-in sinks</h3>
+<table>
+<thead>
+<tr>
+<th>Sink</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>StdoutSink</code></td>
+<td>Writes NDJSON to stdout (one event per line)</td>
+</tr>
+<tr>
+<td><code>FileSink</code></td>
+<td>Appends NDJSON to a file</td>
+</tr>
+<tr>
+<td><code>MemorySink</code></td>
+<td>Stores events in a list (for testing and inspection)</td>
+</tr>
+<tr>
+<td><code>OtelSink</code></td>
+<td>Emits OpenTelemetry spans (requires <code>opentelemetry-api</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="events-emitted-by-agenthandle">Events emitted by Agent.handle()</h3>
+<table>
+<thead>
+<tr>
+<th>Event name</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>task_accepted</code></td>
+<td>After auth chain verified, before handler called</td>
+</tr>
+<tr>
+<td><code>task_running</code></td>
+<td>Handler about to be called</td>
+</tr>
+<tr>
+<td><code>task_completed</code></td>
+<td>Handler returned successfully</td>
+</tr>
+<tr>
+<td><code>task_failed</code></td>
+<td>Handler raised an exception</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-transport-layer">14. Transport Layer</h2>
+<h3 id="httptransport">HttpTransport</h3>
+<p><code>HttpTransport</code> serializes a <code>TaskEnvelope</code> to JSON and POSTs it to <code>&lt;endpoint&gt;/agentpassport/tasks</code>. It uses <code>httpx.AsyncClient</code> for async HTTP.</p>
+<h3 id="stdiotransport">StdioTransport</h3>
+<p><code>StdioTransport</code> serializes tasks to newline-delimited JSON over stdin/stdout. Used for process-based agent communication.</p>
+<h3 id="serialization-format">Serialization format</h3>
+<p>Both transports use <code>TaskEnvelope.model_dump_json()</code> (Pydantic v2) which produces compact JSON. The <code>auth_chain</code> is a JSON array of JWT strings.</p>
+<hr />
+<h2 id="15-registry">15. Registry</h2>
+<p><code>RegistryClient</code> talks to the <code>agentpassport-registry</code> service — a central (but optional) directory of agent cards.</p>
+<p>Agents can <strong>publish</strong> their <code>AgentCard</code> to the registry, and orchestrators can <strong>look up</strong> agents by DID or by capability name. The registry validates the card's signature before storing it.</p>
+<p>The registry itself is a FastAPI app backed by SQLite, with optional rate limiting.</p>
+<hr />
+<h2 id="16-adapters-mcp-rest-cli">16. Adapters — MCP, REST, CLI</h2>
+<p>Adapters bridge AgentPassport's <code>TaskEnvelope</code> protocol to external services that don't speak AgentPassport natively.</p>
+<h3 id="mcpadapter">McpAdapter</h3>
+<p>Translates a <code>TaskEnvelope</code> into a JSON-RPC 2.0 <code>tools/call</code> request sent to an MCP (Model Context Protocol) server over stdio. The <code>task.intent.type</code> becomes the tool name, and <code>task.intent.params</code> become the arguments.</p>
+<h3 id="restadapter">RestAdapter</h3>
+<p>Translates a <code>TaskEnvelope</code> into a REST HTTP call. Maps intent type to an HTTP method and URL template.</p>
+<h3 id="cliadapter">CliAdapter</h3>
+<p>Translates a <code>TaskEnvelope</code> into a subprocess invocation, passing params as CLI arguments or environment variables.</p>
+<hr />
+<h2 id="17-multi-sdk-wire-compatibility">17. Multi-SDK Wire Compatibility</h2>
+<p>The Python SDK (<code>agentpassport</code>) and TypeScript SDK (<code>@agentpassport/core</code>) are designed to be fully wire-compatible. A task created in Python can be verified in TypeScript and vice versa.</p>
+<h3 id="compatibility-guarantees">Compatibility guarantees</h3>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Guarantee</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DID format</td>
+<td>Identical: <code>did:key:z&lt;base58btc&gt;</code>. Same multicodec prefix (0xed01). Same alphabet.</td>
+</tr>
+<tr>
+<td>JWT header</td>
+<td>Identical: <code>{"alg":"EdDSA","crv":"Ed25519"}</code>. Same base64url encoding.</td>
+</tr>
+<tr>
+<td>JWT payload</td>
+<td>Identical: JSON with sorted keys, compact separators (no spaces).</td>
+</tr>
+<tr>
+<td>Signature</td>
+<td>Identical: Ed25519 over <code>&lt;header&gt;.&lt;payload&gt;</code> bytes.</td>
+</tr>
+<tr>
+<td>TaskEnvelope JSON</td>
+<td>Identical field names, identical defaults, compatible Pydantic/TypeScript types.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="testing-cross-sdk">Testing cross-SDK</h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Python: create a delegation token</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_keypair</span><span class="p">,</span> <span class="n">did_from_public_key</span><span class="p">,</span> <span class="n">sign_delegation</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">priv</span><span class="p">,</span> <span class="n">pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="n">did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="n">token</span> <span class="o">=</span> <span class="n">sign_delegation</span><span class="p">(</span><span class="n">priv</span><span class="p">,</span> <span class="n">did</span><span class="p">,</span> <span class="n">other_did</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;read:db&quot;</span><span class="p">])</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1">// TypeScript: verify that token</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@agentpassport/core&quot;</span><span class="p">;</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="p">({</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="w">  </span><span class="nx">chain</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">token</span><span class="p">],</span>
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">  </span><span class="nx">expectedSubject</span><span class="o">:</span><span class="w"> </span><span class="kt">otherDid</span><span class="p">,</span>
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">  </span><span class="nx">knownPublicKeys</span><span class="o">:</span><span class="w"> </span><span class="kt">new</span><span class="w"> </span><span class="nb">Map</span><span class="p">([[</span><span class="nx">issuerDid</span><span class="p">,</span><span class="w"> </span><span class="nx">issuerPubKey</span><span class="p">]]),</span>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="p">});</span>
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="c1">// ok === true</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
