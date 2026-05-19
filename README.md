@@ -9,16 +9,18 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/ceavinrufus/agentpassport/actions/workflows/ci.yml/badge.svg)](https://github.com/ceavinrufus/agentpassport/actions/workflows/ci.yml)
 
-**The AI passport layer.**
+**The authorization layer for multi-agent AI systems.**
+Like IAM, but for your agent graph.
 
-> Cryptographic delegation for AI agents. Prove what an agent was authorized to do — across languages, frameworks, and trust boundaries.
+---
 
-Agents are flooding the internet. They're sending emails, making purchases, running code — on your behalf, or someone else's. But there's no standard way to prove who an agent belongs to, what it's authorized to do, or whether it stayed within bounds.
+## The Problem
 
-agentpassport is building that. Starting with the authorization primitive — cryptographic proof of delegation at every hop. Growing into full agent identity and ownership verification across the open web.
+Agents are delegating to other agents. Nobody's checking the chain.
 
-**Today:** prove an agent was authorized to act.
-**Next:** prove who it belongs to.
+When Agent A delegates to Agent B, and Agent B delegates to Agent C — how do you know what C was actually authorized to do? Right now, every major framework (LangGraph, CrewAI, AutoGen) answers this question with: *trust by convention*. No signed proof. No scope enforcement. No way to revoke mid-flight.
+
+That's not authorization. That's hope.
 
 ```
 [Python Orchestrator] signs delegation → [TypeScript Agent] verifies before executing
@@ -26,38 +28,7 @@ agentpassport is building that. Starting with the authorization primitive — cr
     ScopeError: requires [write:db:customers], granted [read:db:customers]  ✅
 ```
 
-## Why agentpassport?
-
-| | Without agentpassport | With agentpassport |
-|---|---|---|
-| Agent authorization | Trust by convention | Cryptographic proof |
-| Scope enforcement | Ad-hoc checks | Declared + verified before execution |
-| Revocation | Kill the process | Soft-stop by JTI, mid-flight safe |
-| Cross-language | Custom per integration | Wire-compatible out of the box |
-
-## Install
-
-```bash
-# Python
-pip install agentpassport
-
-# TypeScript / JavaScript
-npm install @agentpassport/core
-```
-
-- [agentpassport on PyPI](https://pypi.org/project/agentpassport/)
-- [@agentpassport/core on npm](https://www.npmjs.com/package/@agentpassport/core)
-
----
-
-## The Problem
-
-When Agent A delegates work to Agent B, how do you prove:
-- Agent B had the right to act?
-- It stayed within its authorized scope?
-- You can revoke that right mid-flight?
-
-Right now you can't. Every framework just trusts. agentpassport proves it.
+agentpassport gives every agent a cryptographic identity, signs delegation at every hop, and enforces scope before the handler runs. Revoke a token by JTI and the agent stops cleanly — no process kill, no partial state.
 
 ## Demo
 
@@ -153,6 +124,30 @@ Output:
 Checking https://agentpassport.fyi/.well-known/agent-passport.json ...
 ✓ Valid domain binding: 'agentpassport.fyi' claims did:key:z6Mkh8UwkN88kwynM3mYke8yFXr9ax69jZKv2TCuwG7yPzbw
 ```
+
+## Install
+
+```bash
+# Python
+pip install agentpassport
+
+# TypeScript / JavaScript
+npm install @agentpassport/core
+```
+
+- [agentpassport on PyPI](https://pypi.org/project/agentpassport/)
+- [@agentpassport/core on npm](https://www.npmjs.com/package/@agentpassport/core)
+
+---
+
+## Why agentpassport?
+
+| Problem | Without agentpassport | With agentpassport |
+|---|---|---|
+| Agent authorization | Trust by convention | Cryptographic proof |
+| Scope enforcement | Ad-hoc checks | Declared + verified before execution |
+| Revocation | Kill the process | Soft-stop by JTI, mid-flight safe |
+| Cross-language | Custom per integration | Wire-compatible out of the box |
 
 ## How It Works
 
