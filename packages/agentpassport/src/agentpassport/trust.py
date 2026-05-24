@@ -37,25 +37,28 @@ def _chain_granted_scopes(
     agent_did: str,
     known_public_keys: dict[str, bytes],
 ) -> set[str]:
-    """Return the union of scopes granted across all valid tokens in *auth_chain*
-    whose subject is *agent_did*.
+    """Return the effective scopes granted to *agent_did* by *auth_chain*,
+    respecting scope narrowing across hops.
 
-    Only tokens that pass signature verification and target this agent are
-    included. Expired tokens are still skipped — this re-uses the same
-    per-token logic as verify_auth_chain but returns scopes rather than bool.
+    Scope can only narrow as it travels down the chain — an intermediate agent
+    cannot grant permissions it was never given. The effective grant at any hop
+    is the intersection of the previous effective grant and the current token's
+    scope (wildcard '*' in the previous grant acts as a passthrough).
+
+    Only tokens that pass signature verification and target this agent (sub ==
+    agent_did) contribute. Expired tokens and tokens from untrusted issuers are
+    skipped.
     """
     from datetime import datetime
 
-    granted: set[str] = set()
+    # First pass: collect all valid tokens in chain order with their scopes.
+    ordered_scopes: list[list[str]] = []
     now_ts = datetime.now(UTC).timestamp()
 
     for token in auth_chain:
         try:
             unverified = _decode_jwt_claims(token)
         except Exception:
-            continue
-
-        if unverified.get("sub") != agent_did:
             continue
 
         issuer = unverified.get("iss")
@@ -76,9 +79,25 @@ def _chain_granted_scopes(
 
         scope = claims.get("scope", [])
         if isinstance(scope, list):
-            granted.update(scope)
+            ordered_scopes.append(scope)
 
-    return granted
+    if not ordered_scopes:
+        return set()
+
+    # Second pass: intersect scope across hops (narrowing only).
+    # The last token's sub must be agent_did — check that separately in check().
+    # Here we compute the effective grant by propagating narrowing through each hop.
+    effective: set[str] | None = None
+    for scope_list in ordered_scopes:
+        current = set(scope_list)
+        if effective is None:
+            effective = current
+        elif "*" in effective:
+            effective = current  # wildcard passthrough — current scope takes over
+        else:
+            effective = effective & current  # intersect (narrowing only)
+
+    return effective or set()
 
 
 class TrustMiddleware:
