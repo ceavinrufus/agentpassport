@@ -128,11 +128,13 @@ def verify_auth_chain(
       - carry a valid signature from that issuer
       - not be expired (exp) or used before issuance (iat)
       - carry a non-empty jti claim
+      - have its issuer (iss) equal to the previous token's subject (sub),
+        ensuring the chain is continuous and unbroken
 
     The final token's sub must equal *expected_subject*.
 
     If *revocation_registry* is provided, each token's jti is checked
-    against it and rejected if revoked (placeholder for step 6).
+    against it and rejected if revoked.
 
     Returns True only if every check passes for every hop.
     """
@@ -140,6 +142,7 @@ def verify_auth_chain(
         return False
 
     now_ts = datetime.now(UTC).timestamp()
+    prev_subject: str | None = None
 
     for token in auth_chain:
         # --- resolve issuer public key from unverified claims first ---
@@ -151,6 +154,10 @@ def verify_auth_chain(
         issuer = unverified.get("iss")
         pub_key_bytes = known_public_keys.get(issuer) if issuer else None
         if pub_key_bytes is None:
+            return False
+
+        # --- chain continuity: iss of this token must equal sub of previous token ---
+        if prev_subject is not None and issuer != prev_subject:
             return False
 
         # --- cryptographic verification ---
@@ -176,6 +183,8 @@ def verify_auth_chain(
         # --- revocation check ---
         if revocation_registry is not None and revocation_registry.is_revoked(claims["jti"]):
             return False
+
+        prev_subject = claims.get("sub")
 
     # --- final subject check ---
     try:
