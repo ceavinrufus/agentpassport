@@ -130,6 +130,8 @@ def verify_auth_chain(
       - carry a non-empty jti claim
       - have its issuer (iss) equal to the previous token's subject (sub),
         ensuring the chain is continuous and unbroken
+      - not grant scope beyond what the previous token granted (scope can
+        only narrow across hops, never expand — wildcard '*' is preserved)
 
     The final token's sub must equal *expected_subject*.
 
@@ -143,6 +145,7 @@ def verify_auth_chain(
 
     now_ts = datetime.now(UTC).timestamp()
     prev_subject: str | None = None
+    prev_granted_scope: list[str] | None = None
 
     for token in auth_chain:
         # --- resolve issuer public key from unverified claims first ---
@@ -185,6 +188,18 @@ def verify_auth_chain(
             return False
 
         prev_subject = claims.get("sub")
+
+        # --- scope narrowing: this hop cannot grant more than the previous hop ---
+        token_scope = claims.get("scope", [])
+        if not isinstance(token_scope, list):
+            return False
+        if prev_granted_scope is not None:
+            # wildcard in prev covers everything — pass through
+            if "*" not in prev_granted_scope:
+                # every scope in this token must appear in the previous grant
+                if any(s not in prev_granted_scope for s in token_scope if s != "*"):
+                    return False
+        prev_granted_scope = token_scope
 
     # --- final subject check ---
     try:
