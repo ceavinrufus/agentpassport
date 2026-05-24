@@ -193,12 +193,10 @@ def verify_auth_chain(
         token_scope = claims.get("scope", [])
         if not isinstance(token_scope, list):
             return False
-        if prev_granted_scope is not None:
-            # wildcard in prev covers everything — pass through
-            if "*" not in prev_granted_scope:
-                # every scope in this token must appear in the previous grant
-                if any(s not in prev_granted_scope for s in token_scope if s != "*"):
-                    return False
+        if (prev_granted_scope is not None
+                and "*" not in prev_granted_scope
+                and any(s not in prev_granted_scope for s in token_scope if s != "*")):
+            return False
         prev_granted_scope = token_scope
 
     # --- final subject check ---
