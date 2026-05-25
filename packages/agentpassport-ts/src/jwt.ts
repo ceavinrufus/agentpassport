@@ -113,7 +113,7 @@ export function signDelegation(opts: SignDelegationOptions): string {
     subjectDid,
     scope,
     ttlSeconds = 3600,
-    maxDelegations = 0,
+    maxDelegations = -1,
   } = opts;
 
   const now = Math.floor(Date.now() / 1000);
@@ -149,6 +149,10 @@ export function verifyAuthChain(opts: VerifyAuthChainOptions): boolean {
 
   const nowTs = Date.now() / 1000;
 
+  let prevSubject: string | undefined;
+  let prevGrantedScope: string[] | undefined;
+  let hopsRemaining: number | null = null; // null = no constraint
+
   for (const token of chain) {
     // Decode unverified claims first to find the issuer
     let unverified: Record<string, unknown>;
@@ -161,6 +165,9 @@ export function verifyAuthChain(opts: VerifyAuthChainOptions): boolean {
     const issuer = unverified["iss"] as string | undefined;
     const pubKeyBytes = issuer ? knownPublicKeys.get(issuer) : undefined;
     if (!pubKeyBytes) return false;
+
+    // Chain continuity: iss of this token must equal sub of previous token
+    if (prevSubject !== undefined && issuer !== prevSubject) return false;
 
     // Cryptographic verification
     let claims: Record<string, unknown>;
@@ -182,6 +189,39 @@ export function verifyAuthChain(opts: VerifyAuthChainOptions): boolean {
 
     // Revocation check
     if (revocationRegistry?.isRevoked(jti)) return false;
+
+    prevSubject = claims["sub"] as string | undefined;
+
+    // Scope narrowing: this hop cannot grant more than the previous hop
+    const tokenScope = claims["scope"];
+    if (!Array.isArray(tokenScope)) return false;
+    if (
+      prevGrantedScope !== undefined &&
+      !prevGrantedScope.includes("*") &&
+      tokenScope.some((s) => s !== "*" && !prevGrantedScope!.includes(s))
+    ) {
+      return false;
+    }
+    prevGrantedScope = tokenScope as string[];
+
+    // max_delegations enforcement:
+    //   -1 = no constraint (unlimited)
+    //    0 = recipient cannot delegate at all
+    //    N > 0 = recipient may delegate at most N further times
+    if (hopsRemaining !== null) {
+      if (hopsRemaining <= 0) return false;
+      hopsRemaining -= 1;
+    }
+
+    const md = claims["max_delegations"];
+    if (typeof md !== "number" || md < -1 || !Number.isInteger(md)) return false;
+    if (md === -1) {
+      // no constraint — leave hopsRemaining unchanged
+    } else if (hopsRemaining === null) {
+      hopsRemaining = md;
+    } else {
+      hopsRemaining = Math.min(hopsRemaining, md);
+    }
   }
 
   // Final subject check
