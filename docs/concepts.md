@@ -330,7 +330,7 @@ This is constant. It does not contain a `kid` (key ID) because the issuer DID in
 | `exp` | integer | Expiry Unix timestamp (seconds) |
 | `jti` | string | UUID4 unique token ID (required for revocation) |
 | `scope` | array of strings | Permissions granted by this hop |
-| `max_delegations` | integer | How many further delegation hops the subject may make |
+| `max_delegations` | integer | How many further delegation hops the subject may make. `-1` = unlimited (default), `0` = cannot delegate, `N > 0` = at most N further hops. |
 
 ### Signature
 
