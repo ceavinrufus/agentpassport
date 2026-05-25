@@ -132,6 +132,9 @@ def verify_auth_chain(
         ensuring the chain is continuous and unbroken
       - not grant scope beyond what the previous token granted (scope can
         only narrow across hops, never expand — wildcard '*' is preserved)
+      - respect max_delegations: a token with max_delegations=N permits at
+        most N further hops after it; max_delegations=0 means the recipient
+        cannot delegate at all
 
     The final token's sub must equal *expected_subject*.
 
@@ -146,6 +149,8 @@ def verify_auth_chain(
     now_ts = datetime.now(UTC).timestamp()
     prev_subject: str | None = None
     prev_granted_scope: list[str] | None = None
+    # Track remaining allowed hops. None means no constraint yet.
+    hops_remaining: int | None = None
 
     for token in auth_chain:
         # --- resolve issuer public key from unverified claims first ---
@@ -198,6 +203,22 @@ def verify_auth_chain(
                 and any(s not in prev_granted_scope for s in token_scope if s != "*")):
             return False
         prev_granted_scope = token_scope
+
+        # --- max_delegations enforcement ---
+        # max_delegations > 0 means "at most N more hops after this token".
+        # max_delegations = 0 (default) means no constraint.
+        # Check whether the previous token's limit permits this token to exist.
+        if hops_remaining is not None:
+            if hops_remaining <= 0:
+                return False  # previous token exhausted its delegation allowance
+            hops_remaining -= 1
+
+        # Update the remaining limit from this token if it sets one.
+        md = claims.get("max_delegations", 0)
+        if not isinstance(md, int):
+            return False
+        if md > 0:
+            hops_remaining = md if hops_remaining is None else min(hops_remaining, md)
 
     # --- final subject check ---
     try:
