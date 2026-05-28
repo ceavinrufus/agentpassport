@@ -30,6 +30,8 @@ _JWT_HEADER = _b64url_encode(
     json.dumps({"alg": "EdDSA", "crv": "Ed25519"}, separators=(",", ":")).encode()
 )
 
+_IAT_LEEWAY_SECONDS = 30
+
 
 def _encode_jwt(claims: dict, private_key_seed: bytes) -> str:
     """Produce a compact EdDSA JWT from *claims* signed with *private_key_seed*."""
@@ -181,7 +183,7 @@ def verify_auth_chain(
         except (KeyError, TypeError, ValueError):
             return False
 
-        if iat > now_ts or now_ts > exp:
+        if iat > now_ts + _IAT_LEEWAY_SECONDS or now_ts > exp:
             return False
 
         # --- jti required ---
