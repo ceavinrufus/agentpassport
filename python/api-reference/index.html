@@ -3497,7 +3497,7 @@
 <a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>    <span class="n">subject_did</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>    <span class="n">scope</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
 <a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a>    <span class="n">ttl_seconds</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3600</span><span class="p">,</span>
-<a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a>    <span class="n">max_delegations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a>    <span class="n">max_delegations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
 <a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
 </code></pre></div>
 <p>Create a signed delegation JWT for one hop in the trust chain. Returns a compact <code>header.payload.signature</code> JWT string.</p>
@@ -3552,8 +3552,8 @@
 <td><code>max_delegations</code></td>
 <td><code>int</code></td>
 <td>No</td>
-<td><code>0</code></td>
-<td>How many further hops the subject may delegate. <code>0</code> means the subject cannot delegate further.</td>
+<td><code>-1</code></td>
+<td>How many further hops the subject may delegate. <code>-1</code> (default) means unlimited. <code>0</code> means the subject cannot delegate further. <code>N &gt; 0</code> means at most N further hops.</td>
 </tr>
 </tbody>
 </table>
