@@ -616,7 +616,7 @@ def sign_delegation(
     subject_did: str,
     scope: list[str],
     ttl_seconds: int = 3600,
-    max_delegations: int = 0,
+    max_delegations: int = -1,
 ) -> str
 ```
 
@@ -631,7 +631,7 @@ Create a signed delegation JWT for one hop in the trust chain. Returns a compact
 | `subject_did` | `str` | Yes | — | The subject's DID (who is being authorized). Becomes the `sub` claim. |
 | `scope` | `list[str]` | Yes | — | List of permission strings granted to the subject. |
 | `ttl_seconds` | `int` | No | `3600` | Token validity in seconds from now. |
-| `max_delegations` | `int` | No | `0` | How many further hops the subject may delegate. `0` means the subject cannot delegate further. |
+| `max_delegations` | `int` | No | `-1` | How many further hops the subject may delegate. `-1` (default) means unlimited. `0` means the subject cannot delegate further. `N > 0` means at most N further hops. |
 
 **Returns:** `str` — compact JWT string (`header.payload.sig`, all base64url-encoded, no padding).
 

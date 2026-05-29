@@ -39,7 +39,7 @@ Both SDKs produce and consume the same compact JWT format:
 
 **Payload** — sorted keys (alphabetical), no extra whitespace:
 ```json
-{"exp":1717127056,"iss":"did:key:z6Mk...","iat":1717123456,"jti":"uuid4","max_delegations":0,"scope":["read:db"],"sub":"did:key:z6Mk..."}
+{"exp":1717127056,"iss":"did:key:z6Mk...","iat":1717123456,"jti":"uuid4","max_delegations":-1,"scope":["read:db"],"sub":"did:key:z6Mk..."}
 ```
 
 The key detail: **both SDKs sort JSON keys alphabetically before encoding**. Python uses `json.dumps(..., sort_keys=True)`. TypeScript uses `Object.keys().sort()`. This produces byte-for-byte identical payloads for the same claims, which means signatures created in one SDK verify in the other.

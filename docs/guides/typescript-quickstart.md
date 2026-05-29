@@ -569,7 +569,7 @@ const issuerPub = parseDid(ISSUER_DID);
 // Decode and inspect
 const claims = decodeJwtClaims(TOKEN);
 console.log("Decoded claims:", claims);
-// { iss: '...', sub: '...', iat: ..., exp: ..., jti: '...', scope: ['read:db'], max_delegations: 0 }
+// { iss: '...', sub: '...', iat: ..., exp: ..., jti: '...', scope: ['read:db'], max_delegations: -1 }
 
 // Verify
 const ok = verifyAuthChain({

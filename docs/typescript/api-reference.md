@@ -405,7 +405,7 @@ interface SignDelegationOptions {
   subjectDid: string;            // Subject's DID
   scope: string[];               // Permissions to grant
   ttlSeconds?: number;           // Default: 3600
-  maxDelegations?: number;       // Default: 0
+  maxDelegations?: number;       // Default: -1
 }
 ```
 
@@ -418,7 +418,7 @@ Options object for `signDelegation()`.
 | `subjectDid` | `string` | Yes | — | Subject's DID (`sub` claim) |
 | `scope` | `string[]` | Yes | — | Scopes to grant |
 | `ttlSeconds` | `number` | No | `3600` | Token validity window in seconds |
-| `maxDelegations` | `number` | No | `0` | Further delegation hops the subject may make |
+| `maxDelegations` | `number` | No | `-1` | Further delegation hops the subject may make. `-1` (default) means unlimited. `0` blocks all further delegation. `N > 0` means at most N further hops. |
 
 ---
 

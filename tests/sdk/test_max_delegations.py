@@ -13,9 +13,27 @@ def _make_agent():
     return priv, pub, did
 
 
-def test_max_delegations_zero_means_unlimited():
-    """max_delegations=0 is the default and means 'no constraint'.
-    A chain where hop1 has max_delegations=0 and hop2 exists is valid."""
+def test_max_delegations_minus_one_means_unlimited():
+    """max_delegations=-1 is the default and means 'no constraint'.
+    A chain where hop1 has max_delegations=-1 and hop2 exists is valid."""
+    root_priv, root_pub, root_did = _make_agent()
+    mid_priv, mid_pub, mid_did = _make_agent()
+    _, _, leaf_did = _make_agent()
+
+    hop1 = sign_delegation(root_priv, root_did, mid_did, ["*"], max_delegations=-1)
+    hop2 = sign_delegation(mid_priv, mid_did, leaf_did, ["*"])
+
+    assert verify_auth_chain(
+        auth_chain=[hop1, hop2],
+        expected_subject=leaf_did,
+        known_public_keys={root_did: root_pub, mid_did: mid_pub},
+    )
+
+
+def test_max_delegations_zero_blocks_any_further_hop():
+    """max_delegations=0 means the recipient cannot delegate at all.
+    root→mid (max_delegations=0) grants mid no delegation rights.
+    A chain where mid then delegates to leaf must be rejected."""
     root_priv, root_pub, root_did = _make_agent()
     mid_priv, mid_pub, mid_did = _make_agent()
     _, _, leaf_did = _make_agent()
@@ -23,7 +41,7 @@ def test_max_delegations_zero_means_unlimited():
     hop1 = sign_delegation(root_priv, root_did, mid_did, ["*"], max_delegations=0)
     hop2 = sign_delegation(mid_priv, mid_did, leaf_did, ["*"])
 
-    assert verify_auth_chain(
+    assert not verify_auth_chain(
         auth_chain=[hop1, hop2],
         expected_subject=leaf_did,
         known_public_keys={root_did: root_pub, mid_did: mid_pub},

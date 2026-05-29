@@ -82,7 +82,7 @@ def sign_delegation(
     subject_did: str,
     scope: list[str],
     ttl_seconds: int = 3600,
-    max_delegations: int = 0,
+    max_delegations: int = -1,
 ) -> str:
     """Create a signed delegation JWT for one hop in the trust chain.
 
@@ -95,7 +95,10 @@ def sign_delegation(
         exp             — expiry unix timestamp
         jti             — unique token ID (UUID4, required for revocation)
         scope           — list of action:resource permission strings
-        max_delegations — remaining delegation depth this token permits
+        max_delegations — remaining delegation depth this token permits.
+                          -1 (default) means no constraint (unlimited).
+                           0 means the recipient cannot delegate at all.
+                           N > 0 means at most N further hops are allowed.
     """
     now = datetime.now(UTC)
     exp = now + timedelta(seconds=ttl_seconds)
@@ -132,9 +135,9 @@ def verify_auth_chain(
         ensuring the chain is continuous and unbroken
       - not grant scope beyond what the previous token granted (scope can
         only narrow across hops, never expand — wildcard '*' is preserved)
-      - respect max_delegations: a token with max_delegations=N permits at
-        most N further hops after it; max_delegations=0 means the recipient
-        cannot delegate at all
+      - respect max_delegations: -1 (default) means no constraint;
+        0 means the recipient cannot delegate at all; N > 0 means at most
+        N further hops are permitted after this token
 
     The final token's sub must equal *expected_subject*.
 
@@ -205,20 +208,29 @@ def verify_auth_chain(
         prev_granted_scope = token_scope
 
         # --- max_delegations enforcement ---
-        # max_delegations > 0 means "at most N more hops after this token".
-        # max_delegations = 0 (default) means no constraint.
-        # Check whether the previous token's limit permits this token to exist.
+        # Semantics:
+        #   -1 = no constraint (unlimited delegations)
+        #    0 = recipient cannot delegate at all
+        #    N > 0 = recipient may delegate at most N further times
+        #
+        # hops_remaining tracks the tightest constraint propagated so far.
+        # None means no constraint has been set yet.
+        # Check whether the *previous* token's limit allows this token to exist.
         if hops_remaining is not None:
             if hops_remaining <= 0:
                 return False  # previous token exhausted its delegation allowance
             hops_remaining -= 1
 
-        # Update the remaining limit from this token if it sets one.
-        md = claims.get("max_delegations", 0)
-        if not isinstance(md, int):
+        # Update constraint from this token's max_delegations claim.
+        md = claims.get("max_delegations", -1)
+        if not isinstance(md, int) or md < -1:
             return False
-        if md > 0:
-            hops_remaining = md if hops_remaining is None else min(hops_remaining, md)
+        if md == -1:
+            pass  # no constraint — leave hops_remaining unchanged
+        elif hops_remaining is None:
+            hops_remaining = md
+        else:
+            hops_remaining = min(hops_remaining, md)
 
     # --- final subject check ---
     try:
