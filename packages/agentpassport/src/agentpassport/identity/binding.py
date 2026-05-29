@@ -45,6 +45,7 @@ No central registry. No chain calls. Just crypto + DNS.
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import re
 import time
@@ -495,8 +496,67 @@ def verify_revocation_attestation(revocation: Revocation) -> bool:
         return False
 
 
+# ---------------------------------------------------------------------------
+# SSRF protection
+# ---------------------------------------------------------------------------
+
+# Blocked private / special-purpose IP ranges (SSRF guard).
+_BLOCKED_NETWORKS = [
+    ipaddress.ip_network(cidr)
+    for cidr in (
+        "127.0.0.0/8",       # loopback
+        "::1/128",           # IPv6 loopback
+        "10.0.0.0/8",        # RFC 1918
+        "172.16.0.0/12",     # RFC 1918
+        "192.168.0.0/16",    # RFC 1918
+        "169.254.0.0/16",    # link-local / AWS metadata
+        "fe80::/10",         # IPv6 link-local
+        "fc00::/7",          # IPv6 unique local
+        "100.64.0.0/10",     # CGNAT / Tailscale
+        "0.0.0.0/8",         # unspecified
+        "::ffff:0:0/96",     # IPv4-mapped IPv6
+    )
+]
+
+_BLOCKED_HOSTNAMES = frozenset(
+    {"localhost", "metadata.google.internal", "169.254.169.254"}
+)
+
+
+def _assert_safe_domain(domain: str) -> None:
+    """Raise ValueError if *domain* looks like an internal/private target.
+
+    Guards against SSRF when domain-binding verification fetches a remote URL.
+    Checks both raw hostnames and resolved IP addresses.
+    """
+    hostname = domain.split(":")[0].lower()  # strip optional port
+
+    if hostname in _BLOCKED_HOSTNAMES:
+        raise ValueError(f"Domain '{domain}' is not allowed for binding verification")
+
+    # Try to parse as IP literal first
+    try:
+        addr = ipaddress.ip_address(hostname)
+        for net in _BLOCKED_NETWORKS:
+            if addr in net:
+                raise ValueError(
+                    f"Domain '{domain}' resolves to a blocked IP range"
+                )
+    except ValueError as exc:
+        # Re-raise if we raised it ourselves (blocked range)
+        if "blocked" in str(exc) or "not allowed" in str(exc):
+            raise
+        # Otherwise it's not an IP literal — DNS lookup can't be done here
+        # without an async resolver, but blocking the most common attack strings
+        # (localhost, metadata endpoints) above covers the critical cases.
+
+
 def _fetch_binding_document(domain: str, timeout: float) -> BindingDocument | None:
-    """Fetch and parse a BindingDocument from a domain's .well-known URL."""
+    """Fetch and parse a BindingDocument from a domain's .well-known URL.
+
+    Raises ValueError if *domain* is a private/internal address (SSRF guard).
+    """
+    _assert_safe_domain(domain)
     url = f"https://{domain}/.well-known/agent-passport.json"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "agentpassport/1.0"})

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 from agentpassport.identity.did import parse_did
-from agentpassport.identity.signing import verify_agent_card
+from agentpassport.identity.signing import _verify_jwt_signature, verify_agent_card
 from agentpassport.types import AgentCard
 from fastapi import APIRouter, HTTPException, Request
+from nacl.exceptions import BadSignatureError
 
 from agentpassport_registry.limiter import limiter
 from agentpassport_registry.query import QueryEngine
@@ -75,5 +78,33 @@ def get_agent(request: Request, did: str) -> dict:
 
 
 @router.delete("/v1/agents/{did:path}", status_code=204)
-def delete_agent(did: str) -> None:
+@limiter.limit("10/minute")
+def delete_agent(request: Request, did: str) -> None:
+    proof = request.headers.get("X-Delete-Proof")
+    if not _verify_delete_proof(did, proof):
+        raise HTTPException(status_code=401, detail="Missing or invalid X-Delete-Proof header")
     get_storage().delete(did)
+
+
+def _verify_delete_proof(did: str, proof_header: str | None) -> bool:
+    if not proof_header:
+        return False
+    try:
+        public_key_bytes = parse_did(did)
+    except (ValueError, Exception):
+        return False
+    try:
+        claims = _verify_jwt_signature(proof_header, public_key_bytes)
+    except (BadSignatureError, ValueError):
+        return False
+    # validate claims
+    if claims.get("sub") != did:
+        return False
+    if claims.get("action") != "delete":
+        return False
+    now_ts = datetime.now(UTC).timestamp()
+    try:
+        exp = float(claims["exp"])
+    except (KeyError, TypeError, ValueError):
+        return False
+    return not now_ts > exp

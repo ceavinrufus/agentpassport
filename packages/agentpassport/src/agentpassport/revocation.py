@@ -21,6 +21,7 @@ Usage:
 from __future__ import annotations
 
 import sqlite3
+import threading
 from abc import ABC, abstractmethod
 from datetime import UTC, datetime
 
@@ -59,10 +60,12 @@ class SqliteRevocationRegistry(RevocationRegistry):
     def __init__(self, db_path: str = "agentpassport_revocation.db") -> None:
         self.db_path = db_path
         self._conn: sqlite3.Connection | None = None
+        self._lock = threading.Lock()
 
     def initialize(self) -> None:
         """Create the database and table if they do not exist."""
         self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
+        self._conn.execute("PRAGMA journal_mode=WAL")
         self._conn.execute("""
             CREATE TABLE IF NOT EXISTS revoked_jtis (
                 jti TEXT PRIMARY KEY,
@@ -82,11 +85,12 @@ class SqliteRevocationRegistry(RevocationRegistry):
     def revoke(self, jti: str) -> None:
         """Mark *jti* as revoked. Idempotent — safe to call multiple times."""
         now_ts = int(datetime.now(UTC).timestamp())
-        self._db.execute(
-            "INSERT OR IGNORE INTO revoked_jtis (jti, revoked_at) VALUES (?, ?)",
-            (jti, now_ts),
-        )
-        self._db.commit()
+        with self._lock:
+            self._db.execute(
+                "INSERT OR IGNORE INTO revoked_jtis (jti, revoked_at) VALUES (?, ?)",
+                (jti, now_ts),
+            )
+            self._db.commit()
 
     def is_revoked(self, jti: str) -> bool:
         row = self._db.execute(
