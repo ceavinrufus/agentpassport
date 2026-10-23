@@ -192,13 +192,14 @@ export function verifyAuthChain(opts: VerifyAuthChainOptions): boolean {
 
     prevSubject = claims["sub"] as string | undefined;
 
-    // Scope narrowing: this hop cannot grant more than the previous hop
+    // Scope narrowing: this hop cannot grant more than the previous hop.
+    // "*" may be carried forward only when the previous hop granted it.
     const tokenScope = claims["scope"];
     if (!Array.isArray(tokenScope)) return false;
     if (
       prevGrantedScope !== undefined &&
       !prevGrantedScope.includes("*") &&
-      tokenScope.some((s) => s !== "*" && !prevGrantedScope!.includes(s))
+      tokenScope.some((s) => !prevGrantedScope!.includes(s))
     ) {
       return false;
     }

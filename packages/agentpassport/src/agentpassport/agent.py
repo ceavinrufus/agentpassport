@@ -126,7 +126,9 @@ class Agent:
 
         Pre-execution scope check runs automatically if the capability
         declares requires=[...]. ScopeError is raised before the handler
-        is called if the auth chain does not cover the declared scope.
+        is called when the auth chain is not a valid delegation to this
+        agent (verify_auth_chain rules: final subject, hop continuity,
+        scope narrowing) or does not grant the declared scope.
         """
         handler = self.capabilities.get(task.intent.type)
         if handler is None:

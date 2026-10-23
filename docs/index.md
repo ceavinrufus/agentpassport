@@ -155,7 +155,7 @@ Every other framework assumes agents act within scope. agentpassport gives you c
 There is no global registry. The deploying entity (human, org, CI/CD) is the root of trust. Trust is local and explicit, like TLS.
 
 **3. Scope can only narrow.**
-A delegation chain can never expand permissions. If the root grants `read:db`, no hop downstream can claim `write:db`.
+A delegation chain can never expand permissions. If the root grants `read:db`, no hop downstream can claim `write:db` or introduce `"*"`.
 
 **4. Standard primitives.**
 Ed25519 keys, W3C `did:key` DIDs, compact JWTs with EdDSA. Any language, any platform can verify a token — no agentpassport library required to read the wire format.
