@@ -1,0 +1,21 @@
+# Categories for GitHub's automatically generated release notes.
+# Used by the GitHub Release workflow when a v* tag is pushed.
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: Security
+      labels:
+        - security
+    - title: Fixed
+      labels:
+        - bug
+        - fix
+    - title: Added
+      labels:
+        - enhancement
+        - feature
+    - title: Other changes
+      labels:
+        - "*"

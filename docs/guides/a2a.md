@@ -17,14 +17,14 @@ This guide covers how to integrate agentpassport with the [A2A (Agent-to-Agent) 
 
 ## 1. Background: A2A + agentpassport
 
-A2A is a transport and discovery protocol: it defines how agents advertise their capabilities (AgentCard), how clients send tasks (JSON-RPC 2.0 `message/send`), and how they poll for results (`tasks/get`). What A2A does not define is *who is allowed to call what* — there is no built-in authorization model.
+A2A is a transport and discovery protocol: agents advertise capabilities on an Agent Card, clients send tasks (`message/send`), and they poll for results (`tasks/get`). A2A security schemes, including OAuth 2.0 bearer tokens, decide which client may call an agent. `A2AClientAdapter` sends that credential as `auth_token` and treats it as transport-level auth.
 
-agentpassport fills that gap. It provides cryptographic identity (DIDs + Ed25519 keypairs), signed delegation chains, and scope enforcement. When you combine the two:
+That does not record what each agent in a delegation chain was allowed to do. agentpassport sits on top of it. It does not replace A2A auth.
 
-- A2A handles discovery, transport, and task state.
-- agentpassport handles trust: every call carries a signed chain proving who authorized what, and your agent can enforce scopes before executing anything.
+- A2A handles discovery, transport, and task state, including the client's bearer token.
+- agentpassport adds a signed chain of scopes. A protected capability checks that chain before it runs.
 
-The A2A adapter (`agentpassport-adapters`) bridges the two without forcing you to choose sides: vanilla A2A clients can call open capabilities without knowing about agentpassport, while agentpassport-aware clients can attach an auth chain for protected capabilities.
+The A2A adapter (`agentpassport-adapters`) keeps the two separate. Vanilla A2A clients can call capabilities that declare no `requires`. Clients that send `X-AgentPassport-Auth-Chain` can call protected ones.
 
 ---
 

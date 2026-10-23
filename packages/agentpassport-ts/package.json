@@ -2,6 +2,17 @@
   "name": "@agentpassport/core",
   "version": "0.3.4",
   "description": "TypeScript SDK for agentpassport \u2014 the AI passport layer",
+  "license": "Apache-2.0",
+  "keywords": [
+    "ai",
+    "agents",
+    "authorization",
+    "delegation",
+    "did",
+    "identity",
+    "jwt",
+    "typescript"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -30,7 +41,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ceavinrufus/agentpassport.git"
+    "url": "https://github.com/ceavinrufus/agentpassport.git",
+    "directory": "packages/agentpassport-ts"
   },
   "homepage": "https://agentpassport.fyi",
   "bugs": {

@@ -5,6 +5,10 @@ repo_url: https://github.com/ceavinrufus/agentpassport
 
 docs_dir: docs
 
+# docs/site is the agentpassport.fyi homepage, not a docs page.
+exclude_docs: |
+  site/
+
 theme:
   name: material
   palette:
