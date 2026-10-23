@@ -3,6 +3,10 @@
 The orchestrator grants ``read:records`` to the worker. ``read_record`` runs.
 ``write_record`` requires ``write:records`` and is rejected before its handler runs.
 
+``worker.handle`` enforces the same chain rules as ``verify_auth_chain``
+(final subject, hop continuity, scope narrowing) and the capability's
+required scope. It does not consult a revocation registry.
+
 No network access and no API keys.
 """
 
@@ -18,7 +22,6 @@ from agentpassport import (
     TaskEnvelope,
     generate_keypair,
     sign_delegation,
-    verify_auth_chain,
 )
 
 
@@ -53,14 +56,6 @@ async def main() -> None:
         scope=["read:records"],
         ttl_seconds=300,
     )
-    chain_ok = verify_auth_chain(
-        auth_chain=[token],
-        expected_subject=worker.did,
-        known_public_keys={orchestrator.did: orchestrator.public_key},
-    )
-    if not chain_ok:
-        raise SystemExit("delegation chain did not verify")
-
     allowed = await worker.handle(
         TaskEnvelope(
             intent=Intent(type="read_record", params={"id": "42"}),
@@ -89,7 +84,6 @@ async def main() -> None:
         raise SystemExit(f"scope error did not mention write:records: {denied}")
 
     print("[orchestrator] signed delegation -> worker | scope: read:records")
-    print("chain verified")
     print(f"read_record -> {allowed}")
     print(f"write_record denied: {denied}")
     print("example ok")

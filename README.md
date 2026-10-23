@@ -13,7 +13,7 @@ agentpassport is a signed delegation chain for agents. Each agent has an Ed25519
 
 OAuth and MCP authorization decide which client may reach a server. This check sits on top of that. It does not replace the client check.
 
-`verify_auth_chain` rejects a hop that widens scope. `Agent.handle` checks that the granted scope covers the capability. It does not yet enforce narrowing on its own.
+`Agent.handle` applies the same chain rules as `verify_auth_chain`: the final subject is this agent, each hop's issuer is the previous hop's subject, and scope only narrows. It then checks that the final hop covers the capability. Python `handle` does not consult a revocation registry. `verify_auth_chain` does when you pass `revocation_registry`.
 
 ---
 
@@ -257,7 +257,7 @@ print(agent.did)  # did:key:z6Mk...
 
 ### 2. Signed Delegation (Auth Chain)
 
-Trust flows through a chain of signed JWTs. `verify_auth_chain` rejects a hop that grants a wider scope than it was given. `Agent.handle` does not enforce that narrowing yet.
+Trust flows through a chain of signed JWTs. `verify_auth_chain` and `Agent.handle` both reject a hop that grants a wider scope than it was given, a hop whose issuer is not the previous subject, or a final token addressed to a different agent.
 
 ```python
 from agentpassport import sign_delegation, verify_auth_chain
@@ -271,7 +271,7 @@ token = sign_delegation(
     ttl_seconds=3600,
 )
 
-# Receiving agent verifies before acting
+# Explicit check. Agent.handle runs these same rules before the handler.
 verify_auth_chain(
     auth_chain=[token],
     expected_subject=agent.did,
@@ -281,7 +281,7 @@ verify_auth_chain(
 
 ### 3. Pre-execution Scope Declaration
 
-Capabilities declare what scope they need. agentpassport checks before the handler runs — fail fast, no partial state.
+Capabilities declare what scope they need. `Agent.handle` checks the auth chain, then that scope, before the handler runs — fail fast, no partial state.
 
 ```python
 @agent.capability("query_customers", requires=["read:db:customers"])

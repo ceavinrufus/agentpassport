@@ -4,7 +4,7 @@ Runnable examples. Each one installs only what it needs, makes no network calls,
 
 | Example | What it shows |
 | --- | --- |
-| [langgraph](langgraph/README.md) | A delegation chain across a graph, then a scope check on a tool |
+| [langgraph](langgraph/README.md) | A delegation chain across a graph; `handle` checks the chain and the tool scope |
 | [python](python/README.md) | One signed delegation and a scope check |
 | [typescript](typescript/README.md) | The same flow in TypeScript |
 

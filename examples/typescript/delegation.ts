@@ -4,10 +4,15 @@
  * The orchestrator grants `read:records` to the worker. `read_record` runs.
  * `write_record` requires `write:records` and is rejected before its handler runs.
  *
+ * `worker.handle` enforces the same chain rules as `verifyAuthChain`
+ * (final subject, hop continuity, scope narrowing) and the capability's
+ * required scope. This example does not pass a revocation registry, so
+ * `handle` does not consult one.
+ *
  * No network access and no API keys.
  */
 
-import { Agent, ScopeError, createTask, verifyAuthChain } from "@agentpassport/core";
+import { Agent, ScopeError, createTask } from "@agentpassport/core";
 
 const orchestrator = new Agent("orchestrator");
 const worker = new Agent("worker");
@@ -30,13 +35,8 @@ const readTask = orchestrator.delegate(
   { targetDid: worker.did, scope: ["read:records"], ttlSeconds: 300 },
 );
 
-const chainOk = verifyAuthChain({
-  chain: readTask.auth_chain,
-  expectedSubject: worker.did,
-  knownPublicKeys: new Map([[orchestrator.did, orchestrator.publicKey]]),
-});
-if (!chainOk || readTask.auth_chain.length !== 1) {
-  throw new Error("delegation chain did not verify");
+if (readTask.auth_chain.length !== 1) {
+  throw new Error("expected one delegation token");
 }
 
 const allowed = await worker.handle(readTask);
@@ -71,7 +71,6 @@ if (!denied.message.includes("write:records")) {
 }
 
 console.log("[orchestrator] signed delegation -> worker | scope: read:records");
-console.log("chain verified");
 console.log(`read_record -> ${JSON.stringify(allowed)}`);
 console.log(`write_record denied: ${denied.message}`);
 console.log("example ok");

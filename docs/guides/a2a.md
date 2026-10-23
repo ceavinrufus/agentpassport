@@ -43,7 +43,7 @@ The A2A adapter (`agentpassport-adapters`) keeps the two separate. Vanilla A2A c
 │    ├── extract skillId → map to capability name                 │
 │    ├── parse auth chain header → attach to TaskEnvelope         │
 │    └── agent.handle(envelope)                                   │
-│          ├── TrustMiddleware.check() (scope enforcement)        │
+│          ├── TrustMiddleware.check() (chain + scope)            │
 │          └── your @agent.capability("name") handler             │
 └─────────────────────────────────────────────────────────────────┘
 
@@ -212,11 +212,11 @@ X-AgentPassport-Auth-Chain: eyJhbGc..., eyJhbGc...
 
 The adapter splits this header on commas, strips whitespace, and attaches the resulting list to `TaskEnvelope.auth_chain`. Your capability handler receives the full envelope — including the chain — for any downstream inspection or forwarding.
 
-Scope enforcement happens automatically via `TrustMiddleware` before your handler runs. If the scope check fails, the adapter catches `ScopeError` and returns a JSON-RPC error response (code `-32000`) instead of a 500.
+Scope enforcement happens inside `Agent.handle` via `TrustMiddleware` before your handler runs. For a capability that declares `requires`, the chain must pass the same rules as `verify_auth_chain`: the final `sub` is this agent, each hop's `iss` equals the previous hop's `sub`, scope only narrows, and the final hop grants every required scope. If that check fails, the adapter catches `ScopeError` and returns a JSON-RPC error response (code `-32000`) instead of a 500.
 
 **Open capabilities** (no `requires=` argument) don't check the auth chain at all — any caller can invoke them.
 
-**Protected capabilities** (`requires=["scope:name"]`) require a valid chain with the named scope. No chain = `ScopeError`.
+**Protected capabilities** (`requires=["scope:name"]`) reject an empty chain, a discontinuous chain, and a hop that widens scope, even when the required scope string is still on the final hop. Python `handle` does not consult a revocation registry. Call `verify_auth_chain(..., revocation_registry=...)` when a revoked `jti` must be rejected. The TypeScript `Agent` checks a registry when you pass `{ revocationRegistry }` to the constructor.
 
 ---
 

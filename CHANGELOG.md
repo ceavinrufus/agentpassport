@@ -74,6 +74,10 @@ Git tag `v0.3.2` shipped documentation and npm packaging. `@agentpassport/core` 
 - Python `handle()` now applies the same 30-second `iat` leeway as `verify_auth_chain()`. It still does not consult a revocation registry; pass `revocation_registry` to `verify_auth_chain()` when you need that check.
 - TypeScript `handle()` still checks the revocation registry when one was passed to `Agent`, and now does so for every hop, not only tokens addressed to this agent.
 
+### Documentation
+
+- README, the MCP and A2A guides, the homepage, and the runnable examples describe `Agent.handle` / `TrustMiddleware.check` as enforcing the same chain rules as `verify_auth_chain` (final subject, hop continuity, scope narrowing). Python `handle` still does not consult a revocation registry; `verify_auth_chain(..., revocation_registry=...)` does. A TypeScript `Agent` still checks a registry passed to its constructor.
+
 ## [0.3.0] — 2026-05-14
 
 ### Added
