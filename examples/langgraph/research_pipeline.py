@@ -23,7 +23,7 @@ from agentpassport import (
     verify_auth_chain,
 )
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
-from langchain_core.tools import tool
+from langchain_core.tools import StructuredTool
 from langgraph.graph import START, StateGraph, add_messages
 from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import InjectedState, ToolNode, tools_condition
@@ -31,6 +31,14 @@ from langgraph.prebuilt import InjectedState, ToolNode, tools_condition
 # Tracing is opt-in for this example even if the surrounding shell has keys set.
 os.environ["LANGCHAIN_TRACING_V2"] = "false"
 os.environ["LANGSMITH_TRACING"] = "false"
+
+# The script runs the graph twice (invoke, then ainvoke). Only the first trace is printed.
+_show_trace = True
+
+
+def _log(message: str) -> None:
+    if _show_trace:
+        print(message)
 
 _QUIET = EventEmitter(sinks=[])
 _ORCH_PRIVATE, _ = generate_keypair()
@@ -64,45 +72,98 @@ async def _save_article(_task: TaskEnvelope) -> dict[str, bool]:
     return {"stored": True}
 
 
-def _run_capability(name: str, params: dict[str, str], auth_chain: list[str]) -> dict[str, object]:
-    """Dispatch a tool through the writer agent so scope is checked first.
+def _writer_keys() -> dict[str, bytes]:
+    return {
+        orchestrator.did: orchestrator.public_key,
+        researcher.did: researcher.public_key,
+    }
 
-    ``graph.invoke`` is synchronous, so each tool call opens its own event loop.
+
+async def _run_capability(
+    name: str,
+    params: dict[str, str],
+    auth_chain: list[str],
+) -> dict[str, object]:
+    """Verify the chain for the writer, then run the capability.
+
+    ``verify_auth_chain`` checks subject and hop continuity. ``handle`` then
+    enforces the capability's required scope.
     """
+    chain_ok = verify_auth_chain(
+        auth_chain=auth_chain,
+        expected_subject=writer.did,
+        known_public_keys=_writer_keys(),
+    )
+    if not chain_ok:
+        raise ScopeError(
+            f"Auth chain for {name!r} failed verification for subject {writer.did}"
+        )
     task = TaskEnvelope(
         intent=Intent(type=name, params=params),
         auth_chain=list(auth_chain),
     )
-    return asyncio.run(writer.handle(task))
+    return await writer.handle(task)
 
 
-@tool
-def search_web(
+def _scope_denied(exc: ScopeError) -> str:
+    return f"SCOPE_DENIED: {exc}"
+
+
+async def _search_web(
     topic: str,
     auth_chain: Annotated[list[str], InjectedState("auth_chain")],
 ) -> str:
     """Look up sources for a topic. Requires the read:web scope."""
     try:
-        result = _run_capability("search_web", {"topic": topic}, auth_chain)
+        result = await _run_capability("search_web", {"topic": topic}, auth_chain)
     except ScopeError as exc:
-        return f"SCOPE_DENIED: {exc}"
+        return _scope_denied(exc)
     snippets = result["snippets"]
     if not isinstance(snippets, list):
         raise TypeError("search_web did not return snippets")
     return "\n".join(str(item) for item in snippets)
 
 
-@tool
-def save_article(
+def _search_web_sync(
+    topic: str,
+    auth_chain: Annotated[list[str], InjectedState("auth_chain")],
+) -> str:
+    """Look up sources for a topic. Requires the read:web scope."""
+    # invoke() has no running loop. ainvoke() calls _search_web directly.
+    return asyncio.run(_search_web(topic, auth_chain))
+
+
+async def _save_article_tool(
     body: str,
     auth_chain: Annotated[list[str], InjectedState("auth_chain")],
 ) -> str:
     """Persist an article. Requires the write:db scope."""
     try:
-        _run_capability("save_article", {"body": body}, auth_chain)
+        await _run_capability("save_article", {"body": body}, auth_chain)
     except ScopeError as exc:
-        return f"SCOPE_DENIED: {exc}"
+        return _scope_denied(exc)
     return "stored"
+
+
+def _save_article_sync(
+    body: str,
+    auth_chain: Annotated[list[str], InjectedState("auth_chain")],
+) -> str:
+    """Persist an article. Requires the write:db scope."""
+    return asyncio.run(_save_article_tool(body, auth_chain))
+
+
+# Both entry points: ainvoke awaits the coroutine and does not call asyncio.run.
+search_web = StructuredTool.from_function(
+    func=_search_web_sync,
+    coroutine=_search_web,
+    name="search_web",
+)
+save_article = StructuredTool.from_function(
+    func=_save_article_sync,
+    coroutine=_save_article_tool,
+    name="save_article",
+)
 
 
 class ResearchState(TypedDict):
@@ -125,7 +186,7 @@ def orchestrator_node(_state: ResearchState) -> dict[str, list[str]]:
         ttl_seconds=3600,
         max_delegations=1,
     )
-    print("[orchestrator] signed delegation -> researcher | scope: read:web")
+    _log("[orchestrator] signed delegation -> researcher | scope: read:web")
     return {"auth_chain": [token]}
 
 
@@ -139,7 +200,9 @@ def researcher_node(state: ResearchState) -> dict[str, str | list[str]]:
     if not chain_ok:
         raise RuntimeError("researcher rejected the delegation chain")
 
-    # read:web is the only scope this hop holds, so it cannot grant write:db.
+    # sign_delegation will sign write:db if asked; it does not read the parent
+    # grant. This hop passes read:web only. Widening is rejected later by
+    # verify_auth_chain — see _assert_over_grant_denied.
     token = sign_delegation(
         issuer_private_key=_RESEARCHER_PRIVATE,
         issuer_did=researcher.did,
@@ -148,7 +211,7 @@ def researcher_node(state: ResearchState) -> dict[str, str | list[str]]:
         ttl_seconds=1800,
         max_delegations=0,
     )
-    print("[researcher] chain verified | delegated -> writer | scope: read:web")
+    _log("[researcher] chain verified | delegated -> writer | scope: read:web")
     return {
         "notes": f"Research notes on {state['topic']}.",
         "auth_chain": [*state["auth_chain"], token],
@@ -196,8 +259,8 @@ def writer_node(state: ResearchState) -> dict[str, object]:
     search = _tool_text(state["messages"], "search_web")
     save = _tool_text(state["messages"], "save_article")
     article = f"# {state['topic']}\n\n{state['notes']}\n\n{search}\n"
-    print(f"[writer] search_web -> {search}")
-    print(f"[writer] save_article -> {save}")
+    _log(f"[writer] search_web -> {search}")
+    _log(f"[writer] save_article -> {save}")
     return {
         "messages": [AIMessage(content=article)],
         "article": article,
@@ -232,17 +295,32 @@ def _initial_state(topic: str) -> ResearchState:
     }
 
 
-def main() -> None:
-    topic = "cryptographic delegation in multi-agent systems"
-    result = build_graph().invoke(_initial_state(topic))
+def _over_granted_chain() -> list[str]:
+    """Researcher adds write:db, which the root grant does not contain."""
+    root = sign_delegation(
+        issuer_private_key=_ORCH_PRIVATE,
+        issuer_did=orchestrator.did,
+        subject_did=researcher.did,
+        scope=["read:web"],
+        ttl_seconds=3600,
+        max_delegations=1,
+    )
+    widened = sign_delegation(
+        issuer_private_key=_RESEARCHER_PRIVATE,
+        issuer_did=researcher.did,
+        subject_did=writer.did,
+        scope=["read:web", "write:db"],
+        ttl_seconds=1800,
+        max_delegations=0,
+    )
+    return [root, widened]
 
+
+def _assert_happy_path(result: ResearchState, topic: str) -> None:
     chain_ok = verify_auth_chain(
         auth_chain=result["auth_chain"],
         expected_subject=writer.did,
-        known_public_keys={
-            orchestrator.did: orchestrator.public_key,
-            researcher.did: researcher.public_key,
-        },
+        known_public_keys=_writer_keys(),
     )
     search = str(result["search_result"])
     save = str(result["save_result"])
@@ -257,8 +335,61 @@ def main() -> None:
     if "SCOPE_DENIED" not in save or "write:db" not in save:
         raise SystemExit(f"expected save_article to be denied for write:db, got {save!r}")
 
+
+async def _assert_over_grant_denied() -> None:
+    """A widened hop fails verify_auth_chain, and handle still denies the tool."""
+    chain = _over_granted_chain()
+    if verify_auth_chain(
+        auth_chain=chain,
+        expected_subject=writer.did,
+        known_public_keys=_writer_keys(),
+    ):
+        raise SystemExit("over-grant of write:db should fail verify_auth_chain")
+
+    ran_before = len(_handlers_ran)
+    try:
+        await _run_capability("save_article", {"body": "draft"}, chain)
+    except ScopeError:
+        pass
+    else:
+        raise SystemExit("tool path accepted a chain that failed verification")
+    if len(_handlers_ran) != ran_before:
+        raise SystemExit("save_article handler ran after verify_auth_chain failed")
+
+    try:
+        await writer.handle(
+            TaskEnvelope(
+                intent=Intent(type="save_article", params={"body": "draft"}),
+                auth_chain=chain,
+            )
+        )
+    except ScopeError as exc:
+        if "write:db" not in str(exc):
+            raise SystemExit(f"handle denied without mentioning write:db: {exc}") from exc
+    else:
+        raise SystemExit("writer.handle should deny write:db on an over-granted chain")
+    if "save_article" in _handlers_ran:
+        raise SystemExit("save_article handler ran on an over-granted chain")
+
+    print("[researcher] over-granted write:db: verify_auth_chain is false")
+    print("[writer] save_article still denied on that chain")
+
+
+def main() -> None:
+    global _show_trace
+
+    topic = "cryptographic delegation in multi-agent systems"
+    graph = build_graph()
+    result = graph.invoke(_initial_state(topic))
+    _assert_happy_path(result, topic)
     print(f"auth chain hops: {len(result['auth_chain'])}")
     print(str(result["article"]).rstrip())
+
+    # Same tools under ainvoke. They await handle; they do not call asyncio.run.
+    _show_trace = False
+    again = asyncio.run(graph.ainvoke(_initial_state(topic)))
+    _assert_happy_path(again, topic)
+    asyncio.run(_assert_over_grant_denied())
     print("example ok")
 
 
