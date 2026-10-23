@@ -35,8 +35,9 @@ def test_python_packages_have_pypi_metadata():
         assert "LICENSE" in project["license-files"]
         assert (ROOT / rel / "LICENSE").is_file()
         assert project["keywords"]
+        assert "authorization layer" not in project["description"].lower()
         classifiers = project["classifiers"]
-        assert "License :: OSI Approved :: Apache Software License" in classifiers
+        assert not any(item.startswith("License ::") for item in classifiers)
         assert "Programming Language :: Python :: 3" in classifiers
         urls = project["urls"]
         assert urls["Homepage"] == HOMEPAGE
@@ -55,3 +56,11 @@ def test_npm_package_has_registry_metadata():
     assert package["repository"]["directory"] == "packages/agentpassport-ts"
     assert package["bugs"]["url"] == f"{REPOSITORY}/issues"
     assert (ROOT / "packages/agentpassport-ts/LICENSE").is_file()
+
+
+def test_packaged_license_matches_root():
+    root_license = (ROOT / "LICENSE").read_bytes()
+    packaged = [*(ROOT / rel / "LICENSE" for rel in PYTHON_PACKAGES)]
+    packaged.append(ROOT / "packages/agentpassport-ts/LICENSE")
+    for path in packaged:
+        assert path.read_bytes() == root_license, path

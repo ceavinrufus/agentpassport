@@ -4,22 +4,22 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>agentpassport — Agents act. agentpassport proves it.</title>
-<meta name="description" content="Cryptographic identity and authorization for AI agents. Prove delegation, enforce scope, and revoke access across languages and frameworks.">
+<meta name="description" content="Delegation-chain layer for AI agents, on top of OAuth and MCP auth. Prove who delegated what, and enforce scope across languages.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://agentpassport.fyi">
 <meta property="og:title" content="agentpassport — Agents act. agentpassport proves it.">
-<meta property="og:description" content="Cryptographic identity and authorization for AI agents. Prove delegation, enforce scope, and revoke access across languages and frameworks.">
+<meta property="og:description" content="Delegation-chain layer for AI agents, on top of OAuth and MCP auth. Prove who delegated what, and enforce scope across languages.">
 <meta property="og:url" content="https://agentpassport.fyi">
 <meta property="og:image" content="https://agentpassport.fyi/logo.png">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="agentpassport — Agents act. agentpassport proves it.">
-<meta name="twitter:description" content="Cryptographic identity and authorization for AI agents. Prove delegation, enforce scope, and revoke access across languages and frameworks.">
+<meta name="twitter:description" content="Delegation-chain layer for AI agents, on top of OAuth and MCP auth. Prove who delegated what, and enforce scope across languages.">
 <meta name="twitter:image" content="https://agentpassport.fyi/logo.png">
 <link rel="icon" type="image/png" href="/logo.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/lucide@1.61.0/dist/umd/lucide.min.js" integrity="sha384-wx1iBc8a89SnsJAxZPb9eNEoMn4t/Wg111+QJyasxB9Om4SDDtkJeBuXx4NiRwa8" crossorigin="anonymous"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -252,7 +252,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); pa
 <section class="hero">
   <div class="hero-badge"><div class="pulse-dot"></div><span id="ap-version" data-ap-version="0.3.4">v0.3.4</span> · Apache 2.0 · Python + TypeScript</div>
   <h1>Agents act.<br><em>agentpassport</em> proves it.</h1>
-  <p class="hero-sub">Cryptographic authorization for AI agents. Prove delegation, enforce scope, and revoke access — across languages and frameworks.</p>
+  <p class="hero-sub">The delegation-chain layer on top of OAuth and MCP auth. Prove who delegated what, and enforce scope — across languages and frameworks.</p>
   <div class="hero-actions">
     <a class="btn btn-primary" href="https://docs.agentpassport.fyi">Get Started →</a>
     <a class="btn btn-ghost" href="https://github.com/ceavinrufus/agentpassport"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg> Star on GitHub</a>
@@ -327,7 +327,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); pa
 
 <section class="features" id="features">
   <div class="section-eyebrow">// why agentpassport</div>
-  <h2 class="section-title">The authorization primitive<br>your agents are missing.</h2>
+  <h2 class="section-title">The delegation chain<br>your agents are missing.</h2>
   <p class="section-sub">Every framework trusts by convention. agentpassport proves by cryptography.</p>
   <div class="features-grid">
     <div class="feature-card">
@@ -352,7 +352,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); pa
       <div class="feature-icon"><i data-lucide="ban"></i></div>
       <div class="feature-num">04 / REVOCATION</div>
       <div class="feature-title">Mid-flight revocation</div>
-      <p class="feature-desc">Revoke by JTI without killing in-flight work. Current action finishes safely. Next hop is denied.</p>
+      <p class="feature-desc">Revoke a JTI in a registry. <code style="font-family:var(--mono);font-size:0.78rem;color:var(--green)">verify_auth_chain</code> rejects that token when you pass the registry. <code style="font-family:var(--mono);font-size:0.78rem;color:var(--green)">Agent.handle</code> does not check it.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon"><i data-lucide="arrow-left-right"></i></div>
@@ -377,9 +377,9 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); pa
   <div class="compare-grid">
     <div class="compare-col">
       <div class="compare-header">✗ Without agentpassport</div>
-      <div class="compare-item">– Authorization by convention, not proof</div>
+      <div class="compare-item">– Delegation by convention, not a signed chain</div>
       <div class="compare-item">– Scope enforced ad-hoc, post-execution</div>
-      <div class="compare-item">– Revocation = kill the process</div>
+      <div class="compare-item">– A revoked JWT still verifies until you check it</div>
       <div class="compare-item">– Custom glue per language integration</div>
       <div class="compare-item">– Audit trail = grep logs at 3am</div>
     </div>
@@ -387,7 +387,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); pa
       <div class="compare-header">✓ With agentpassport</div>
       <div class="compare-item">✓ Cryptographic proof at every hop</div>
       <div class="compare-item">✓ Declared + verified before execution</div>
-      <div class="compare-item">✓ Soft-stop by JTI, mid-flight safe</div>
+      <div class="compare-item">✓ verify_auth_chain rejects a JTI when given the registry</div>
       <div class="compare-item">✓ Wire-compatible Python ↔ TypeScript</div>
       <div class="compare-item">✓ Signed receipts, tamper-evident</div>
     </div>
@@ -408,7 +408,7 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); pa
       </div>
     </div>
     <pre id="tab-python" class="active"><span class="c"># 1. Every agent gets a cryptographic identity</span>
-<span class="kw">from</span> agentpassport <span class="kw">import</span> Agent, sign_delegation
+<span class="kw">from</span> agentpassport <span class="kw">import</span> Agent, sign_delegation, verify_auth_chain
 
 agent = <span class="fn">Agent</span>(<span class="str">"my-agent"</span>)
 <span class="fn">print</span>(agent.did)  <span class="c"># did:key:z6Mk...</span>
@@ -425,10 +425,16 @@ token = <span class="fn">sign_delegation</span>(
 <span class="c"># 3. Declare required scope — enforced before execution</span>
 <span class="fn">@agent.capability</span>(<span class="str">"query_customers"</span>, requires=[<span class="str">"read:db:customers"</span>])
 <span class="kw">async def</span> <span class="fn">handle</span>(task):
-    <span class="kw">return</span> {<span class="str">"customers"</span>: [...]}  <span class="c"># only runs if authorized</span>
+    <span class="kw">return</span> {<span class="str">"customers"</span>: [...]}  <span class="c"># only runs if the chain grants that scope</span>
 
-<span class="c"># Revoke mid-flight — safe, no kill signal</span>
-registry.<span class="fn">revoke</span>(jti)  <span class="c"># next request denies, current finishes</span></pre>
+<span class="c"># Revoke by JTI. Checked by verify_auth_chain, not Agent.handle</span>
+registry.<span class="fn">revoke</span>(jti)
+<span class="fn">verify_auth_chain</span>(
+    auth_chain=[token],
+    expected_subject=agent.did,
+    known_public_keys={root_did: root_pub},
+    revocation_registry=registry,
+)  <span class="c"># False</span></pre>
     <pre id="tab-typescript"><span class="c">// Wire-compatible with Python — no shared infrastructure needed</span>
 <span class="kw">import</span> { Agent, InMemoryRevocationRegistry } <span class="kw">from</span> <span class="str">"@agentpassport/core"</span>
 
@@ -448,8 +454,8 @@ agent.<span class="fn">capability</span>(<span class="str">"queryCustomers"</spa
 
 <section class="cta-section">
   <div class="cta-inner">
-    <h2>Start proving<br>agent authorization.</h2>
-    <p>Pure OSS under Apache 2.0. No gateway required. No vendor lock-in. A library that proves what your agents were authorized to do.</p>
+    <h2>Start proving<br>delegation.</h2>
+    <p>Pure OSS under Apache 2.0. No gateway required. No vendor lock-in. A delegation-chain layer on top of OAuth and MCP auth.</p>
     <div class="cta-actions">
       <a class="btn btn-primary" href="https://docs.agentpassport.fyi">Read the docs →</a>
       <a class="btn btn-ghost" href="https://github.com/ceavinrufus/agentpassport"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg> Star on GitHub</a>
@@ -520,15 +526,15 @@ const SCENARIOS = {
     labels: [
       { id:'el-01', text:'signed · jwt',  cls:'scope' },
       { id:'el-12', text:'⊘ jti revoked', cls:'deny'  },
-      { id:'el-23', text:'⊘ 403',         cls:'deny'  },
+      { id:'el-23', text:'⊘ false',       cls:'deny'  },
     ],
     n1did: 'jti: d77dd09a…',
-    n3: { icon:'⊘', label:'Blocked', did:'next hop denied', ring:'deny' },
+    n3: { icon:'⊘', label:'Rejected', did:'verify_auth_chain', ring:'deny' },
     logs: [
       { cls:'log-dim', text:'[01] delegation  jti=d77dd09a… active' },
-      { cls:'log-dim', text:'[02] revocation  registry.revoke(jti) — mid-flight safe' },
-      { cls:'log-ok',  text:'[03] current     action completed safely before stop' },
-      { cls:'log-err', text:'[04] next hop    ⊘ revoked · 403 · cascade propagated' },
+      { cls:'log-dim', text:'[02] revocation  registry.revoke(jti)' },
+      { cls:'log-err', text:'[03] verify      verify_auth_chain(..., revocation_registry)' },
+      { cls:'log-err', text:'[04] result      false — Agent.handle does not apply this' },
     ]
   }
 };
