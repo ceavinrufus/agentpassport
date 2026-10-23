@@ -1,0 +1,2 @@
+# This example depends only on agentpassport, installed from this repository.
+# See README.md. There are no third-party dependencies.
