@@ -52,7 +52,7 @@ Available in Python (`agentpassport`) and TypeScript (`@agentpassport/core`), wi
 - Revocation: `RevocationRegistry`, `InMemoryRevocationRegistry`, `SqliteRevocationRegistry`
 - Transport: `HttpTransport`, `StdioTransport`
 - `RegistryClient`
-- Internal helpers: `_base58btc_encode/decode`, `_b64url_encode/decode`, `_encode_jwt`, `_decode_jwt_claims`, `_verify_jwt_signature`, `_chain_granted_scopes`
+- Internal helpers: `_base58btc_encode/decode`, `_b64url_encode/decode`, `_encode_jwt`, `_decode_jwt_claims`, `_verify_jwt_signature`, `_final_granted_scopes`
 
 ---
 

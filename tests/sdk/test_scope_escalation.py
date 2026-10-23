@@ -93,6 +93,56 @@ def test_wildcard_in_prev_allows_any_scope():
     )
 
 
+def test_introducing_wildcard_rejected():
+    """mid received ['read:db'] and re-delegates ['*'] — that widens the grant."""
+    root_priv, root_pub, root_did = _make_agent()
+    mid_priv, mid_pub, mid_did = _make_agent()
+    _, _, leaf_did = _make_agent()
+
+    hop1 = sign_delegation(root_priv, root_did, mid_did, ["read:db"])
+    hop2 = sign_delegation(mid_priv, mid_did, leaf_did, ["*"])
+
+    assert not verify_auth_chain(
+        auth_chain=[hop1, hop2],
+        expected_subject=leaf_did,
+        known_public_keys={root_did: root_pub, mid_did: mid_pub},
+    )
+
+
+def test_wildcard_then_unrelated_scope_via_introduced_star_rejected():
+    """['read:db'] → ['*'] → ['admin'] must not verify. '*' is not a free widening."""
+    root_priv, root_pub, root_did = _make_agent()
+    mid_priv, mid_pub, mid_did = _make_agent()
+    leaf_priv, leaf_pub, leaf_did = _make_agent()
+    _, _, final_did = _make_agent()
+
+    hop1 = sign_delegation(root_priv, root_did, mid_did, ["read:db"])
+    hop2 = sign_delegation(mid_priv, mid_did, leaf_did, ["*"])
+    hop3 = sign_delegation(leaf_priv, leaf_did, final_did, ["admin"])
+
+    assert not verify_auth_chain(
+        auth_chain=[hop1, hop2, hop3],
+        expected_subject=final_did,
+        known_public_keys={root_did: root_pub, mid_did: mid_pub, leaf_did: leaf_pub},
+    )
+
+
+def test_wildcard_passthrough_accepted():
+    """A hop that received ['*'] may pass ['*'] downstream."""
+    root_priv, root_pub, root_did = _make_agent()
+    mid_priv, mid_pub, mid_did = _make_agent()
+    _, _, leaf_did = _make_agent()
+
+    hop1 = sign_delegation(root_priv, root_did, mid_did, ["*"])
+    hop2 = sign_delegation(mid_priv, mid_did, leaf_did, ["*"])
+
+    assert verify_auth_chain(
+        auth_chain=[hop1, hop2],
+        expected_subject=leaf_did,
+        known_public_keys={root_did: root_pub, mid_did: mid_pub},
+    )
+
+
 def test_scope_escalation_in_three_hop_chain_rejected():
     """Escalation at the second re-delegation in a 3-hop chain."""
     root_priv, root_pub, root_did = _make_agent()

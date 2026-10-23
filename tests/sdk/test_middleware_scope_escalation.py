@@ -1,10 +1,8 @@
 """Tests for scope escalation prevention in TrustMiddleware.
 
-TrustMiddleware._chain_granted_scopes was computing a union of scopes
-across all tokens — meaning an intermediate agent could escalate scope
-and TrustMiddleware would accept it.
-
-The fix: scope is intersected (narrowed) across hops, not unioned.
+Agent.handle rejects a chain that grants scope the previous hop did not
+have. The check is the same one verify_auth_chain applies: a widened hop
+fails the whole chain, rather than being silently intersected away.
 """
 import pytest
 from agentpassport.agent import Agent

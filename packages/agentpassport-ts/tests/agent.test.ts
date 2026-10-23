@@ -134,4 +134,132 @@ describe("Agent", () => {
       agent.trustKeys(new Map([[issuer.did, issuer.kp.publicKey]]))
     ).not.toThrow();
   });
+
+  it("rejects a token addressed to a different agent", async () => {
+    const issuer = makeParty();
+    const other = makeParty();
+    const agent = new Agent("agent");
+    agent.trustKeys({ [issuer.did]: issuer.kp.publicKey });
+
+    const token = signDelegation({
+      issuerPrivateKey: issuer.kp.privateKey,
+      issuerDid: issuer.did,
+      subjectDid: other.did,
+      scope: ["read:db"],
+    });
+
+    let called = false;
+    agent.capability("query", { requires: ["read:db"] }, async () => {
+      called = true;
+      return { ok: true };
+    });
+
+    const task = createTask({ type: "query", params: {} }, { auth_chain: [token] });
+    await expect(agent.handle(task)).rejects.toThrow(ScopeError);
+    expect(called).toBe(false);
+  });
+
+  it("rejects a chain with an issuer/subject gap", async () => {
+    const root = makeParty();
+    const skipped = makeParty();
+    const other = makeParty();
+    const agent = new Agent("agent");
+    agent.trustKeys({
+      [root.did]: root.kp.publicKey,
+      [other.did]: other.kp.publicKey,
+    });
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: skipped.did,
+      scope: ["read:db"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: other.kp.privateKey,
+      issuerDid: other.did,
+      subjectDid: agent.did,
+      scope: ["read:db"],
+    });
+
+    let called = false;
+    agent.capability("query", { requires: ["read:db"] }, async () => {
+      called = true;
+      return { ok: true };
+    });
+
+    const task = createTask(
+      { type: "query", params: {} },
+      { auth_chain: [hop1, hop2] }
+    );
+    await expect(agent.handle(task)).rejects.toThrow(ScopeError);
+    expect(called).toBe(false);
+  });
+
+  it("rejects a widened scope even when the required scope is on every hop", async () => {
+    const root = makeParty();
+    const mid = makeParty();
+    const agent = new Agent("agent");
+    agent.trustKeys({
+      [root.did]: root.kp.publicKey,
+      [mid.did]: mid.kp.publicKey,
+    });
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: mid.did,
+      scope: ["read:db"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: mid.kp.privateKey,
+      issuerDid: mid.did,
+      subjectDid: agent.did,
+      scope: ["read:db", "write:db"],
+    });
+
+    let called = false;
+    agent.capability("query", { requires: ["read:db"] }, async () => {
+      called = true;
+      return { ok: true };
+    });
+
+    const task = createTask(
+      { type: "query", params: {} },
+      { auth_chain: [hop1, hop2] }
+    );
+    await expect(agent.handle(task)).rejects.toThrow(ScopeError);
+    expect(called).toBe(false);
+  });
+
+  it("accepts a continuous chain whose scope only narrows", async () => {
+    const root = makeParty();
+    const mid = makeParty();
+    const agent = new Agent("agent");
+    agent.trustKeys({
+      [root.did]: root.kp.publicKey,
+      [mid.did]: mid.kp.publicKey,
+    });
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: mid.did,
+      scope: ["read:db", "write:db"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: mid.kp.privateKey,
+      issuerDid: mid.did,
+      subjectDid: agent.did,
+      scope: ["read:db"],
+    });
+
+    agent.capability("query", { requires: ["read:db"] }, async () => ({ rows: 1 }));
+
+    const task = createTask(
+      { type: "query", params: {} },
+      { auth_chain: [hop1, hop2] }
+    );
+    await expect(agent.handle(task)).resolves.toEqual({ rows: 1 });
+  });
 });

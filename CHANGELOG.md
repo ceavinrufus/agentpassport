@@ -58,6 +58,22 @@ Git tag `v0.3.2` shipped documentation and npm packaging. `@agentpassport/core` 
 
 ---
 
+## [Unreleased]
+
+### Fixed
+
+- **Security:** `Agent.handle()` / `TrustMiddleware.check()` in the Python and TypeScript SDKs now accept a capability's `requires` only when the task's auth chain passes the same rules as `verify_auth_chain()` / `verifyAuthChain()`. A token a trusted issuer gave to agent A is no longer accepted by agent B. A chain with an issuer/subject gap, or a hop that widens scope, is rejected even when the required scope string still appears on the final hop.
+- **Security:** `verify_auth_chain()` / `verifyAuthChain()` reject a hop that includes `"*"` when the previous hop did not grant `"*"`. That string used to be skipped in the subset check and then stored as the grant, so the next hop could delegate any scope. A hop that received `"*"` may still pass `"*"` on, and a previous `"*"` still allows any concrete scope downstream. `Agent.handle()` follows this rule.
+
+### Changed
+
+`Agent.handle()` on a capability that declares `requires` is stricter. Capabilities with no `requires` are unchanged.
+
+- The chain is verified as a whole. One bad hop fails the call. Python previously skipped tokens that failed a signature or expiry check and intersected the scopes of whatever remained, without checking `sub`, hop continuity, `jti`, or `max_delegations`. TypeScript previously verified each token on its own and kept only those whose `sub` was this agent, so continuity and narrowing were not enforced.
+- The scopes granted to the receiving agent are the **final hop's** `scope`, after that verification. `"*"` on that hop still covers every required scope. Earlier hops constrain it: scope may only narrow, and a previous `"*"` still allows any downstream scope.
+- Python `handle()` now applies the same 30-second `iat` leeway as `verify_auth_chain()`. It still does not consult a revocation registry; pass `revocation_registry` to `verify_auth_chain()` when you need that check.
+- TypeScript `handle()` still checks the revocation registry when one was passed to `Agent`, and now does so for every hop, not only tokens addressed to this agent.
+
 ## [0.3.0] — 2026-05-14
 
 ### Added

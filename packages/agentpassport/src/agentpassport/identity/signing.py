@@ -136,7 +136,9 @@ def verify_auth_chain(
       - have its issuer (iss) equal to the previous token's subject (sub),
         ensuring the chain is continuous and unbroken
       - not grant scope beyond what the previous token granted (scope can
-        only narrow across hops, never expand — wildcard '*' is preserved)
+        only narrow across hops, never expand). A hop may carry "*" only
+        when the previous hop granted "*". A previous "*" still allows
+        any concrete scope downstream.
       - respect max_delegations: -1 (default) means no constraint;
         0 means the recipient cannot delegate at all; N > 0 means at most
         N further hops are permitted after this token
@@ -203,9 +205,11 @@ def verify_auth_chain(
         token_scope = claims.get("scope", [])
         if not isinstance(token_scope, list):
             return False
-        if (prev_granted_scope is not None
-                and "*" not in prev_granted_scope
-                and any(s not in prev_granted_scope for s in token_scope if s != "*")):
+        if (
+            prev_granted_scope is not None
+            and "*" not in prev_granted_scope
+            and any(s not in prev_granted_scope for s in token_scope)
+        ):
             return False
         prev_granted_scope = token_scope
 

@@ -111,12 +111,12 @@ describe("TrustMiddleware", () => {
     }
   });
 
-  it("ignores tokens whose sub is not the agent DID", () => {
+  it("rejects a token addressed to a different agent", () => {
     const issuer = makeParty();
     const agent = makeParty();
     const other = makeParty();
 
-    // Token delegates to 'other', not 'agent'
+    // Scope matches; the token is addressed to `other`, not `agent`.
     const token = signDelegation({
       issuerPrivateKey: issuer.kp.privateKey,
       issuerDid: issuer.did,
@@ -131,6 +131,127 @@ describe("TrustMiddleware", () => {
     );
 
     expect(() => middleware.check([token], "queryCustomers")).toThrow(ScopeError);
+  });
+
+  it("rejects a chain with an issuer/subject gap", () => {
+    const root = makeParty();
+    const skipped = makeParty();
+    const other = makeParty();
+    const agent = makeParty();
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: skipped.did,
+      scope: ["read:db:customers"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: other.kp.privateKey,
+      issuerDid: other.did,
+      subjectDid: agent.did,
+      scope: ["read:db:customers"],
+    });
+
+    const middleware = new TrustMiddleware(
+      agent.did,
+      new Map([
+        [root.did, root.kp.publicKey],
+        [other.did, other.kp.publicKey],
+      ]),
+      new Map([["queryCustomers", ["read:db:customers"]]])
+    );
+
+    expect(() => middleware.check([hop1, hop2], "queryCustomers")).toThrow(ScopeError);
+  });
+
+  it("rejects a widened scope even when the required scope is on every hop", () => {
+    const root = makeParty();
+    const mid = makeParty();
+    const agent = makeParty();
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: mid.did,
+      scope: ["read:db:customers"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: mid.kp.privateKey,
+      issuerDid: mid.did,
+      subjectDid: agent.did,
+      scope: ["read:db:customers", "write:db"],
+    });
+
+    const middleware = new TrustMiddleware(
+      agent.did,
+      new Map([
+        [root.did, root.kp.publicKey],
+        [mid.did, mid.kp.publicKey],
+      ]),
+      new Map([["queryCustomers", ["read:db:customers"]]])
+    );
+
+    expect(() => middleware.check([hop1, hop2], "queryCustomers")).toThrow(ScopeError);
+  });
+
+  it("rejects a hop that introduces * without receiving it", () => {
+    const root = makeParty();
+    const mid = makeParty();
+    const agent = makeParty();
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: mid.did,
+      scope: ["read:db:customers"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: mid.kp.privateKey,
+      issuerDid: mid.did,
+      subjectDid: agent.did,
+      scope: ["*"],
+    });
+
+    const middleware = new TrustMiddleware(
+      agent.did,
+      new Map([
+        [root.did, root.kp.publicKey],
+        [mid.did, mid.kp.publicKey],
+      ]),
+      new Map([["queryCustomers", ["admin"]]])
+    );
+
+    expect(() => middleware.check([hop1, hop2], "queryCustomers")).toThrow(ScopeError);
+  });
+
+  it("accepts a continuous chain whose scope only narrows", () => {
+    const root = makeParty();
+    const mid = makeParty();
+    const agent = makeParty();
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: mid.did,
+      scope: ["read:db:customers", "write:db"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: mid.kp.privateKey,
+      issuerDid: mid.did,
+      subjectDid: agent.did,
+      scope: ["read:db:customers"],
+    });
+
+    const middleware = new TrustMiddleware(
+      agent.did,
+      new Map([
+        [root.did, root.kp.publicKey],
+        [mid.did, mid.kp.publicKey],
+      ]),
+      new Map([["queryCustomers", ["read:db:customers"]]])
+    );
+
+    expect(() => middleware.check([hop1, hop2], "queryCustomers")).not.toThrow();
   });
 
   it("ignores tokens from untrusted issuers", () => {
