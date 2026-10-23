@@ -236,10 +236,10 @@ Incoming request:
 
 agentpassport:
 1. Extracts auth chain from header
-2. Verifies all JWTs
-3. Maps tool name → required scope
+2. verify_auth_chain — signatures, linkage, narrowing, and final subject
+3. TrustMiddleware.check — tool name → required scope
 4. Forwards to backend MCP server if all checks pass
-5. Returns 403 with ScopeError message if checks fail
+5. Returns 403 if either check fails
 """
 
 import asyncio
@@ -249,6 +249,7 @@ from typing import Any
 import httpx
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response
+from agentpassport import verify_auth_chain
 from agentpassport.trust import TrustMiddleware, ScopeError
 
 # ---------------------------------------------------------------------------
@@ -273,8 +274,9 @@ TRUSTED_KEYS: dict[str, bytes] = {
     "did:key:z6Mk...": bytes.fromhex("abc123..."),  # orchestrator
 }
 
-# The DID of this proxy agent (used for subject check)
-PROXY_DID = "did:key:z6Mk..."  # set this to your proxy agent's DID
+# Final JWT subject for this proxy. verify_auth_chain requires sub == PROXY_DID.
+# TrustMiddleware.check does not compare the token subject to this DID.
+PROXY_DID = "did:key:z6Mk..."
 
 # ---------------------------------------------------------------------------
 # Proxy implementation
@@ -303,7 +305,15 @@ def check_auth(auth_chain_header: str | None, tool_name: str, proxy_did: str) ->
     if not chain:
         raise HTTPException(status_code=403, detail="X-Auth-Chain header is empty.")
 
-    # Verify auth chain + scope in one step using TrustMiddleware
+    # Subject, chain linkage, and scope narrowing. TrustMiddleware.check does not do these.
+    if not verify_auth_chain(
+        auth_chain=chain,
+        expected_subject=proxy_did,
+        known_public_keys=TRUSTED_KEYS,
+    ):
+        raise HTTPException(status_code=403, detail="Auth chain verification failed.")
+
+    # Tool scope only. A token whose subject is not proxy_did still passes this call.
     tm = TrustMiddleware(
         agent_did=proxy_did,
         known_public_keys=TRUSTED_KEYS,

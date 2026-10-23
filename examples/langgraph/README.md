@@ -227,7 +227,7 @@ The writer can read. It cannot write to the database. The scope check happens be
 
 ---
 
-**agentpassport** — Signed delegation on top of the auth you already have. OAuth and MCP auth decide which client may reach a server. agentpassport records what each agent in the chain was allowed to do.
+**agentpassport** — The authorization layer for multi-agent AI systems.
 
 GitHub: https://github.com/ceavinrufus/agentpassport
 Docs: https://agentpassport.fyi

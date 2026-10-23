@@ -9,9 +9,11 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/ceavinrufus/agentpassport/actions/workflows/ci.yml/badge.svg)](https://github.com/ceavinrufus/agentpassport/actions/workflows/ci.yml)
 
-OAuth and MCP authorization decide which client may reach a server. agentpassport sits on top of that check and records what each later agent in a delegation chain was allowed to do. It does not replace the client check.
+agentpassport is a signed delegation chain for agents. Each agent has an Ed25519 `did:key`, and each hop is a JWT recording the scope that agent was granted.
 
-Each agent gets an Ed25519 `did:key`. Each hop is a signed JWT, and scope can only narrow. The receiving agent checks that scope before the handler runs.
+OAuth and MCP authorization decide which client may reach a server. This check sits on top of that. It does not replace the client check.
+
+`verify_auth_chain` rejects a hop that widens scope. `Agent.handle` checks that the granted scope covers the capability. It does not yet enforce narrowing on its own.
 
 ---
 
@@ -255,7 +257,7 @@ print(agent.did)  # did:key:z6Mk...
 
 ### 2. Signed Delegation (Auth Chain)
 
-Trust flows through a chain of signed JWTs. Each hop narrows scope — an agent can never grant more than it has.
+Trust flows through a chain of signed JWTs. `verify_auth_chain` rejects a hop that grants a wider scope than it was given. `Agent.handle` does not enforce that narrowing yet.
 
 ```python
 from agentpassport import sign_delegation, verify_auth_chain
@@ -293,6 +295,8 @@ async def handle(task: TaskEnvelope) -> dict:
 `verify_auth_chain(..., revocation_registry=registry)` returns false after `registry.revoke(jti)`. Nothing is killed.
 
 Python `Agent.handle` does not take a registry, so call `verify_auth_chain` yourself if a revoked token must be rejected. The TypeScript `Agent` checks a registry when you pass `{ revocationRegistry }` to the constructor.
+
+Fragment. `token`, `jti`, `agent`, `issuer_did`, and `issuer_pub` come from a delegation you already signed. They are not defined in this snippet.
 
 ```python
 from agentpassport import SqliteRevocationRegistry, verify_auth_chain
