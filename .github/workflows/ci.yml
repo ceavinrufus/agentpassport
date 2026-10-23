@@ -71,3 +71,47 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
         working-directory: packages/agentpassport-ts
+
+  examples:
+    name: Smoke-run examples
+    runs-on: ubuntu-latest
+    env:
+      LANGCHAIN_TRACING_V2: "false"
+      LANGSMITH_TRACING: "false"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Smoke-run Python example
+        run: |
+          uv venv --python 3.12 /tmp/agentpassport-example-python
+          uv pip install --python /tmp/agentpassport-example-python/bin/python \
+            -e packages/agentpassport \
+            -r examples/python/requirements.txt
+          /tmp/agentpassport-example-python/bin/python examples/python/delegation.py
+
+      - name: Smoke-run LangGraph example
+        run: |
+          uv venv --python 3.12 /tmp/agentpassport-example-langgraph
+          uv pip install --python /tmp/agentpassport-example-langgraph/bin/python \
+            -e packages/agentpassport \
+            -r examples/langgraph/requirements.txt
+          /tmp/agentpassport-example-langgraph/bin/python examples/langgraph/research_pipeline.py
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build TypeScript SDK
+        working-directory: packages/agentpassport-ts
+        run: npm ci && npm run build
+
+      - name: Smoke-run TypeScript example
+        working-directory: examples/typescript
+        run: npm install --no-package-lock && npm run typecheck && npm start
