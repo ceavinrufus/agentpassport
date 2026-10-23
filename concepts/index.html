@@ -3240,8 +3240,8 @@
 <a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>  |                        |                     |                     |   sub=B.did ✓
 </code></pre></div>
 <h3 id="scope-narrowing">Scope narrowing</h3>
-<p>A key property: <strong>scope can only narrow, never expand, as it travels down the chain</strong>. If JWT1 grants <code>scope=["read:db"]</code>, then B cannot create a token with <code>scope=["write:db"]</code> and have it be useful — C would reject it because C checks that the chain grants the required scope, and the chain would not contain <code>write:db</code> from the root.</p>
-<p>AgentPassport's scope check (<code>TrustMiddleware.check()</code>) operates on the union of scopes across all tokens whose subject is the agent being checked. This means a narrowed scope in the final hop is what C actually sees.</p>
+<p>A key property: <strong>scope can only narrow, never expand, as it travels down the chain</strong>. If JWT1 grants <code>scope=["read:db"]</code>, then B cannot create a token with <code>scope=["write:db"]</code> — or add <code>write:db</code> next to <code>read:db</code> — and have C accept it. <code>verify_auth_chain()</code> and <code>TrustMiddleware.check()</code> both reject the whole chain when a hop grants a scope the previous hop did not.</p>
+<p>The scope C is granted is the final hop's <code>scope</code>, and only after the chain verifies with <code>sub</code> equal to C's DID. A hop that did not receive <code>"*"</code> cannot add <code>"*"</code>.</p>
 <hr />
 <h2 id="7-jwt-structure">7. JWT Structure</h2>
 <p>AgentPassport uses compact JWTs with the EdDSA algorithm profile. The format is identical between the Python and TypeScript SDKs.</p>
@@ -3373,7 +3373,7 @@
 </table>
 <p>This strict matching is intentional: it forces issuers to be explicit about what they grant. Implicit scope inheritance through prefix matching would make it easy to accidentally grant too much.</p>
 <h3 id="multiple-scopes">Multiple scopes</h3>
-<p>A token can grant multiple scopes: <code>scope: ["read:db", "write:cache", "invoke:llm"]</code>. The receiving agent's granted scopes are the <strong>union</strong> of all scopes across all valid tokens in the chain whose subject is that agent.</p>
+<p>A token can grant multiple scopes: <code>scope: ["read:db", "write:cache", "invoke:llm"]</code>. After the chain verifies, the receiving agent is granted the <strong>final hop's</strong> scope list. Each earlier hop must be a subset of the one before it, unless that earlier hop granted <code>"*"</code>.</p>
 <h3 id="declaring-required-scopes-on-capabilities">Declaring required scopes on capabilities</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">"summarize"</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">"invoke:llm"</span><span class="p">,</span> <span class="s2">"read:docs"</span><span class="p">])</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
@@ -3390,14 +3390,15 @@
 <li>Call <code>TrustMiddleware.check(task.auth_chain, capability_name)</code>.</li>
 <li>If the capability declared <code>requires=[...]</code>:
    a. If <code>auth_chain</code> is empty → raise <code>ScopeError</code>.
-   b. Iterate each token in <code>auth_chain</code>:<ul>
-<li>Skip tokens whose <code>sub</code> is not this agent's DID.</li>
-<li>Skip tokens whose issuer is not in <code>known_public_keys</code>.</li>
-<li>Verify the signature.</li>
-<li>Skip expired tokens.</li>
-<li>Accumulate valid scopes into a granted set.
-   c. If <code>"*"</code> is in granted → pass.
-   d. If any required scope is missing from granted → raise <code>ScopeError</code> with details.</li>
+   b. Verify the whole chain with the same rules as <code>verify_auth_chain()</code>:<ul>
+<li>every token is a valid, unexpired, signed delegation from a known issuer</li>
+<li>each hop's <code>iss</code> equals the previous hop's <code>sub</code></li>
+<li>scope only narrows (<code>"*"</code> on an earlier hop allows any scope downstream)</li>
+<li><code>jti</code> and <code>max_delegations</code> are enforced</li>
+<li>the final token's <code>sub</code> is this agent's DID
+  If any check fails → raise <code>ScopeError</code>. The handler does not run.
+   c. The granted set is the final token's <code>scope</code>. If it contains <code>"*"</code> → pass.
+   d. If any required scope is missing from that set → raise <code>ScopeError</code> with details.</li>
 </ul>
 </li>
 <li>If check passes, call the capability handler.</li>

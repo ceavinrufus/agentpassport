@@ -2082,7 +2082,7 @@
 <a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"rows"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="s2">"Alice"</span><span class="p">}]}</span>
 </code></pre></div>
 <h3 id="why-this-works">Why this works</h3>
-<p><code>verify_auth_chain</code> checks every token in order. <code>TrustMiddleware.check()</code> collects scopes from tokens whose <code>sub</code> matches the agent's own DID — in the worker's case, only <code>JWT_gateway→worker</code>. The scope <code>read:db</code> appears there, so the check passes.</p>
+<p><code>verify_auth_chain</code> and <code>TrustMiddleware.check()</code> both walk every token in order. The worker accepts <code>[JWT_orchestrator→gateway, JWT_gateway→worker]</code> only when the chain is continuous, scopes only narrow, and the final <code>sub</code> is the worker. The <code>read:db</code> scope on that final hop is what satisfies <code>requires=["read:db"]</code>.</p>
 <hr />
 <h2 id="7-sharing-public-keys-between-sdks">7. Sharing public keys between SDKs</h2>
 <p>The only thing one SDK needs from another to verify tokens is the <strong>issuer's public key as raw bytes (hex-encoded for transport)</strong>. There is no certificate, no CA, no X.509.</p>

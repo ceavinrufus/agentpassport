@@ -1702,10 +1702,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_chain_granted_scopesauth_chain-agent_did-known_public_keys-setstr" class="md-nav__link">
+  <a href="#_final_granted_scopesauth_chain-setstr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        _chain_granted_scopes(auth_chain, agent_did, known_public_keys) -&gt; set[str]
+        _final_granted_scopes(auth_chain) -&gt; set[str]
       
     </span>
   </a>
@@ -2816,10 +2816,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_chain_granted_scopesauth_chain-agent_did-known_public_keys-setstr" class="md-nav__link">
+  <a href="#_final_granted_scopesauth_chain-setstr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        _chain_granted_scopes(auth_chain, agent_did, known_public_keys) -&gt; set[str]
+        _final_granted_scopes(auth_chain) -&gt; set[str]
       
     </span>
   </a>
@@ -3096,7 +3096,7 @@
 </code></pre></div></p>
 <p><strong>Raises (at decoration time):</strong> Nothing.</p>
 <p><strong>Raises (at call time via <code>handle()</code>):</strong>
-- <code>ScopeError</code> — if <code>requires</code> is set and the auth chain doesn't cover all required scopes.
+- <code>ScopeError</code> — if <code>requires</code> is set and the auth chain is not a valid delegation to this agent, or does not cover all required scopes.
 - Any exception raised by the handler propagates out of <code>handle()</code>.</p>
 <p><strong>Example 1: Simple capability, no scope required</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">Agent</span><span class="p">,</span> <span class="n">TaskEnvelope</span>
@@ -3292,7 +3292,7 @@
 <p><strong>Returns:</strong> <code>dict[str, Any]</code> — the dict returned by the capability handler.</p>
 <p><strong>Raises:</strong>
 - <code>ValueError</code> — if no handler is registered for <code>task.intent.type</code>.
-- <code>ScopeError</code> — if the capability declares <code>requires=[...]</code> and the auth chain doesn't cover it.
+- <code>ScopeError</code> — if the capability declares <code>requires=[...]</code> and the auth chain is not a valid delegation to this agent (<code>verify_auth_chain</code> rules) or does not cover the required scopes.
 - Any exception raised by the handler (handler exceptions cause the task to transition to <code>FAILED</code> and emit a <code>task_failed</code> event before re-raising).</p>
 <p><strong>Side effects:</strong>
 - Transitions <code>task.state</code> through <code>DELEGATED → ACCEPTED → RUNNING → COMPLETED</code> (or <code>FAILED</code>).
@@ -3666,10 +3666,13 @@
 1. Structural validity (3 parts)
 2. <code>alg: EdDSA</code> in header
 3. Issuer in <code>known_public_keys</code>
-4. Valid Ed25519 signature
-5. <code>iat &lt;= now &lt;= exp</code> (temporal validity)
-6. <code>jti</code> is non-empty
-7. <code>jti</code> not revoked (if registry provided)</p>
+4. This hop's <code>iss</code> equals the previous hop's <code>sub</code> (the first hop has no predecessor)
+5. Valid Ed25519 signature
+6. <code>iat</code> is not more than 30 seconds in the future, and <code>now &lt;= exp</code>
+7. <code>jti</code> is non-empty
+8. <code>jti</code> not revoked (if registry provided)
+9. <code>scope</code> does not widen. Every scope string on this hop, including <code>"*"</code>, must be in the previous hop's scope unless that hop granted <code>"*"</code>. A previous <code>"*"</code> allows any concrete scope downstream.
+10. <code>max_delegations</code> on earlier hops still allows this hop</p>
 <p><strong>Final check:</strong> Last token's <code>sub == expected_subject</code>.</p>
 <p><strong>Example 1: Verify a single-hop chain</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -4527,7 +4530,7 @@
 <td><code>agent_did</code></td>
 <td><code>str</code></td>
 <td>Yes</td>
-<td>The DID of the agent whose scope is being checked. Tokens with <code>sub != agent_did</code> are ignored.</td>
+<td>DID of the receiving agent. The final token's <code>sub</code> must equal this value; otherwise the chain is rejected.</td>
 </tr>
 <tr>
 <td><code>known_public_keys</code></td>
@@ -4546,7 +4549,7 @@
 <h3 id="trustmiddlewarecheck"><code>TrustMiddleware.check()</code></h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-72-1" name="__codelineno-72-1" href="#__codelineno-72-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">task_auth_chain</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">capability_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </code></pre></div>
-<p>Raises <code>ScopeError</code> if the auth chain doesn't cover the required scope for <code>capability_name</code>. No-op if the capability has no declared required scope.</p>
+<p>Raises <code>ScopeError</code> if the capability declares required scope and the auth chain is empty, fails <code>verify_auth_chain()</code> for this agent (signature, expiry, <code>jti</code>, <code>max_delegations</code>, final <code>sub</code>, hop continuity, or scope narrowing), or the final hop's scope does not cover every required string. No-op if the capability has no declared required scope. The granted set is the final hop's <code>scope</code>.</p>
 <table>
 <thead>
 <tr>
@@ -4582,7 +4585,7 @@
 <p>Raised by <code>TrustMiddleware.check()</code> and propagated through <code>Agent.handle()</code>. The message includes:
 - The capability name
 - The required scopes
-- The granted scopes (or "no auth chain" if chain was empty)</p>
+- The granted scopes when the chain is valid but incomplete, "no auth chain" when the chain is empty, or "not a valid delegation to this agent" when <code>verify_auth_chain()</code> rejects it</p>
 <p><strong>Example:</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-74-1" name="__codelineno-74-1" href="#__codelineno-74-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">ScopeError</span>
 <a id="__codelineno-74-2" name="__codelineno-74-2" href="#__codelineno-74-2"></a>
@@ -5084,8 +5087,8 @@
 <p>Decodes the payload section of a JWT <strong>without verifying the signature</strong>. Used internally to read <code>iss</code> before looking up the public key.</p>
 <h3 id="_verify_jwt_signaturetoken-str-public_key_bytes-bytes-dict"><code>_verify_jwt_signature(token: str, public_key_bytes: bytes) -&gt; dict</code></h3>
 <p>Verifies the JWT signature and returns the decoded claims. Raises <code>ValueError</code> on structural issues, <code>nacl.exceptions.BadSignatureError</code> on invalid signatures.</p>
-<h3 id="_chain_granted_scopesauth_chain-agent_did-known_public_keys-setstr"><code>_chain_granted_scopes(auth_chain, agent_did, known_public_keys) -&gt; set[str]</code></h3>
-<p>Returns the union of scopes from all valid, non-expired, correctly-targeted tokens in the chain. Used by <code>TrustMiddleware.check()</code>.</p>
+<h3 id="_final_granted_scopesauth_chain-setstr"><code>_final_granted_scopes(auth_chain) -&gt; set[str]</code></h3>
+<p>Returns the scope strings on the final hop. <code>TrustMiddleware.check()</code> calls this only after <code>verify_auth_chain()</code> has accepted the chain, so the set is the scope actually granted to the receiving agent.</p>
 
 
 

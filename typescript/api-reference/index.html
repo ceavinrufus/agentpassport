@@ -1530,10 +1530,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_chain_granted_scopes-equivalent-inline-in-trustmiddlewarecheck" class="md-nav__link">
+  <a href="#finalgrantedscopes-internal-trustts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        _chain_granted_scopes equivalent (inline in TrustMiddleware.check())
+        finalGrantedScopes (internal, trust.ts)
       
     </span>
   </a>
@@ -2186,10 +2186,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#_chain_granted_scopes-equivalent-inline-in-trustmiddlewarecheck" class="md-nav__link">
+  <a href="#finalgrantedscopes-internal-trustts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        _chain_granted_scopes equivalent (inline in TrustMiddleware.check())
+        finalGrantedScopes (internal, trust.ts)
       
     </span>
   </a>
@@ -2771,10 +2771,13 @@
 1. Structural validity (3 parts split by <code>.</code>)
 2. <code>alg: "EdDSA"</code> in header
 3. Issuer in <code>knownPublicKeys</code>
-4. Valid Ed25519 signature via <code>@noble/ed25519</code>
-5. <code>iat &lt;= now &lt;= exp</code>
-6. <code>jti</code> is a non-empty string
-7. <code>revocationRegistry?.isRevoked(jti)</code> returns <code>false</code></p>
+4. This hop's <code>iss</code> equals the previous hop's <code>sub</code> (the first hop has no predecessor)
+5. Valid Ed25519 signature via <code>@noble/ed25519</code>
+6. <code>iat &lt;= now &lt;= exp</code> (no clock-skew leeway; the Python SDK allows 30 seconds on <code>iat</code>)
+7. <code>jti</code> is a non-empty string
+8. <code>revocationRegistry?.isRevoked(jti)</code> returns <code>false</code>
+9. <code>scope</code> does not widen. Every scope string on this hop, including <code>"*"</code>, must be in the previous hop's scope unless that hop granted <code>"*"</code>. A previous <code>"*"</code> allows any concrete scope downstream.
+10. <code>max_delegations</code> on earlier hops still allows this hop</p>
 <p><strong>Final check:</strong> <code>chain[last].sub === expectedSubject</code></p>
 <p><strong>Example 1: Single-hop chain</strong>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">generateKeypair</span><span class="p">,</span><span class="w"> </span><span class="nx">didFromPublicKey</span><span class="p">,</span><span class="w"> </span><span class="nx">signDelegation</span><span class="p">,</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@agentpassport/core"</span><span class="p">;</span>
@@ -2936,9 +2939,9 @@
 <a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a><span class="w">  </span><span class="k">readonly</span><span class="w"> </span><span class="nx">message</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">;</span>
 <a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a><span class="p">}</span>
 </code></pre></div>
-<p>Thrown by <code>TrustMiddleware.check()</code> and propagated through <code>Agent.handle()</code> when the auth chain doesn't grant the required scope.</p>
+<p>Thrown by <code>TrustMiddleware.check()</code> and propagated through <code>Agent.handle()</code> when the auth chain is not a valid delegation to this agent or doesn't grant the required scope. An invalid chain reports <code>granted</code> as <code>[]</code>. An optional <code>detail</code> string is appended to <code>message</code>.</p>
 <p><strong>Constructor (internal):</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="ow">new</span><span class="w"> </span><span class="nx">ScopeError</span><span class="p">(</span><span class="nx">capability</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[],</span><span class="w"> </span><span class="nx">granted</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[])</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="ow">new</span><span class="w"> </span><span class="nx">ScopeError</span><span class="p">(</span><span class="nx">capability</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">,</span><span class="w"> </span><span class="nx">required</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[],</span><span class="w"> </span><span class="nx">granted</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">[],</span><span class="w"> </span><span class="nx">detail?</span><span class="o">:</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span>
 </code></pre></div></p>
 <table>
 <thead>
@@ -3020,7 +3023,7 @@
 <td><code>string</code></td>
 <td>Yes</td>
 <td>—</td>
-<td>DID of the agent. Tokens with <code>sub !== agentDid</code> are skipped.</td>
+<td>DID of the receiving agent. The final token's <code>sub</code> must equal this value; otherwise the chain is rejected.</td>
 </tr>
 <tr>
 <td><code>knownPublicKeys</code></td>
@@ -3051,13 +3054,10 @@
 <p>Check that the auth chain grants the required scope for a capability.</p>
 <p><strong>Logic:</strong>
 1. If <code>capabilityScopes.get(capabilityName)</code> is empty/undefined → return (no-op).
-2. Iterate tokens:
-   - Skip tokens where <code>sub !== agentDid</code> or issuer is unknown.
-   - Verify via <code>verifyAuthChain</code> (single-token chain against self).
-   - Accumulate granted scopes.
-3. If <code>"*"</code> in granted → return (pass).
-4. If any required scope is missing → throw <code>ScopeError</code>.
-5. If chain is empty and scopes required → throw <code>ScopeError</code>.</p>
+2. If the chain is empty and scopes are required → throw <code>ScopeError</code>.
+3. Verify the whole chain with <code>verifyAuthChain</code> (<code>expectedSubject</code> = this agent, plus revocation when a registry was configured). A wrong final <code>sub</code>, a broken hop, or a widened scope rejects the chain.
+4. The granted set is the final hop's <code>scope</code>. If it contains <code>"*"</code> → return (pass).
+5. If any required scope is missing → throw <code>ScopeError</code>.</p>
 <p><strong>Throws:</strong> <code>ScopeError</code> if scope check fails.</p>
 <p><strong>Returns:</strong> <code>void</code></p>
 <hr />
@@ -3397,7 +3397,7 @@
 <p><strong>Returns:</strong> <code>Promise&lt;Record&lt;string, unknown&gt;&gt;</code> — the result returned by the handler.</p>
 <p><strong>Throws:</strong>
 - <code>Error</code> with message <code>"No handler for capability: &lt;type&gt;"</code> if no handler is registered for <code>task.intent.type</code>.
-- <code>ScopeError</code> if the auth chain doesn't cover the required scope.
+- <code>ScopeError</code> if the auth chain is not a valid delegation to this agent or doesn't cover the required scope.
 - Any error thrown by the handler.</p>
 <p><strong>Note:</strong> Unlike the Python SDK, the TypeScript <code>Agent.handle()</code> does not manage task lifecycle state or emit observability events automatically. You can build these on top using a wrapper.</p>
 <p><strong>Example 1: Express/HTTP server</strong>
@@ -3773,8 +3773,8 @@
 <p>Decode JWT payload without signature verification. Exported publicly — see <a href="#decodejwtclaims"><code>decodeJwtClaims()</code></a>.</p>
 <h3 id="verifyjwtsignaturetoken-string-publickeybytes-uint8array-recordstring-unknown"><code>verifyJwtSignature(token: string, publicKeyBytes: Uint8Array): Record&lt;string, unknown&gt;</code></h3>
 <p>Verify JWT signature using <code>@noble/ed25519</code> and return decoded claims. Throws on structural errors or invalid signature.</p>
-<h3 id="_chain_granted_scopes-equivalent-inline-in-trustmiddlewarecheck"><code>_chain_granted_scopes</code> equivalent (inline in <code>TrustMiddleware.check()</code>)</h3>
-<p>The TypeScript implementation inlines the granted-scope accumulation logic inside <code>TrustMiddleware.check()</code> rather than extracting it as a separate function. For each token in the auth chain whose <code>sub === agentDid</code> and whose issuer is known, it calls <code>verifyAuthChain</code> on that single token and accumulates scopes if valid.</p>
+<h3 id="finalgrantedscopes-internal-trustts"><code>finalGrantedScopes</code> (internal, <code>trust.ts</code>)</h3>
+<p>After <code>verifyAuthChain</code> accepts the chain, <code>TrustMiddleware.check()</code> reads the final hop's <code>scope</code>. That list is what the receiving agent was granted.</p>
 
 
 
