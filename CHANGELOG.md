@@ -6,6 +6,56 @@ Format: [Semantic Versioning](https://semver.org). Dates in UTC.
 
 ---
 
+## [0.3.4] — 2026-05-29
+
+Python packages and `@agentpassport/core` are aligned on 0.3.4.
+
+### Fixed
+
+**Auth chain (Python and TypeScript)**
+- Chain continuity: a hop is rejected unless its `iss` is the previous hop's `sub`. Unrelated tokens no longer verify as one chain.
+- Scope can only narrow. `verify_auth_chain` rejects a hop that grants a scope the previous hop did not grant. `TrustMiddleware` intersects grants across hops instead of unioning them.
+- `max_delegations` is enforced at verification time. `-1` (the new default) means unlimited, `0` means the recipient cannot delegate further, and `N > 0` means at most N further hops. The most restrictive limit in the chain wins. Previously `0` was stored but treated as unlimited, including on tokens that had already been issued.
+- TypeScript `verifyAuthChain` applies the same continuity, scope-narrowing, and depth checks as Python. It previously checked signatures only.
+
+**Registry, revocation, and domain binding**
+- `DELETE /v1/agents/{did}` requires a signed `X-Delete-Proof` JWT from that agent DID (`sub` is the DID, `action` is `delete`, and `exp` is still in the future).
+- Domain-binding verification refuses loopback, private, link-local, and metadata hosts before it fetches `/.well-known/agent-passport.json`.
+- SQLite registry writes and SQLite revocation updates take a lock so concurrent writers cannot interleave.
+- `iat` checks allow 30 seconds of clock skew.
+
+---
+
+## [0.3.3] — 2026-05-19
+
+### Changed
+
+- `@agentpassport/core` set to 0.3.2 (git tag `v0.3.3`). No API changes. The Python packages stayed on 0.3.0 until 0.3.4.
+
+---
+
+## [0.3.2] — 2026-05-19
+
+Git tag `v0.3.2` shipped documentation and npm packaging. `@agentpassport/core` was 0.3.1 at this tag. The Python packages stayed on 0.3.0 until 0.3.4.
+
+### Added
+
+- Documentation site (MkDocs Material) at [docs.agentpassport.fyi](https://docs.agentpassport.fyi), including the CLI reference and guides for observability, budget tracking, and ownership binding
+- LangGraph integration tutorial (`examples/langgraph`)
+- Project logo
+- npm provenance on publish, plus `files` and `engines` for `@agentpassport/core`
+
+### Changed
+
+- Canonical project domain is [agentpassport.fyi](https://agentpassport.fyi)
+
+### Fixed
+
+- CI requires 80% coverage on the Python SDK
+- Docs deploy can push the GitHub Pages branch and serves the custom domain
+
+---
+
 ## [0.3.0] — 2026-05-14
 
 ### Added
@@ -72,5 +122,8 @@ Format: [Semantic Versioning](https://semver.org). Dates in UTC.
 
 ---
 
+[0.3.4]: https://github.com/ceavinrufus/agentpassport/compare/v0.3.3...v0.3.4
+[0.3.3]: https://github.com/ceavinrufus/agentpassport/compare/v0.3.2...v0.3.3
+[0.3.2]: https://github.com/ceavinrufus/agentpassport/compare/v0.3.0...v0.3.2
 [0.3.0]: https://github.com/ceavinrufus/agentpassport/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/ceavinrufus/agentpassport/releases/tag/v0.2.0

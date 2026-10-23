@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>agentpassport — Agents act. agentpassport proves it.</title>
+<meta name="description" content="Cryptographic identity and authorization for AI agents. Prove delegation, enforce scope, and revoke access across languages and frameworks.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://agentpassport.fyi">
+<meta property="og:title" content="agentpassport — Agents act. agentpassport proves it.">
+<meta property="og:description" content="Cryptographic identity and authorization for AI agents. Prove delegation, enforce scope, and revoke access across languages and frameworks.">
+<meta property="og:url" content="https://agentpassport.fyi">
+<meta property="og:image" content="https://agentpassport.fyi/logo.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="agentpassport — Agents act. agentpassport proves it.">
+<meta name="twitter:description" content="Cryptographic identity and authorization for AI agents. Prove delegation, enforce scope, and revoke access across languages and frameworks.">
+<meta name="twitter:image" content="https://agentpassport.fyi/logo.png">
+<link rel="icon" type="image/png" href="/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0a; --surface: #111111; --surface2: #161616;
+  --border: rgba(255,255,255,0.05); --border2: rgba(255,255,255,0.09);
+  --green: #00e5a0; --green-dim: rgba(0,229,160,0.12); --green-glow: rgba(0,229,160,0.06);
+  --red: #ff5370; --red-dim: rgba(255,83,112,0.12);
+  --text: #f0f0f0; --text-mid: #888; --text-dim: #444;
+  --mono: 'JetBrains Mono', monospace; --sans: 'Inter', system-ui, sans-serif;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+  background-size: 48px 48px; pointer-events: none; z-index: 0;
+}
+body::after {
+  content: ''; position: fixed; top: -300px; left: 50%; transform: translateX(-50%);
+  width: 700px; height: 600px;
+  background: radial-gradient(ellipse, rgba(0,229,160,0.07) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 58px;
+  background: rgba(10,10,10,0.85); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border2);
+}
+.nav-logo { font-family: var(--mono); font-size: 0.88rem; color: var(--text); text-decoration: none; font-weight: 600; letter-spacing: -0.02em; }
+.nav-logo em { font-style: normal; color: var(--green); }
+.nav-links { display: flex; gap: 0.25rem; list-style: none; }
+.nav-links a { font-family: var(--mono); font-size: 0.75rem; color: var(--text-mid); text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 5px; letter-spacing: 0.03em; transition: color 0.15s, background 0.15s; }
+.nav-links a:hover { color: var(--green); background: var(--green-glow); }
+.nav-cta { display: flex; gap: 0.5rem; }
+.btn { font-family: var(--mono); font-size: 0.75rem; font-weight: 600; padding: 0.45rem 1rem; border-radius: 6px; cursor: pointer; text-decoration: none; letter-spacing: 0.04em; transition: all 0.15s; display:inline-flex; align-items:center; gap:0.4rem; }
+.btn-ghost { background: transparent; border: 1px solid var(--border2); color: var(--text-mid); }
+.btn-ghost:hover { border-color: var(--green); color: var(--green); }
+.btn-primary { background: var(--green); border: 1px solid var(--green); color: #000; }
+.btn-primary:hover { opacity: 0.85; }
+
+/* HERO */
+.hero { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8rem 2rem 6rem; text-align: center; }
+.hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; font-family: var(--mono); font-size: 0.68rem; color: var(--green); border: 1px solid var(--green-dim); background: var(--green-glow); padding: 0.3rem 0.85rem; border-radius: 999px; margin-bottom: 2.25rem; letter-spacing: 0.08em; }
+.pulse-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.75); } }
+.hero h1 { font-family: var(--mono); font-size: clamp(2.2rem, 5.5vw, 4rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.5rem; max-width: 760px; }
+.hero h1 em { font-style: normal; color: var(--green); }
+.hero-sub { font-size: 1.05rem; color: var(--text-mid); max-width: 500px; margin-bottom: 2.5rem; line-height: 1.75; }
+.hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin-bottom: 3.5rem; }
+.hero-actions .btn { font-size: 0.82rem; padding: 0.6rem 1.4rem; }
+.install-pill { display: inline-flex; align-items: center; gap: 0.75rem; background: var(--surface); border: 1px solid var(--border2); border-radius: 8px; padding: 0.7rem 1.25rem; font-family: var(--mono); font-size: 0.8rem; cursor: pointer; transition: border-color 0.2s; }
+.install-pill:hover { border-color: var(--green); }
+.install-pill .prompt { color: var(--green); opacity: 0.7; }
+.install-pill .copy-hint { color: var(--text-dim); font-size: 0.68rem; margin-left: 0.5rem; display:flex; align-items:center; }
+
+/* GRAPH */
+.flow-section { position: relative; z-index: 1; padding: 0 2rem 7rem; display: flex; justify-content: center; }
+.flow-container { width: 100%; max-width: 820px; }
+.flow-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+.flow-status { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.68rem; color: var(--green); letter-spacing: 0.08em; }
+.scenario-tabs { display: flex; gap: 0.4rem; }
+.scenario-tab { font-family: var(--mono); font-size: 0.7rem; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer; border: 1px solid var(--border2); color: var(--text-dim); transition: all 0.15s; }
+.scenario-tab.active { border-color: var(--green-dim); background: var(--green-glow); color: var(--green); }
+.graph-wrap { position: relative; width: 100%; height: 300px; background: var(--surface); border: 1px solid var(--border2); border-radius: 12px 12px 0 0; }
+.graph-wrap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.agent-node { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 0.45rem; transform: translate(-50%, -50%); }
+.node-ring { width: 64px; height: 64px; border-radius: 50%; border: 1px solid var(--border2); background: var(--surface2); display: flex; align-items: center; justify-content: center; position: relative; transition: border-color 0.4s, box-shadow 0.4s; color: var(--text-dim); }
+.node-ring i { width: 22px; height: 22px; }
+.node-ring.active { color: var(--green); }
+.node-ring.deny { color: var(--red); }
+.node-ring.active { border-color: var(--green); box-shadow: 0 0 20px rgba(0,229,160,0.2), 0 0 0 4px rgba(0,229,160,0.06); }
+.node-ring.deny { border-color: var(--red); box-shadow: 0 0 20px rgba(255,83,112,0.2), 0 0 0 4px rgba(255,83,112,0.06); }
+.node-ping { position: absolute; inset: -5px; border-radius: 50%; border: 1px solid var(--green); opacity: 0; }
+.node-ring.active .node-ping { animation: ping 2s ease-out infinite; }
+.node-ring.deny .node-ping { border-color: var(--red); animation: ping 2s ease-out infinite; }
+@keyframes ping { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.7); opacity: 0; } }
+.node-label { font-family: var(--mono); font-size: 0.68rem; color: var(--text-mid); text-align: center; white-space: nowrap; }
+.node-did { font-size: 0.6rem; color: var(--text-dim); text-align: center; white-space: nowrap; }
+.edge-label { position: absolute; font-family: var(--mono); font-size: 0.65rem; padding: 0.18rem 0.55rem; border-radius: 4px; white-space: nowrap; transform: translate(-50%, -50%); pointer-events: none; opacity: 0; transition: opacity 0.4s; border: 1px solid; }
+.edge-label.allow { background: var(--green-glow); color: var(--green); border-color: var(--green-dim); }
+.edge-label.deny  { background: var(--red-dim); color: var(--red); border-color: rgba(255,83,112,0.25); }
+.edge-label.scope { background: rgba(255,255,255,0.03); color: var(--text-mid); border-color: var(--border2); }
+.edge-label.visible { opacity: 1; }
+.log-strip { background: var(--surface); border: 1px solid var(--border2); border-top: none; border-radius: 0 0 12px 12px; }
+.log-header { display: flex; align-items: center; justify-content: space-between; padding: 0.55rem 1rem; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.62rem; color: var(--text-dim); letter-spacing: 0.08em; }
+.log-header span:last-child { color: var(--green); }
+.log-entries { padding: 0.4rem 0; min-height: 72px; }
+.log-entry { display: flex; align-items: center; gap: 0.75rem; padding: 0.28rem 1rem; font-family: var(--mono); font-size: 0.72rem; opacity: 0; transform: translateY(4px); transition: opacity 0.3s, transform 0.3s; }
+.log-entry.visible { opacity: 1; transform: translateY(0); }
+.log-ts { color: var(--text-dim); flex-shrink: 0; }
+.log-ok  { color: var(--green); }
+.log-err { color: var(--red); }
+.log-dim { color: var(--text-mid); }
+
+/* DIVIDER */
+.divider { position: relative; z-index: 1; border: none; border-top: 1px solid var(--border); margin: 0 2rem; }
+
+/* FEATURES */
+.features { position: relative; z-index: 1; padding: 6rem 2rem; max-width: 1080px; margin: 0 auto; }
+.section-eyebrow { font-family: var(--mono); font-size: 0.68rem; color: var(--green); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.875rem; }
+.section-title { font-family: var(--mono); font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 0.875rem; }
+.section-sub { color: var(--text-mid); font-size: 0.95rem; max-width: 460px; margin-bottom: 3rem; line-height: 1.7; }
+.features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border2); border: 1px solid var(--border2); border-radius: 12px; overflow: hidden; }
+/* ── RESPONSIVE 768px ── */
+@media (max-width: 768px) {
+  nav { padding: 0 1rem; }
+  .nav-links { display: none; }
+  .nav-cta { gap: 0.35rem; }
+  .nav-cta .btn { font-size: 0.68rem; padding: 0.35rem 0.65rem; }
+
+  .hero { padding: 7rem 1.25rem 4rem; }
+  .hero-actions { flex-direction: column; align-items: center; }
+  .hero-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
+
+  .install-pills-wrap { width: 100%; padding: 0 0; }
+  .install-pill { width: 100%; max-width: 320px; justify-content: space-between; box-sizing: border-box; }
+  .install-pill .cmd { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+
+  .flow-section { padding: 0 1.25rem 5rem; }
+  .flow-topbar { flex-direction: column; align-items: flex-start; gap: 0.6rem; }
+  .graph-wrap { display: none; }
+  .log-strip { border-radius: 12px 12px 12px 12px; border-top: 1px solid var(--border2); }
+
+  .features { padding: 4rem 1.25rem; }
+  .features-grid { grid-template-columns: 1fr; }
+
+  .compare { padding: 4rem 1.25rem; }
+  .compare-grid { grid-template-columns: 1fr; }
+
+  .code-section { padding: 4rem 1.25rem; }
+  pre { font-size: 0.72rem; padding: 1rem; overflow-x: auto; white-space: pre; word-break: normal; }
+
+  .cta-section { padding: 4rem 1.25rem 6rem; }
+  .cta-actions { flex-direction: column; align-items: center; }
+  .cta-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
+
+  footer { flex-direction: column; align-items: flex-start; padding: 1.5rem 1.25rem; }
+  .footer-links { flex-wrap: wrap; gap: 1rem; }
+
+  .divider { margin: 0 1.25rem; }
+  .section-sub { max-width: 100%; }
+}
+
+/* ── RESPONSIVE 480px ── */
+@media (max-width: 480px) {
+  .hero h1 { font-size: clamp(1.6rem, 8vw, 2.2rem); }
+  .hero-sub { font-size: 0.92rem; }
+  .hero-badge { font-size: 0.6rem; text-align: center; }
+
+  .nav-cta .btn-ghost { display: none; }
+  .nav-cta .btn-primary { font-size: 0.7rem; padding: 0.38rem 0.75rem; }
+
+  .install-pill { font-size: 0.72rem; padding: 0.6rem 1rem; }
+
+  .scenario-tabs { flex-wrap: wrap; gap: 0.3rem; }
+
+  pre { font-size: 0.65rem; }
+
+  .section-title { font-size: clamp(1.25rem, 6vw, 1.7rem); }
+  .compare-item { font-size: 0.78rem; }
+  .feature-desc { font-size: 0.8rem; }
+}
+.feature-card { background: var(--surface); padding: 1.75rem; transition: background 0.2s; }
+.feature-card:hover { background: var(--surface2); }
+.feature-icon { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--border2); background: var(--green-glow); display: flex; align-items: center; justify-content: center; color: var(--green); margin-bottom: 0.875rem; }
+.feature-icon i { width: 16px; height: 16px; }
+.feature-num { font-family: var(--mono); font-size: 0.62rem; color: var(--green); opacity: 0.6; margin-bottom: 0.4rem; letter-spacing: 0.1em; }
+.feature-title { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; }
+.feature-desc { font-size: 0.83rem; color: var(--text-mid); line-height: 1.65; }
+
+/* COMPARE */
+.compare { position: relative; z-index: 1; padding: 6rem 2rem; max-width: 860px; margin: 0 auto; }
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 3rem; }
+.compare-col { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; overflow: hidden; }
+.compare-col.good { border-color: var(--green-dim); }
+.compare-header { padding: 0.875rem 1.25rem; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 0.75rem; font-weight: 600; color: var(--text-mid); }
+.compare-col.good .compare-header { color: var(--green); }
+.compare-item { padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--border); font-size: 0.83rem; color: var(--text-mid); }
+.compare-item:last-child { border-bottom: none; }
+.compare-col.good .compare-item { color: var(--text); }
+
+/* CODE */
+.code-section { position: relative; z-index: 1; padding: 6rem 2rem; max-width: 860px; margin: 0 auto; }
+.code-wrap { background: var(--surface); border: 1px solid var(--border2); border-radius: 12px; overflow: hidden; margin-top: 3rem; }
+.code-topbar { display: flex; align-items: center; justify-content: space-between; padding: 0.7rem 1.25rem; border-bottom: 1px solid var(--border); }
+.code-dots { display: flex; gap: 0.4rem; }
+.code-dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ff5f57; } .dot-y { background: #febc2e; } .dot-g { background: #28c840; }
+.code-tabs2 { display: flex; gap: 0.25rem; }
+.code-tab2 { font-family: var(--mono); font-size: 0.68rem; padding: 0.28rem 0.75rem; border-radius: 4px; cursor: pointer; color: var(--text-dim); transition: all 0.15s; border: 1px solid transparent; }
+.code-tab2.active { color: var(--green); border-color: var(--green-dim); background: var(--green-glow); }
+pre { padding: 1.5rem; font-family: var(--mono); font-size: 0.78rem; line-height: 1.9; overflow-x: auto; display: none; }
+pre.active { display: block; }
+.c { color: #3a3a3a; } .kw { color: var(--green); } .str { color: #e8a87c; } .fn { color: #82aaff; } .num { color: #f78c6c; }
+
+/* CTA */
+.cta-section { position: relative; z-index: 1; padding: 6rem 2rem 8rem; text-align: center; }
+.cta-inner { max-width: 580px; margin: 0 auto; }
+.cta-inner h2 { font-family: var(--mono); font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 1rem; }
+.cta-inner p { color: var(--text-mid); margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.7; }
+.cta-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
+.cta-actions .btn { font-size: 0.82rem; padding: 0.6rem 1.4rem; }
+
+/* FOOTER */
+footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.footer-brand { font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); }
+.footer-brand strong { color: var(--text-mid); }
+.footer-links { display: flex; gap: 1.5rem; list-style: none; }
+.footer-links a { font-family: var(--mono); font-size: 0.72rem; color: var(--text-dim); text-decoration: none; transition: color 0.15s; }
+.footer-links a:hover { color: var(--green); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">agent<em>passport</em></a>
+  <ul class="nav-links">
+    <li><a href="#features">features</a></li>
+    <li><a href="#code">quickstart</a></li>
+    <li><a href="https://docs.agentpassport.fyi">docs</a></li>
+  </ul>
+  <div class="nav-cta">
+    <a class="btn btn-ghost" href="https://github.com/ceavinrufus/agentpassport"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>GitHub</a>
+    <a class="btn btn-primary" href="https://docs.agentpassport.fyi">Get Started →</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-badge"><div class="pulse-dot"></div><span id="ap-version" data-ap-version="0.3.4">v0.3.4</span> · Apache 2.0 · Python + TypeScript</div>
+  <h1>Agents act.<br><em>agentpassport</em> proves it.</h1>
+  <p class="hero-sub">Cryptographic authorization for AI agents. Prove delegation, enforce scope, and revoke access — across languages and frameworks.</p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="https://docs.agentpassport.fyi">Get Started →</a>
+    <a class="btn btn-ghost" href="https://github.com/ceavinrufus/agentpassport"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg> Star on GitHub</a>
+  </div>
+  <div class="install-pills-wrap" style="display:flex;flex-direction:column;gap:0.5rem;align-items:center">
+    <div class="install-pill" onclick="copyInstall(this,'pip')">
+      <span class="prompt">$</span>
+      <span class="cmd">pip install agentpassport</span>
+      <span class="copy-hint"><i data-lucide="copy" style="width:13px;height:13px"></i></span>
+    </div>
+    <div class="install-pill" onclick="copyInstall(this,'npm')">
+      <span class="prompt">$</span>
+      <span class="cmd">npm install @agentpassport/core</span>
+      <span class="copy-hint"><i data-lucide="copy" style="width:13px;height:13px"></i></span>
+    </div>
+  </div>
+</section>
+
+<section class="flow-section">
+  <div class="flow-container">
+    <div class="flow-topbar">
+      <div class="flow-status"><div class="pulse-dot"></div>auth chain · live</div>
+      <div class="scenario-tabs">
+        <div class="scenario-tab active" onclick="setScenario('allow',this)">✓ allow</div>
+        <div class="scenario-tab" onclick="setScenario('deny',this)">✗ scope denied</div>
+        <div class="scenario-tab" onclick="setScenario('revoke',this)">⊘ revoked</div>
+      </div>
+    </div>
+    <div class="graph-wrap" id="graph-wrap">
+      <svg id="graph-svg">
+        <defs>
+          <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#00e5a0"/></marker>
+          <marker id="arr-red"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#ff5370"/></marker>
+          <marker id="arr-dim"   markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#444"/></marker>
+        </defs>
+        <path id="edge-01" fill="none" stroke-width="1.5" stroke-dasharray="5 4" opacity="0" style="transition:opacity 0.4s,stroke 0.4s"/>
+        <path id="edge-12" fill="none" stroke-width="1.5" stroke-dasharray="5 4" opacity="0" style="transition:opacity 0.4s,stroke 0.4s"/>
+        <path id="edge-23" fill="none" stroke-width="1.5" stroke-dasharray="5 4" opacity="0" style="transition:opacity 0.4s,stroke 0.4s"/>
+      </svg>
+      <div class="agent-node" id="node-0" style="left:10%;top:55%">
+        <div class="node-ring" id="ring-0" style="font-size:1.4rem"><div class="node-ping"></div>🖥️</div>
+        <div class="node-label">Orchestrator</div>
+        <div class="node-did">Python · did:key:z6Mk…</div>
+      </div>
+      <div class="agent-node" id="node-1" style="left:37%;top:30%">
+        <div class="node-ring" id="ring-1" style="font-size:1.4rem"><div class="node-ping"></div>🔑</div>
+        <div class="node-label">Delegation</div>
+        <div class="node-did" id="n1-did">scope: read:db:customers</div>
+      </div>
+      <div class="agent-node" id="node-2" style="left:64%;top:55%">
+        <div class="node-ring" id="ring-2" style="font-size:1.4rem"><div class="node-ping"></div>⚡</div>
+        <div class="node-label">TS Agent</div>
+        <div class="node-did">TypeScript · did:key:z6Ko…</div>
+      </div>
+      <div class="agent-node" id="node-3" style="left:90%;top:55%">
+        <div class="node-ring" id="ring-3" style="font-size:1.4rem"><div class="node-ping"></div><span id="n3-icon">✅</span></div>
+        <div class="node-label" id="n3-label">Capability</div>
+        <div class="node-did" id="n3-did">GET /db/customers</div>
+      </div>
+      <div class="edge-label scope" id="el-01">signed · jwt</div>
+      <div class="edge-label scope" id="el-12">verify chain</div>
+      <div class="edge-label allow" id="el-23">✓ allow · 1.9ms</div>
+    </div>
+    <div class="log-strip">
+      <div class="log-header"><span>// output</span><span>flow active</span></div>
+      <div class="log-entries" id="log-entries"></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="features" id="features">
+  <div class="section-eyebrow">// why agentpassport</div>
+  <h2 class="section-title">The authorization primitive<br>your agents are missing.</h2>
+  <p class="section-sub">Every framework trusts by convention. agentpassport proves by cryptography.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="fingerprint"></i></div>
+      <div class="feature-num">01 / IDENTITY</div>
+      <div class="feature-title">did:key identity</div>
+      <p class="feature-desc">Every agent gets an Ed25519 keypair. Its public key becomes a W3C DID — no registry, no PII, verifiable by anyone.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="git-branch"></i></div>
+      <div class="feature-num">02 / DELEGATION</div>
+      <div class="feature-title">Signed delegation chains</div>
+      <p class="feature-desc">Trust flows through signed JWTs. Each hop narrows scope — an agent can never grant more than it was given.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="shield-check"></i></div>
+      <div class="feature-num">03 / ENFORCEMENT</div>
+      <div class="feature-title">Pre-execution scope gates</div>
+      <p class="feature-desc">Capabilities declare required scope. agentpassport checks before the handler runs — fail fast, no partial state.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="ban"></i></div>
+      <div class="feature-num">04 / REVOCATION</div>
+      <div class="feature-title">Mid-flight revocation</div>
+      <p class="feature-desc">Revoke by JTI without killing in-flight work. Current action finishes safely. Next hop is denied.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="arrow-left-right"></i></div>
+      <div class="feature-num">05 / CROSS-SDK</div>
+      <div class="feature-title">Python ↔ TypeScript</div>
+      <p class="feature-desc">Wire-compatible out of the box. Python orchestrator delegates. TypeScript agent verifies. No shared infrastructure.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon"><i data-lucide="link"></i></div>
+      <div class="feature-num">06 / OWNERSHIP</div>
+      <div class="feature-title">Domain & wallet binding</div>
+      <p class="feature-desc">Prove real-world agent ownership via <code style="font-family:var(--mono);font-size:0.78rem;color:var(--green)">/.well-known/agent-passport.json</code> — domain, EVM, Solana, Bitcoin.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="compare">
+  <div class="section-eyebrow">// without vs with</div>
+  <h2 class="section-title">Convention vs cryptography.</h2>
+  <div class="compare-grid">
+    <div class="compare-col">
+      <div class="compare-header">✗ Without agentpassport</div>
+      <div class="compare-item">– Authorization by convention, not proof</div>
+      <div class="compare-item">– Scope enforced ad-hoc, post-execution</div>
+      <div class="compare-item">– Revocation = kill the process</div>
+      <div class="compare-item">– Custom glue per language integration</div>
+      <div class="compare-item">– Audit trail = grep logs at 3am</div>
+    </div>
+    <div class="compare-col good">
+      <div class="compare-header">✓ With agentpassport</div>
+      <div class="compare-item">✓ Cryptographic proof at every hop</div>
+      <div class="compare-item">✓ Declared + verified before execution</div>
+      <div class="compare-item">✓ Soft-stop by JTI, mid-flight safe</div>
+      <div class="compare-item">✓ Wire-compatible Python ↔ TypeScript</div>
+      <div class="compare-item">✓ Signed receipts, tamper-evident</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="code-section" id="code">
+  <div class="section-eyebrow">// quickstart</div>
+  <h2 class="section-title">Three steps.<br>Every action provable.</h2>
+  <div class="code-wrap">
+    <div class="code-topbar">
+      <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+      <div class="code-tabs2">
+        <div class="code-tab2 active" onclick="switchTab('python',this)">python</div>
+        <div class="code-tab2" onclick="switchTab('typescript',this)">typescript</div>
+      </div>
+    </div>
+    <pre id="tab-python" class="active"><span class="c"># 1. Every agent gets a cryptographic identity</span>
+<span class="kw">from</span> agentpassport <span class="kw">import</span> Agent, sign_delegation
+
+agent = <span class="fn">Agent</span>(<span class="str">"my-agent"</span>)
+<span class="fn">print</span>(agent.did)  <span class="c"># did:key:z6Mk...</span>
+
+<span class="c"># 2. Sign a scoped delegation JWT</span>
+token = <span class="fn">sign_delegation</span>(
+    issuer_private_key=root_priv,
+    issuer_did=root_did,
+    subject_did=agent.did,
+    scope=[<span class="str">"read:db:customers"</span>],
+    ttl_seconds=<span class="num">3600</span>,
+)
+
+<span class="c"># 3. Declare required scope — enforced before execution</span>
+<span class="fn">@agent.capability</span>(<span class="str">"query_customers"</span>, requires=[<span class="str">"read:db:customers"</span>])
+<span class="kw">async def</span> <span class="fn">handle</span>(task):
+    <span class="kw">return</span> {<span class="str">"customers"</span>: [...]}  <span class="c"># only runs if authorized</span>
+
+<span class="c"># Revoke mid-flight — safe, no kill signal</span>
+registry.<span class="fn">revoke</span>(jti)  <span class="c"># next request denies, current finishes</span></pre>
+    <pre id="tab-typescript"><span class="c">// Wire-compatible with Python — no shared infrastructure needed</span>
+<span class="kw">import</span> { Agent, InMemoryRevocationRegistry } <span class="kw">from</span> <span class="str">"@agentpassport/core"</span>
+
+<span class="kw">const</span> registry = <span class="kw">new</span> <span class="fn">InMemoryRevocationRegistry</span>()
+<span class="kw">const</span> agent = <span class="kw">new</span> <span class="fn">Agent</span>(<span class="str">"ts-agent"</span>, { privateKey, revocationRegistry: registry })
+
+agent.<span class="fn">trustKeys</span>({ [orchestratorDid]: orchestratorPublicKey })
+
+agent.<span class="fn">capability</span>(<span class="str">"queryCustomers"</span>, { requires: [<span class="str">"read:db:customers"</span>] }, <span class="kw">async</span> (task) => {
+  <span class="kw">return</span> { customers: [...] }
+})
+
+<span class="c">// ScopeError thrown automatically if scope insufficient</span>
+<span class="c">// → JSON-RPC error, not HTTP 500. No partial state.</span></pre>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Start proving<br>agent authorization.</h2>
+    <p>Pure OSS under Apache 2.0. No gateway required. No vendor lock-in. A library that proves what your agents were authorized to do.</p>
+    <div class="cta-actions">
+      <a class="btn btn-primary" href="https://docs.agentpassport.fyi">Read the docs →</a>
+      <a class="btn btn-ghost" href="https://github.com/ceavinrufus/agentpassport"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block;vertical-align:middle;flex-shrink:0"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg> Star on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<footer>
+  <div class="footer-brand"><strong>agentpassport</strong> · Apache 2.0 · built for the agentic web</div>
+  <ul class="footer-links">
+    <li><a href="https://github.com/ceavinrufus/agentpassport">GitHub</a></li>
+    <li><a href="https://pypi.org/project/agentpassport/">PyPI</a></li>
+    <li><a href="https://www.npmjs.com/package/@agentpassport/core">npm</a></li>
+    <li><a href="https://docs.agentpassport.fyi">docs</a></li>
+  </ul>
+</footer>
+
+<script>
+const SCENARIOS = {
+  allow: {
+    edges: [
+      { id:'edge-01', from:0, to:1, stroke:'#00e5a0', marker:'arr-green' },
+      { id:'edge-12', from:1, to:2, stroke:'#00e5a0', marker:'arr-green' },
+      { id:'edge-23', from:2, to:3, stroke:'#00e5a0', marker:'arr-green' },
+    ],
+    labels: [
+      { id:'el-01', text:'signed · jwt',    cls:'scope' },
+      { id:'el-12', text:'verify chain',    cls:'scope' },
+      { id:'el-23', text:'✓ allow · 1.9ms', cls:'allow' },
+    ],
+    n1did: 'scope: read:db:customers',
+    n3: { icon:'✅', label:'Capability', did:'GET /db/customers', ring:'active' },
+    logs: [
+      { cls:'log-dim', text:'[01] identity    did:key:z6Mk…3c2e · issued' },
+      { cls:'log-dim', text:'[02] delegation  scope=read:db:customers · signed jwt' },
+      { cls:'log-ok',  text:'[03] enforce     ✓ allow · GET /db/customers · 1.9ms' },
+      { cls:'log-ok',  text:'[04] receipt     ed25519:7f2c… · tamper-evident' },
+    ]
+  },
+  deny: {
+    edges: [
+      { id:'edge-01', from:0, to:1, stroke:'#00e5a0', marker:'arr-green' },
+      { id:'edge-12', from:1, to:2, stroke:'#00e5a0', marker:'arr-green' },
+      { id:'edge-23', from:2, to:3, stroke:'#ff5370', marker:'arr-red' },
+    ],
+    labels: [
+      { id:'el-01', text:'signed · jwt',       cls:'scope' },
+      { id:'el-12', text:'verify chain',       cls:'scope' },
+      { id:'el-23', text:'✗ ScopeError · 403', cls:'deny'  },
+    ],
+    n1did: 'scope: read:db:customers',
+    n3: { icon:'🚫', label:'Denied', did:'POST /db/customers', ring:'deny' },
+    logs: [
+      { cls:'log-dim', text:'[01] identity    did:key:z6Mk…3c2e · issued' },
+      { cls:'log-dim', text:'[02] delegation  scope=read:db:customers · signed jwt' },
+      { cls:'log-err', text:'[03] enforce     ✗ ScopeError: requires write:db:customers' },
+      { cls:'log-err', text:'                    granted: read:db:customers — no partial state' },
+    ]
+  },
+  revoke: {
+    edges: [
+      { id:'edge-01', from:0, to:1, stroke:'#00e5a0', marker:'arr-green' },
+      { id:'edge-12', from:1, to:2, stroke:'#ff5370', marker:'arr-red' },
+      { id:'edge-23', from:2, to:3, stroke:'#444',    marker:'arr-dim' },
+    ],
+    labels: [
+      { id:'el-01', text:'signed · jwt',  cls:'scope' },
+      { id:'el-12', text:'⊘ jti revoked', cls:'deny'  },
+      { id:'el-23', text:'⊘ 403',         cls:'deny'  },
+    ],
+    n1did: 'jti: d77dd09a…',
+    n3: { icon:'⊘', label:'Blocked', did:'next hop denied', ring:'deny' },
+    logs: [
+      { cls:'log-dim', text:'[01] delegation  jti=d77dd09a… active' },
+      { cls:'log-dim', text:'[02] revocation  registry.revoke(jti) — mid-flight safe' },
+      { cls:'log-ok',  text:'[03] current     action completed safely before stop' },
+      { cls:'log-err', text:'[04] next hop    ⊘ revoked · 403 · cascade propagated' },
+    ]
+  }
+};
+
+let currentScenario = 'allow';
+const wrap  = document.getElementById('graph-wrap');
+const nodeEls = [0,1,2,3].map(i => document.getElementById('node-'+i));
+
+function nodeCenter(n) {
+  const nr = n.getBoundingClientRect(), wr = wrap.getBoundingClientRect();
+  return { x: nr.left + nr.width/2 - wr.left, y: nr.top + nr.height/2 - wr.top };
+}
+
+function drawEdge(id, p1, p2, stroke, marker) {
+  const path = document.getElementById(id);
+  const cx = (p1.x + p2.x) / 2;
+  path.setAttribute('d', `M ${p1.x} ${p1.y} Q ${cx} ${p1.y} ${p2.x} ${p2.y}`);
+  path.setAttribute('stroke', stroke);
+  path.setAttribute('marker-end', `url(#${marker})`);
+}
+
+function renderGraph(name, animate) {
+  const s = SCENARIOS[name];
+  ['edge-01','edge-12','edge-23'].forEach(id => document.getElementById(id).style.opacity = '0');
+  ['el-01','el-12','el-23'].forEach(id => { const el = document.getElementById(id); el.classList.remove('visible','allow','deny','scope'); });
+  nodeEls.forEach(n => n.querySelector('.node-ring').classList.remove('active','deny'));
+  document.getElementById('log-entries').innerHTML = '';
+  document.getElementById('n1-did').textContent = s.n1did;
+  document.getElementById('n3-icon').textContent = s.n3.icon;
+  document.getElementById('n3-label').textContent = s.n3.label;
+  document.getElementById('n3-did').textContent = s.n3.did;
+
+  const centers = nodeEls.map(n => nodeCenter(n));
+  s.edges.forEach((e, i) => {
+    drawEdge(e.id, centers[e.from], centers[e.to], e.stroke, e.marker);
+    const lbl = document.getElementById(s.labels[i].id);
+    lbl.style.left = ((centers[e.from].x + centers[e.to].x) / 2) + 'px';
+    lbl.style.top  = (Math.min(centers[e.from].y, centers[e.to].y) - 16) + 'px';
+    lbl.textContent = s.labels[i].text;
+    lbl.className = 'edge-label ' + s.labels[i].cls;
+  });
+
+  nodeEls[0].querySelector('.node-ring').classList.add('active');
+
+  const showStep = (i, instant) => {
+    const e = s.edges[i];
+    document.getElementById(e.id).style.opacity = '1';
+    document.getElementById(s.labels[i].id).classList.add('visible');
+    nodeEls[e.to].querySelector('.node-ring').classList.add(i === s.edges.length-1 ? s.n3.ring : 'active');
+    const log = s.logs[i];
+    if (log) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry ' + log.cls;
+      const ts = new Date().toISOString().slice(11,19);
+      entry.innerHTML = `<span class="log-ts">${ts}</span><span>${log.text}</span>`;
+      document.getElementById('log-entries').appendChild(entry);
+      if (!instant) requestAnimationFrame(() => entry.classList.add('visible'));
+      else entry.classList.add('visible');
+    }
+  };
+
+  if (animate) {
+    s.edges.forEach((_, i) => setTimeout(() => showStep(i, false), i * 500 + 300));
+    if (s.logs[3]) setTimeout(() => {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry ' + s.logs[3].cls;
+      const ts = new Date().toISOString().slice(11,19);
+      entry.innerHTML = `<span class="log-ts">${ts}</span><span>${s.logs[3].text}</span>`;
+      document.getElementById('log-entries').appendChild(entry);
+      requestAnimationFrame(() => entry.classList.add('visible'));
+    }, 3 * 500 + 300);
+  } else {
+    s.edges.forEach((_, i) => showStep(i, true));
+    if (s.logs[3]) {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry visible ' + s.logs[3].cls;
+      const ts = new Date().toISOString().slice(11,19);
+      entry.innerHTML = `<span class="log-ts">${ts}</span><span>${s.logs[3].text}</span>`;
+      document.getElementById('log-entries').appendChild(entry);
+    }
+  }
+}
+
+function setScenario(name, tabEl) {
+  document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  currentScenario = name;
+  renderGraph(name, true);
+}
+
+function switchTab(lang, tabEl) {
+  document.querySelectorAll('.code-tab2').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('pre').forEach(b => b.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.getElementById('tab-' + lang).classList.add('active');
+}
+
+function copyInstall(el, type) {
+  const cmd = type === 'npm' ? 'npm install @agentpassport/core' : 'pip install agentpassport';
+  navigator.clipboard.writeText(cmd);
+  const hint = el.querySelector('.copy-hint');
+  hint.innerHTML = '<i data-lucide="check" style="width:13px;height:13px;color:var(--green)"></i>';
+  lucide.createIcons({ nodes: [hint] });
+  setTimeout(() => {
+    hint.innerHTML = '<i data-lucide="copy" style="width:13px;height:13px"></i>';
+    lucide.createIcons({ nodes: [hint] });
+  }, 2000);
+}
+
+window.addEventListener('load', () => {
+  lucide.createIcons();
+  // Re-run to catch any icons missed on first pass
+  requestAnimationFrame(() => {
+    lucide.createIcons();
+    setTimeout(() => renderGraph('allow', true), 300);
+  });
+});
+window.addEventListener('resize', () => { clearTimeout(window._rt); window._rt = setTimeout(() => renderGraph(currentScenario, false), 100); });
+</script>
+
+<script>
+// Fallback text matches packages/agentpassport/pyproject.toml (tests/test_homepage_version.py).
+// After load, show the version currently published on PyPI so this page does not stay stale.
+(function () {
+  var el = document.getElementById("ap-version");
+  if (!el || !window.fetch) return;
+  fetch("https://pypi.org/pypi/agentpassport/json")
+    .then(function (response) { return response.json(); })
+    .then(function (data) {
+      var version = data && data.info && data.info.version;
+      if (!version) return;
+      el.dataset.apVersion = version;
+      el.textContent = "v" + version;
+    })
+    .catch(function () {});
+})();
+</script>
+</body>
+</html>
