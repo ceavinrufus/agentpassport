@@ -9,30 +9,145 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![CI](https://github.com/ceavinrufus/agentpassport/actions/workflows/ci.yml/badge.svg)](https://github.com/ceavinrufus/agentpassport/actions/workflows/ci.yml)
 
-**The authorization layer for multi-agent AI systems.**
-Like IAM, but for your agent graph.
+OAuth and MCP authorization decide which client may reach a server. agentpassport sits on top of that check and records what each later agent in a delegation chain was allowed to do. It does not replace the client check.
+
+Each agent gets an Ed25519 `did:key`. Each hop is a signed JWT, and scope can only narrow. The receiving agent checks that scope before the handler runs.
 
 ---
 
-## The Problem
+## Quickstart
 
-Agents are delegating to other agents. Nobody's checking the chain.
+Python first, then the TypeScript SDK. Neither snippet needs a clone of this repo.
 
-When Agent A delegates to Agent B, and Agent B delegates to Agent C — how do you know what C was actually authorized to do? Right now, every major framework (LangGraph, CrewAI, AutoGen) answers this question with: *trust by convention*. No signed proof. No scope enforcement. No way to revoke mid-flight.
+### Python
 
-That's not authorization. That's hope.
+Python 3.11+.
 
-```
-[Python Orchestrator] signs delegation → [TypeScript Agent] verifies before executing
-         ↓
-    ScopeError: requires [write:db:customers], granted [read:db:customers]  ✅
+```bash
+pip install agentpassport
 ```
 
-agentpassport gives every agent a cryptographic identity, signs delegation at every hop, and enforces scope before the handler runs. Revoke a token by JTI and the agent stops cleanly — no process kill, no partial state.
+Save as `quickstart.py` and run `python quickstart.py`.
+
+```python
+import asyncio
+
+from agentpassport import (
+    Agent,
+    EventEmitter,
+    Intent,
+    ScopeError,
+    TaskEnvelope,
+    generate_keypair,
+    sign_delegation,
+)
+
+orchestrator_key, _ = generate_keypair()
+orchestrator = Agent("orchestrator", private_key=orchestrator_key)
+# Agent writes a JSON lifecycle line by default. Silence it for this example.
+worker = Agent("worker", emitter=EventEmitter(sinks=[]))
+worker.trust_keys({orchestrator.did: orchestrator.public_key})
+
+
+@worker.capability("query_customers", requires=["read:db:customers"])
+async def query_customers(task: TaskEnvelope) -> dict:
+    return {"customers": ["ada", "grace"]}
+
+
+def delegated(scope: list[str]) -> TaskEnvelope:
+    token = sign_delegation(
+        issuer_private_key=orchestrator_key,
+        issuer_did=orchestrator.did,
+        subject_did=worker.did,
+        scope=scope,
+    )
+    return TaskEnvelope(intent=Intent(type="query_customers"), auth_chain=[token])
+
+
+async def main() -> None:
+    print(await worker.handle(delegated(["read:db:customers"])))
+    try:
+        await worker.handle(delegated(["read:db:orders"]))
+    except ScopeError as exc:
+        print(exc)
+
+
+asyncio.run(main())
+```
+
+```text
+{'customers': ['ada', 'grace']}
+Capability 'query_customers' requires scope ['read:db:customers'] not granted by the auth chain. Granted: ['read:db:orders']
+```
+
+The first call is allowed. The second is signed, and it is rejected because the granted scope is `read:db:orders`.
+
+`pip install agentpassport[otel]` adds the OpenTelemetry sink. The quickstart does not need it.
+
+### TypeScript
+
+Node.js 18+. The package is ESM.
+
+```bash
+npm install @agentpassport/core
+```
+
+Save as `quickstart.mjs` and run `node quickstart.mjs`. No TypeScript compile step.
+
+```javascript
+import { Agent, ScopeError, createTask } from "@agentpassport/core";
+
+const orchestrator = new Agent("orchestrator");
+const worker = new Agent("worker");
+worker.trustKeys({ [orchestrator.did]: orchestrator.publicKey });
+
+worker.capability(
+  "queryCustomers",
+  { requires: ["read:db:customers"] },
+  async () => ({ customers: ["ada", "grace"] }),
+);
+
+const allowed = orchestrator.delegate(
+  createTask({ type: "queryCustomers", params: {} }),
+  { targetDid: worker.did, scope: ["read:db:customers"] },
+);
+console.log(await worker.handle(allowed));
+
+const denied = orchestrator.delegate(
+  createTask({ type: "queryCustomers", params: {} }),
+  { targetDid: worker.did, scope: ["read:db:orders"] },
+);
+try {
+  await worker.handle(denied);
+} catch (err) {
+  if (err instanceof ScopeError) console.log(err.message);
+  else throw err;
+}
+```
+
+```text
+{ customers: [ 'ada', 'grace' ] }
+Scope denied for capability "queryCustomers": requires [read:db:customers], missing [read:db:customers]
+```
+
+`Agent.delegate` on the TypeScript SDK appends a signed JWT and returns the task. The Python `Agent.delegate` sends that task over HTTP, so the Python quickstart calls `sign_delegation` directly.
+
+---
+
+## What it checks
+
+| Question | OAuth / MCP auth | agentpassport |
+|---|---|---|
+| May this client reach the server? | Bearer token, when the server requires one | Use the server's OAuth or MCP auth |
+| What was this agent in the chain allowed to do? | Client access only | Signed JWT scope, checked before the handler |
+
+MCP authorization for HTTP transports is OAuth 2.1. Support is optional. When a server uses it, the server is an OAuth resource server and a bearer token decides which client may call it. stdio transports are outside that flow. See the [MCP guide](docs/guides/mcp.md).
+
+Frameworks such as LangGraph, CrewAI, and AutoGen do not sign the hop from one agent to the next. A task arrives because the caller was able to send it. agentpassport is the signed record of the scope that caller granted.
 
 ## Demo
 
-**Cross-SDK trust chain** — Python orchestrator delegates to TypeScript agent:
+The snippets above run from a package install. This demo is the cross-SDK walkthrough in the repo: a Python orchestrator delegates to a TypeScript agent.
 
 ```bash
 git clone https://github.com/ceavinrufus/agentpassport
@@ -111,7 +226,7 @@ uv run python -m demo.binding_demo
 
 ### Verify domain ownership — live
 
-agentpassport.fyi publishes its own `/.well-known/agent-passport.json` — you can verify it right now:
+agentpassport.fyi publishes its own `/.well-known/agent-passport.json`. With the CLI installed (`pip install agentpassport-cli`):
 
 ```bash
 $ agentpass identity verify-domain \
@@ -124,30 +239,6 @@ Output:
 Checking https://agentpassport.fyi/.well-known/agent-passport.json ...
 ✓ Valid domain binding: 'agentpassport.fyi' claims did:key:z6Mkh8UwkN88kwynM3mYke8yFXr9ax69jZKv2TCuwG7yPzbw
 ```
-
-## Install
-
-```bash
-# Python
-pip install agentpassport
-
-# TypeScript / JavaScript
-npm install @agentpassport/core
-```
-
-- [agentpassport on PyPI](https://pypi.org/project/agentpassport/)
-- [@agentpassport/core on npm](https://www.npmjs.com/package/@agentpassport/core)
-
----
-
-## Why agentpassport?
-
-| Problem | Without agentpassport | With agentpassport |
-|---|---|---|
-| Agent authorization | Trust by convention | Cryptographic proof |
-| Scope enforcement | Ad-hoc checks | Declared + verified before execution |
-| Revocation | Kill the process | Soft-stop by JTI, mid-flight safe |
-| Cross-language | Custom per integration | Wire-compatible out of the box |
 
 ## How It Works
 
@@ -199,31 +290,27 @@ async def handle(task: TaskEnvelope) -> dict:
 
 ### 4. Revocation
 
-Revoke a delegation by JTI without stopping in-flight work — the agent completes its current action and stops before the next.
+`verify_auth_chain(..., revocation_registry=registry)` returns false after `registry.revoke(jti)`. Nothing is killed.
+
+Python `Agent.handle` does not take a registry, so call `verify_auth_chain` yourself if a revoked token must be rejected. The TypeScript `Agent` checks a registry when you pass `{ revocationRegistry }` to the constructor.
 
 ```python
-from agentpassport import InMemoryRevocationRegistry, SqliteRevocationRegistry
+from agentpassport import SqliteRevocationRegistry, verify_auth_chain
 
 registry = SqliteRevocationRegistry("revocations.db")
-registry.revoke(jti)  # all future requests with this token fail
+registry.revoke(jti)
+
+verify_auth_chain(
+    auth_chain=[token],
+    expected_subject=agent.did,
+    known_public_keys={issuer_did: issuer_pub},
+    revocation_registry=registry,
+)  # False
 ```
 
 ## TypeScript SDK
 
-Wire-compatible with Python — cross-language trust chains work out of the box.
-
-```typescript
-import { Agent, InMemoryRevocationRegistry, ScopeError } from "@agentpassport/core"
-
-const agent = new Agent("ts-agent", { privateKey, revocationRegistry })
-agent.trustKeys({ [orchestratorDid]: orchestratorPublicKey })
-
-agent.capability("queryCustomers", { requires: ["read:db:customers"] }, async (task) => {
-  return { customers: [...] }
-})
-```
-
-A Python orchestrator can sign a delegation JWT. A TypeScript agent can verify it. No shared infrastructure needed.
+`@agentpassport/core` verifies the same EdDSA JWT the Python SDK signs. The quickstart above is the runnable example. A Python orchestrator can sign a delegation and a TypeScript agent can verify it, with no shared service. The [demo](#demo) runs that path from a clone.
 
 ## Scope Format
 
@@ -235,22 +322,11 @@ Scopes are `action:resource` pairs:
 
 Both parts together make authorization provable. Action-only (`"read"`) is too loose. Resource-only (`"db:customers"`) is incomplete.
 
-## Install
-
-```bash
-pip install agentpassport          # Python SDK
-pip install agentpassport[otel]    # + OpenTelemetry sink
-```
-
-```bash
-cd packages/agentpassport-ts && npm install  # TypeScript SDK
-```
-
 ## Packages
 
 | Package | Description |
 |---------|-------------|
-| [`agentpassport`](https://pypi.org/project/agentpassport/) [![PyPI](https://img.shields.io/pypi/v/agentpassport)](https://pypi.org/project/agentpassport/) | Python trust and authorization layer |
+| [`agentpassport`](https://pypi.org/project/agentpassport/) [![PyPI](https://img.shields.io/pypi/v/agentpassport)](https://pypi.org/project/agentpassport/) | Python SDK — identity, signed delegation, scope checks |
 | [`@agentpassport/core`](https://www.npmjs.com/package/@agentpassport/core) [![npm](https://img.shields.io/npm/v/@agentpassport/core)](https://www.npmjs.com/package/@agentpassport/core) | TypeScript SDK (wire-compatible) |
 | [`agentpassport-registry`](https://pypi.org/project/agentpassport-registry/) [![PyPI](https://img.shields.io/pypi/v/agentpassport-registry)](https://pypi.org/project/agentpassport-registry/) | Trusted agent registry with signature verification |
 | [`agentpassport-adapters`](https://pypi.org/project/agentpassport-adapters/) [![PyPI](https://img.shields.io/pypi/v/agentpassport-adapters)](https://pypi.org/project/agentpassport-adapters/) | MCP, REST, and A2A adapters |
@@ -259,6 +335,8 @@ cd packages/agentpassport-ts && npm install  # TypeScript SDK
 ## CLI
 
 ```bash
+pip install agentpassport-cli
+
 # Generate a keypair and DID
 agentpass identity keygen --alias myagent
 
@@ -308,7 +386,7 @@ See the [Ownership Binding guide](docs/guides/ownership-binding.md) for the full
 
 | | Feature | Status |
 |---|---|---|
-| **Authorization layer** | Cryptographic agent identity (`did:key:`) | ✅ Done |
+| **Delegation** | Cryptographic agent identity (`did:key:`) | ✅ Done |
 | | Signed delegation chain (JWT) | ✅ Done |
 | | Scope enforcement + revocation | ✅ Done |
 | | Python SDK | ✅ Done |

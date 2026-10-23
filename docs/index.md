@@ -140,7 +140,7 @@ worker.capability(
 | [Guide: Python Quickstart](./guides/python-quickstart.md) | Full runnable Python multi-agent walkthrough |
 | [Guide: TypeScript Quickstart](./guides/typescript-quickstart.md) | Full runnable TypeScript multi-agent walkthrough |
 | [Guide: Cross-SDK Interop](./guides/cross-sdk.md) | Python signs → TypeScript verifies, and vice versa |
-| [Guide: MCP Middleware](./guides/mcp.md) | Enforce passport and scope before MCP tool execution |
+| [Guide: MCP Middleware](./guides/mcp.md) | Delegation scope checks in front of an MCP server, on top of MCP auth |
 | [Guide: A2A Integration](./guides/a2a.md) | Expose agentpassport agents as A2A servers; delegate to external A2A agents |
 | [Guide: Ownership Binding](./guides/ownership-binding.md) | Link your agent DID to a domain or wallet address |
 
