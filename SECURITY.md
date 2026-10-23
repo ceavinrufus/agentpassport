@@ -44,7 +44,7 @@ agentpassport operates under these assumptions:
 
 **Delegation chain integrity:**
 - JWT delegation tokens are signed with Ed25519. Verification requires the issuer's public key to be in `known_public_keys`. Tokens with unknown issuers are rejected.
-- Scope can only narrow at each delegation hop — a delegatee can never grant more than it received. This is enforced by `verify_auth_chain()`.
+- Scope can only narrow at each delegation hop — a delegatee can never grant more than it received. `verify_auth_chain()` and `TrustMiddleware` (inside `Agent.handle()`) both enforce that, along with hop continuity and a final `sub` equal to the receiving agent's DID.
 - Revocation is soft-stop by JTI: in-flight actions complete; the next action is blocked. For hard stops, callers must implement their own preemption.
 
 **Revocation registry:**

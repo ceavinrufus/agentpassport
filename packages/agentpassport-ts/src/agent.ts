@@ -94,7 +94,9 @@ export class Agent {
   /**
    * Handle an incoming task.
    * Runs scope check before dispatching to the capability handler.
-   * Throws ScopeError if the auth chain doesn't cover declared scope.
+   * Throws ScopeError if the chain is not a valid delegation to this
+   * agent (verifyAuthChain rules: final subject, hop continuity, scope
+   * narrowing) or does not grant the declared scope.
    */
   async handle(task: TaskEnvelope): Promise<Record<string, unknown>> {
     const handler = this._capabilities.get(task.intent.type);

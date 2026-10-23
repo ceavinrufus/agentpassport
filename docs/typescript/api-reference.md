@@ -534,10 +534,13 @@ Verify a complete chain of delegation JWTs. Returns `true` only if every token i
 1. Structural validity (3 parts split by `.`)
 2. `alg: "EdDSA"` in header
 3. Issuer in `knownPublicKeys`
-4. Valid Ed25519 signature via `@noble/ed25519`
-5. `iat <= now <= exp`
-6. `jti` is a non-empty string
-7. `revocationRegistry?.isRevoked(jti)` returns `false`
+4. This hop's `iss` equals the previous hop's `sub` (the first hop has no predecessor)
+5. Valid Ed25519 signature via `@noble/ed25519`
+6. `iat <= now <= exp` (no clock-skew leeway; the Python SDK allows 30 seconds on `iat`)
+7. `jti` is a non-empty string
+8. `revocationRegistry?.isRevoked(jti)` returns `false`
+9. `scope` does not widen. Every scope string on this hop, including `"*"`, must be in the previous hop's scope unless that hop granted `"*"`. A previous `"*"` allows any concrete scope downstream.
+10. `max_delegations` on earlier hops still allows this hop
 
 **Final check:** `chain[last].sub === expectedSubject`
 
@@ -709,11 +712,11 @@ class ScopeError extends Error {
 }
 ```
 
-Thrown by `TrustMiddleware.check()` and propagated through `Agent.handle()` when the auth chain doesn't grant the required scope.
+Thrown by `TrustMiddleware.check()` and propagated through `Agent.handle()` when the auth chain is not a valid delegation to this agent or doesn't grant the required scope. An invalid chain reports `granted` as `[]`. An optional `detail` string is appended to `message`.
 
 **Constructor (internal):**
 ```typescript
-new ScopeError(capability: string, required: string[], granted: string[])
+new ScopeError(capability: string, required: string[], granted: string[], detail?: string)
 ```
 
 | Property | Type | Description |
@@ -762,7 +765,7 @@ Pre-execution scope enforcement. Wired automatically inside `Agent`. You typical
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `agentDid` | `string` | Yes | — | DID of the agent. Tokens with `sub !== agentDid` are skipped. |
+| `agentDid` | `string` | Yes | — | DID of the receiving agent. The final token's `sub` must equal this value; otherwise the chain is rejected. |
 | `knownPublicKeys` | `Map<string, Uint8Array>` | Yes | — | Issuer DID → public key. Passed by reference — mutations are reflected. |
 | `capabilityScopes` | `Map<string, string[]>` | Yes | — | Capability name → required scopes. Passed by reference. |
 | `revocationRegistry` | `RevocationRegistry` | No | `undefined` | Optional revocation registry for token validity checks. |
@@ -777,13 +780,10 @@ Check that the auth chain grants the required scope for a capability.
 
 **Logic:**
 1. If `capabilityScopes.get(capabilityName)` is empty/undefined → return (no-op).
-2. Iterate tokens:
-   - Skip tokens where `sub !== agentDid` or issuer is unknown.
-   - Verify via `verifyAuthChain` (single-token chain against self).
-   - Accumulate granted scopes.
-3. If `"*"` in granted → return (pass).
-4. If any required scope is missing → throw `ScopeError`.
-5. If chain is empty and scopes required → throw `ScopeError`.
+2. If the chain is empty and scopes are required → throw `ScopeError`.
+3. Verify the whole chain with `verifyAuthChain` (`expectedSubject` = this agent, plus revocation when a registry was configured). A wrong final `sub`, a broken hop, or a widened scope rejects the chain.
+4. The granted set is the final hop's `scope`. If it contains `"*"` → return (pass).
+5. If any required scope is missing → throw `ScopeError`.
 
 **Throws:** `ScopeError` if scope check fails.
 
@@ -1035,7 +1035,7 @@ Handle an incoming task. Runs scope check then dispatches to the registered hand
 
 **Throws:**
 - `Error` with message `"No handler for capability: <type>"` if no handler is registered for `task.intent.type`.
-- `ScopeError` if the auth chain doesn't cover the required scope.
+- `ScopeError` if the auth chain is not a valid delegation to this agent or doesn't cover the required scope.
 - Any error thrown by the handler.
 
 **Note:** Unlike the Python SDK, the TypeScript `Agent.handle()` does not manage task lifecycle state or emit observability events automatically. You can build these on top using a wrapper.
@@ -1330,6 +1330,6 @@ Decode JWT payload without signature verification. Exported publicly — see [`d
 
 Verify JWT signature using `@noble/ed25519` and return decoded claims. Throws on structural errors or invalid signature.
 
-### `_chain_granted_scopes` equivalent (inline in `TrustMiddleware.check()`)
+### `finalGrantedScopes` (internal, `trust.ts`)
 
-The TypeScript implementation inlines the granted-scope accumulation logic inside `TrustMiddleware.check()` rather than extracting it as a separate function. For each token in the auth chain whose `sub === agentDid` and whose issuer is known, it calls `verifyAuthChain` on that single token and accumulates scopes if valid.
+After `verifyAuthChain` accepts the chain, `TrustMiddleware.check()` reads the final hop's `scope`. That list is what the receiving agent was granted.

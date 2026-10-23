@@ -190,6 +190,66 @@ describe("verifyAuthChain", () => {
     ).toBe(false);
   });
 
+  it("rejects a hop that introduces * without receiving it", () => {
+    const root = makeParty();
+    const middle = makeParty();
+    const leaf = makeParty();
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: middle.did,
+      scope: ["read:db"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: middle.kp.privateKey,
+      issuerDid: middle.did,
+      subjectDid: leaf.did,
+      scope: ["*"],
+    });
+
+    expect(
+      verifyAuthChain({
+        chain: [hop1, hop2],
+        expectedSubject: leaf.did,
+        knownPublicKeys: new Map([
+          [root.did, root.kp.publicKey],
+          [middle.did, middle.kp.publicKey],
+        ]),
+      })
+    ).toBe(false);
+  });
+
+  it("accepts passing * through when the previous hop granted it", () => {
+    const root = makeParty();
+    const middle = makeParty();
+    const leaf = makeParty();
+
+    const hop1 = signDelegation({
+      issuerPrivateKey: root.kp.privateKey,
+      issuerDid: root.did,
+      subjectDid: middle.did,
+      scope: ["*"],
+    });
+    const hop2 = signDelegation({
+      issuerPrivateKey: middle.kp.privateKey,
+      issuerDid: middle.did,
+      subjectDid: leaf.did,
+      scope: ["*"],
+    });
+
+    expect(
+      verifyAuthChain({
+        chain: [hop1, hop2],
+        expectedSubject: leaf.did,
+        knownPublicKeys: new Map([
+          [root.did, root.kp.publicKey],
+          [middle.did, middle.kp.publicKey],
+        ]),
+      })
+    ).toBe(true);
+  });
+
   it("verifies a two-hop chain", () => {
     const root = makeParty();
     const middle = makeParty();

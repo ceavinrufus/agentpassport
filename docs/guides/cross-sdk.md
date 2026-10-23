@@ -434,7 +434,7 @@ async def query_db(task: TaskEnvelope) -> dict:
 
 ### Why this works
 
-`verify_auth_chain` checks every token in order. `TrustMiddleware.check()` collects scopes from tokens whose `sub` matches the agent's own DID — in the worker's case, only `JWT_gateway→worker`. The scope `read:db` appears there, so the check passes.
+`verify_auth_chain` and `TrustMiddleware.check()` both walk every token in order. The worker accepts `[JWT_orchestrator→gateway, JWT_gateway→worker]` only when the chain is continuous, scopes only narrow, and the final `sub` is the worker. The `read:db` scope on that final hop is what satisfies `requires=["read:db"]`.
 
 ---
 

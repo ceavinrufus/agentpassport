@@ -1,0 +1,3 @@
+# The SDK dependency is a local path. Its install hash changes whenever
+# packages/agentpassport-ts is rebuilt, so this lockfile is not committed.
+package-lock.json

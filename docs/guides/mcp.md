@@ -1,13 +1,13 @@
 # Guide: MCP Middleware — Enforcing Passport and Scope Before Tool Execution
 
-This guide shows how to use agentpassport as a trust layer in front of MCP (Model Context Protocol) tool servers. Every tool call is gated by auth chain verification and scope checking before the MCP server sees the request.
+This guide shows how to check an agentpassport delegation chain before an MCP tool runs. MCP authorization, when a server uses it, already decides which client may reach the server. agentpassport does not replace that. It records what each agent in a delegation chain was allowed to do.
 
 ---
 
 ## Table of Contents
 
-1. [The problem: MCP has no authorization layer](#1-the-problem-mcp-has-no-authorization-layer)
-2. [The solution: agentpassport as MCP middleware](#2-the-solution-agentpassport-as-mcp-middleware)
+1. [Where this sits relative to MCP auth](#1-where-this-sits-relative-to-mcp-auth)
+2. [What the middleware checks](#2-what-the-middleware-checks)
 3. [Architecture overview](#3-architecture-overview)
 4. [Pattern A: Agent wraps McpAdapter with scope enforcement](#4-pattern-a-agent-wraps-mcpadapter-with-scope-enforcement)
 5. [Pattern B: HTTP proxy — enforce passport before forwarding to MCP server](#5-pattern-b-http-proxy--enforce-passport-before-forwarding-to-mcp-server)
@@ -19,30 +19,31 @@ This guide shows how to use agentpassport as a trust layer in front of MCP (Mode
 
 ---
 
-## 1. The problem: MCP has no authorization layer
+## 1. Where this sits relative to MCP auth
 
-MCP defines how AI models call tools via a JSON-RPC 2.0 protocol. What it doesn't define is *who* is allowed to call a tool or *whether they were authorized to*. Any client that can reach the MCP server can call any tool.
+MCP defines authorization for HTTP transports. Support is optional. When a server uses it, the mechanism is [OAuth 2.1](https://modelcontextprotocol.io/specification/latest/basic/authorization): the server is a resource server, and a bearer token decides which client may call it. stdio transports are outside that flow. The spec says they should take credentials from the environment instead.
 
-In a multi-agent system this is a problem:
-- Agent A calls a tool on behalf of a user
-- Agent A delegates to Agent B, who calls the same tool
-- Neither the MCP server nor the caller has any proof that Agent B was authorized by the user to call that tool
-- There's no way to revoke Agent B's access without killing the whole session
+That answers a different question from delegation:
 
-agentpassport fills this gap.
+- An authorized client can hand the tool call to another agent.
+- The server still sees one client. It does not see a signed grant from that client to the next agent, or a scope that narrowed at that hop.
+- Revoking the downstream grant is not the same operation as revoking the client's OAuth token.
+
+agentpassport sits on top of OAuth and MCP auth. It does not replace them, and it is not an MCP authorization server.
 
 ---
 
-## 2. The solution: agentpassport as MCP middleware
+## 2. What the middleware checks
 
-agentpassport sits in front of the MCP server and:
+The patterns below run after the client is allowed to reach the server, and before the tool:
 
-1. **Verifies the auth chain** — every JWT in the chain is cryptographically verified
-2. **Checks scope** — the tool name is mapped to a required scope, and the chain must grant it
-3. **Checks revocation** — if a token has been revoked, the call is rejected before the MCP server sees it
-4. **Forwards if valid** — if all checks pass, the request is forwarded to the actual MCP server
+1. **Chain and scope** — for a tool that declares a required scope, `TrustMiddleware.check` (what `Agent.handle` runs) accepts the task only when `verify_auth_chain` would. Every hop must be a signed, unexpired delegation from a trusted issuer. Each hop's `iss` must equal the previous hop's `sub`. Scope may only narrow, and the final `sub` must be this agent. The final hop's scope must include the tool's scope, or `"*"`. One bad hop fails the call. A capability with no `requires` is not checked.
+2. **Stop on failure** — `ScopeError` is raised before `McpAdapter.execute`, or before the proxy forwards, so the tool does not run.
+3. **Forward on success** — the tool call goes to the MCP server. The auth chain is not forwarded. The server does not have to understand agentpassport.
 
-The MCP server itself never needs to be modified. The trust layer is entirely in the middleware.
+Python `TrustMiddleware.check` and `Agent.handle` do not consult a revocation registry. To reject a revoked `jti`, call `verify_auth_chain(..., revocation_registry=...)`. The TypeScript `Agent` checks a registry when you pass `{ revocationRegistry }` to the constructor. See [section 8](#8-revocation-mid-flight).
+
+In the wrapper and proxy patterns the MCP server process is unchanged. OAuth on an HTTP server, if you use it, still decides which client may connect.
 
 ---
 
@@ -55,9 +56,10 @@ Agent / LLM orchestrator
   ▼
 agentpassport Agent (Python)
   ├── TrustMiddleware.check(auth_chain, "read_file")
-  │     ├── verify JWT1: iss=user, sub=orchestrator ✓
-  │     ├── verify JWT2: iss=orchestrator, sub=this_agent ✓
-  │     └── scope check: "read_file" requires ["fs:read"] → granted ✓
+  │     ├── verify_auth_chain rules: signature, expiry, final subject,
+  │     │   hop continuity, scope narrowing, jti, max_delegations
+  │     ├── final hop grants "fs:read", or "*"
+  │     └── revocation registry: not consulted; call verify_auth_chain
   │
   ├── if check passes ──▶  McpAdapter.execute(task)
   │                           ├── spawn MCP server subprocess
@@ -235,10 +237,12 @@ Incoming request:
 
 agentpassport:
 1. Extracts auth chain from header
-2. Verifies all JWTs
-3. Maps tool name → required scope
-4. Forwards to backend MCP server if all checks pass
-5. Returns 403 with ScopeError message if checks fail
+2. TrustMiddleware.check — verify_auth_chain rules (signature, expiry,
+   final subject, hop continuity, scope narrowing) and the tool's scope
+3. Forwards to the backend MCP server if the check passes
+4. Returns 403 if the check fails
+
+Python check() does not consult a revocation registry.
 """
 
 import asyncio
@@ -272,8 +276,8 @@ TRUSTED_KEYS: dict[str, bytes] = {
     "did:key:z6Mk...": bytes.fromhex("abc123..."),  # orchestrator
 }
 
-# The DID of this proxy agent (used for subject check)
-PROXY_DID = "did:key:z6Mk..."  # set this to your proxy agent's DID
+# Final JWT subject for this proxy. check() requires the final sub to equal PROXY_DID.
+PROXY_DID = "did:key:z6Mk..."
 
 # ---------------------------------------------------------------------------
 # Proxy implementation
@@ -302,7 +306,8 @@ def check_auth(auth_chain_header: str | None, tool_name: str, proxy_did: str) ->
     if not chain:
         raise HTTPException(status_code=403, detail="X-Auth-Chain header is empty.")
 
-    # Verify auth chain + scope in one step using TrustMiddleware
+    # Same rules as verify_auth_chain for this agent, plus the tool's scope.
+    # Does not consult a revocation registry.
     tm = TrustMiddleware(
         agent_did=proxy_did,
         known_public_keys=TRUSTED_KEYS,
@@ -514,7 +519,7 @@ agentpassport scope matching is **exact string match or `"*"` wildcard only**. T
 
 ## 8. Revocation mid-flight
 
-One of agentpassport's key features is the ability to revoke a delegation token while an agent is mid-task. The revocation takes effect before the *next* tool call — the current atomic action completes, but no further calls are permitted.
+Revoking a `jti` does not stop a running call. `verify_auth_chain(..., revocation_registry=registry)` returns false on the next check. Python `Agent.handle` and `TrustMiddleware.check` do not read the registry, so a later `handle` of the same task still succeeds unless you verify the chain yourself first.
 
 ```python
 # revocation_demo.py
@@ -537,19 +542,10 @@ revocation_registry = InMemoryRevocationRegistry()
 priv, pub = generate_keypair()
 orchestrator_did = did_from_public_key(pub)
 
-# MCP gateway agent — uses the revocation registry
+# MCP gateway agent. handle() enforces subject, continuity, narrowing, and scope.
+# It does not read the revocation registry.
 gateway = Agent("mcp-gateway")
 gateway.trust_keys({orchestrator_did: pub})
-
-# Override trust middleware to use revocation registry
-from agentpassport.trust import TrustMiddleware
-gateway._trust_middleware = TrustMiddleware(
-    agent_did=gateway.did,
-    known_public_keys={orchestrator_did: pub},
-    capability_scopes={"read_file": ["fs:read"]},
-)
-# Note: to use revocation in TrustMiddleware.check(), pass registry at construction
-# or verify_auth_chain with revocation_registry parameter
 
 
 call_count = 0
@@ -602,10 +598,7 @@ async def main():
         revocation_registry=revocation_registry,
     )
     print(f"Chain valid after revocation: {is_valid}")  # False
-
-    # The agent's TrustMiddleware.check() also rejects it
-    # (wire it up to use the registry in production)
-    print("Token is now revoked — future calls will be rejected at auth chain verification.")
+    # gateway.handle(task) would still succeed. Check verify_auth_chain first.
 
 
 asyncio.run(main())

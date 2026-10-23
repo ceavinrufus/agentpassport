@@ -290,9 +290,9 @@ User (U)                Agent A               Agent B               Agent C
 
 ### Scope narrowing
 
-A key property: **scope can only narrow, never expand, as it travels down the chain**. If JWT1 grants `scope=["read:db"]`, then B cannot create a token with `scope=["write:db"]` and have it be useful — C would reject it because C checks that the chain grants the required scope, and the chain would not contain `write:db` from the root.
+A key property: **scope can only narrow, never expand, as it travels down the chain**. If JWT1 grants `scope=["read:db"]`, then B cannot create a token with `scope=["write:db"]` — or add `write:db` next to `read:db` — and have C accept it. `verify_auth_chain()` and `TrustMiddleware.check()` both reject the whole chain when a hop grants a scope the previous hop did not.
 
-AgentPassport's scope check (`TrustMiddleware.check()`) operates on the union of scopes across all tokens whose subject is the agent being checked. This means a narrowed scope in the final hop is what C actually sees.
+The scope C is granted is the final hop's `scope`, and only after the chain verifies with `sub` equal to C's DID. A hop that did not receive `"*"` cannot add `"*"`.
 
 ---
 
@@ -391,7 +391,7 @@ This strict matching is intentional: it forces issuers to be explicit about what
 
 ### Multiple scopes
 
-A token can grant multiple scopes: `scope: ["read:db", "write:cache", "invoke:llm"]`. The receiving agent's granted scopes are the **union** of all scopes across all valid tokens in the chain whose subject is that agent.
+A token can grant multiple scopes: `scope: ["read:db", "write:cache", "invoke:llm"]`. After the chain verifies, the receiving agent is granted the **final hop's** scope list. Each earlier hop must be a subset of the one before it, unless that earlier hop granted `"*"`.
 
 ### Declaring required scopes on capabilities
 
@@ -417,14 +417,15 @@ When `Agent.handle(task)` is called:
 2. Call `TrustMiddleware.check(task.auth_chain, capability_name)`.
 3. If the capability declared `requires=[...]`:
    a. If `auth_chain` is empty → raise `ScopeError`.
-   b. Iterate each token in `auth_chain`:
-      - Skip tokens whose `sub` is not this agent's DID.
-      - Skip tokens whose issuer is not in `known_public_keys`.
-      - Verify the signature.
-      - Skip expired tokens.
-      - Accumulate valid scopes into a granted set.
-   c. If `"*"` is in granted → pass.
-   d. If any required scope is missing from granted → raise `ScopeError` with details.
+   b. Verify the whole chain with the same rules as `verify_auth_chain()`:
+      - every token is a valid, unexpired, signed delegation from a known issuer
+      - each hop's `iss` equals the previous hop's `sub`
+      - scope only narrows (`"*"` on an earlier hop allows any scope downstream)
+      - `jti` and `max_delegations` are enforced
+      - the final token's `sub` is this agent's DID
+      If any check fails → raise `ScopeError`. The handler does not run.
+   c. The granted set is the final token's `scope`. If it contains `"*"` → pass.
+   d. If any required scope is missing from that set → raise `ScopeError` with details.
 4. If check passes, call the capability handler.
 
 ### ScopeError

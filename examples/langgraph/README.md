@@ -1,10 +1,12 @@
 # LangGraph + agentpassport: Scoped delegation for multi-agent workflows
 
-LangGraph gives you powerful tools for building multi-agent systems: stateful graphs, conditional edges, human-in-the-loop checkpoints, streaming. What it doesn't give you is an authorization layer between nodes.
+LangGraph gives you stateful graphs, conditional edges, human-in-the-loop checkpoints, and streaming. It does not authorize one node to call another.
 
-When one node in your graph calls another — a researcher delegating to a writer, an orchestrator spinning up a subagent — there's no built-in way to say "this node is authorized to do X and only X." Trust flows by convention: if you're in the graph, you can do anything in the graph.
+When a researcher delegates to a writer, nothing in the graph says "this node may do X and only X." Trust flows by convention: if you are in the graph, you can do anything in the graph.
 
-This tutorial shows how to add cryptographic scope enforcement between LangGraph nodes using agentpassport. You'll build a research pipeline where a researcher agent delegates to a writer agent with `read:web` scope only — and see exactly what happens when the writer tries to exceed that scope.
+This example adds a signed delegation chain between LangGraph nodes with agentpassport. An orchestrator grants `read:web` to a researcher, who re-delegates that same scope to a writer. The writer can search. It cannot persist. The scope check runs before the capability handler.
+
+The runnable script is [`research_pipeline.py`](research_pipeline.py). CI executes that file, so this page describes it instead of keeping a second copy of the program.
 
 ## What we're building
 
@@ -13,216 +15,77 @@ This tutorial shows how to add cryptographic scope enforcement between LangGraph
                                                     ↓
                                    delegates(scope=read:web) → [Writer]
                                                                    ↓
-                                           attempts write:db → ScopeError ✅
+                              search_web (read:web)     → runs
+                              save_article (write:db)   → ScopeError before the handler
 ```
 
-The writer can summarize. It cannot persist. The scope is enforced cryptographically before any handler runs.
+The writer node is a tool-calling model. The model in this file is a stub: it always calls `search_web` and `save_article`, then stops. No API key and no network call. Replace `writer_node` with a chat model bound to the same tools when you want a live model.
 
-## Setup
+## What the script checks
+
+Delegation tokens are signed with `sign_delegation`. That function signs the scope you pass. It does not look at the parent grant, so a researcher can put `write:db` on a token even if it was only given `read:web`.
+
+`writer.handle` rejects that expansion. It applies the same rules as `verify_auth_chain`: the final subject is the writer, each hop's issuer is the previous subject, and scope only narrows. It then checks the scope declared on the capability (`requires=["read:web"]` or `requires=["write:db"]`). It does not consult a revocation registry. On the happy path the chain is `read:web` only, so `search_web` runs and `save_article` raises `ScopeError` before its handler.
+
+The researcher calls `verify_auth_chain` with `expected_subject=researcher.did` before re-delegating. That check is the researcher's own grant. The writer does not need a second copy of it.
+
+The script also builds a negative chain where the researcher over-grants `write:db`. `verify_auth_chain` returns false for that chain, and `writer.handle` denies `save_article` for the same reason, without running the handler.
+
+Tools register a sync function and a coroutine. `graph.invoke` uses the sync function. `graph.ainvoke` awaits the coroutine, so a tool call does not open a nested event loop with `asyncio.run`.
+
+## Run
+
+From the repository root, against the SDK in this checkout:
+
+```bash
+uv venv --python 3.12 /tmp/agentpassport-example-langgraph
+uv pip install --python /tmp/agentpassport-example-langgraph/bin/python \
+  -e packages/agentpassport \
+  -r examples/langgraph/requirements.txt
+/tmp/agentpassport-example-langgraph/bin/python examples/langgraph/research_pipeline.py
+```
+
+Outside this repo, install the published packages and run the same file:
 
 ```bash
 pip install langgraph agentpassport
-```
-
-## The code
-
-```python
-import asyncio
-from typing import TypedDict, Annotated
-from langgraph.graph import StateGraph, END
-from agentpassport import Agent, sign_delegation, verify_auth_chain, ScopeError
-from agentpassport.revocation import InMemoryRevocationRegistry
-
-# --- Agent identities ---
-
-orchestrator = Agent("orchestrator")
-researcher = Agent("researcher")
-writer = Agent("writer")
-
-# Shared revocation registry (in production, use SqliteRevocationRegistry)
-registry = InMemoryRevocationRegistry()
-
-# Researcher trusts orchestrator's keys
-researcher_trusted_keys = {orchestrator.did: orchestrator.public_key}
-
-# Writer trusts researcher's keys
-writer_trusted_keys = {researcher.did: researcher.public_key}
-
-
-# --- Graph state ---
-
-class ResearchState(TypedDict):
-    topic: str
-    auth_token: str        # delegation token passed between nodes
-    research_notes: str
-    final_article: str
-    error: str
-
-
-# --- Node: Orchestrator ---
-
-def orchestrator_node(state: ResearchState) -> ResearchState:
-    """Signs a delegation to the researcher scoped to read:web only."""
-    token = sign_delegation(
-        issuer_private_key=orchestrator.private_key,
-        issuer_did=orchestrator.did,
-        subject_did=researcher.did,
-        scope=["read:web"],
-        ttl_seconds=3600,
-        revocation_registry=registry,
-    )
-    print(f"[Orchestrator] Signed delegation → researcher | scope: read:web")
-    return {**state, "auth_token": token}
-
-
-# --- Node: Researcher ---
-
-def researcher_node(state: ResearchState) -> ResearchState:
-    """Verifies its delegation, does research, re-delegates to writer."""
-    # Verify the orchestrator's delegation
-    try:
-        verify_auth_chain(
-            auth_chain=[state["auth_token"]],
-            expected_subject=researcher.did,
-            required_scope=["read:web"],
-            known_public_keys=researcher_trusted_keys,
-            revocation_registry=registry,
-        )
-    except ScopeError as e:
-        return {**state, "error": f"Researcher auth failed: {e}"}
-
-    print(f"[Researcher] Auth verified ✅ | Fetching web content for: {state['topic']}")
-
-    # Simulate web research (real impl would use a search tool here)
-    notes = f"Research notes on '{state['topic']}': [fetched from web, read:web scope used]"
-
-    # Re-delegate to writer — same scope (read:web), narrowed TTL
-    writer_token = sign_delegation(
-        issuer_private_key=researcher.private_key,
-        issuer_did=researcher.did,
-        subject_did=writer.did,
-        scope=["read:web"],   # can only grant what we have
-        ttl_seconds=1800,
-        revocation_registry=registry,
-    )
-
-    return {**state, "research_notes": notes, "auth_token": writer_token}
-
-
-# --- Node: Writer ---
-
-def writer_node(state: ResearchState) -> ResearchState:
-    """Verifies delegation, writes article. Cannot exceed read:web scope."""
-    # Verify the researcher's delegation
-    try:
-        verify_auth_chain(
-            auth_chain=[state["auth_token"]],
-            expected_subject=writer.did,
-            required_scope=["read:web"],
-            known_public_keys=writer_trusted_keys,
-            revocation_registry=registry,
-        )
-    except ScopeError as e:
-        return {**state, "error": f"Writer auth failed: {e}"}
-
-    print(f"[Writer] Auth verified ✅ | Writing article from research notes")
-
-    # This works — read:web is granted
-    article = f"# Article: {state['topic']}\n\n{state['research_notes']}\n\n[Written by writer agent]"
-
-    # Now let's see what happens if the writer tries to exceed its scope
-    print(f"[Writer] Attempting to cache results to database...")
-    try:
-        verify_auth_chain(
-            auth_chain=[state["auth_token"]],
-            expected_subject=writer.did,
-            required_scope=["write:db"],   # NOT in the delegation chain
-            known_public_keys=writer_trusted_keys,
-            revocation_registry=registry,
-        )
-        # This line never runs
-        print("[Writer] write:db access granted")
-    except ScopeError as e:
-        print(f"[Writer] Scope check failed 🛡️ — {e}")
-        print("[Writer] Continuing without DB write (correct behavior)")
-
-    return {**state, "final_article": article}
-
-
-# --- Build the graph ---
-
-def build_graph():
-    graph = StateGraph(ResearchState)
-
-    graph.add_node("orchestrator", orchestrator_node)
-    graph.add_node("researcher", researcher_node)
-    graph.add_node("writer", writer_node)
-
-    graph.set_entry_point("orchestrator")
-    graph.add_edge("orchestrator", "researcher")
-    graph.add_edge("researcher", "writer")
-    graph.add_edge("writer", END)
-
-    return graph.compile()
-
-
-# --- Run it ---
-
-if __name__ == "__main__":
-    app = build_graph()
-
-    result = app.invoke({
-        "topic": "cryptographic delegation in multi-agent systems",
-        "auth_token": "",
-        "research_notes": "",
-        "final_article": "",
-        "error": "",
-    })
-
-    print("\n--- Final Output ---")
-    if result["error"]:
-        print(f"Error: {result['error']}")
-    else:
-        print(result["final_article"])
-```
-
-## Running the example
-
-```bash
 python research_pipeline.py
 ```
+
+The script exits 0 only when the two-hop chain verifies, `search_web` returns notes, `save_article` is denied without running its handler, the same graph succeeds under `ainvoke`, and the over-granted chain is rejected.
 
 Expected output:
 
 ```
-[Orchestrator] Signed delegation → researcher | scope: read:web
-[Researcher] Auth verified ✅ | Fetching web content for: cryptographic delegation in multi-agent systems
-[Writer] Auth verified ✅ | Writing article from research notes
-[Writer] Attempting to cache results to database...
-[Writer] Scope check failed 🛡️ — ScopeError: requires [write:db], granted [read:web]
-[Writer] Continuing without DB write (correct behavior)
+[orchestrator] signed delegation -> researcher | scope: read:web
+[researcher] chain verified | delegated -> writer | scope: read:web
+[writer] search_web -> stub notes about cryptographic delegation in multi-agent systems
+[writer] save_article -> SCOPE_DENIED: Capability 'save_article' requires scope ['write:db'] not granted by the auth chain. Granted: ['read:web']
+auth chain hops: 2
+# cryptographic delegation in multi-agent systems
 
---- Final Output ---
-# Article: cryptographic delegation in multi-agent systems
+Research notes on cryptographic delegation in multi-agent systems.
 
-Research notes on 'cryptographic delegation in multi-agent systems': [fetched from web, read:web scope used]
-
-[Written by writer agent]
+stub notes about cryptographic delegation in multi-agent systems
+[researcher] over-granted write:db: verify_auth_chain is false
+[writer] save_article denied on that chain
+example ok
 ```
 
-The writer can read. It cannot write to the database. The scope check happens before the handler runs — no partial state, no cleanup needed.
+The writer can read. It cannot write to the database. The scope check happens before the handler runs.
 
 ## What this gives you
 
-- **Auditable delegation chains.** Every hop is a signed JWT. You can trace exactly who authorized what, when, and with what scope.
-- **Fail-fast scope enforcement.** Capabilities declare what they need. agentpassport checks before running. Bad requests fail cleanly.
-- **Revocation without process kills.** Revoke a delegation by JTI mid-flight. The current action completes; the next one fails.
-- **Cross-language.** Your LangGraph orchestrator can delegate to a TypeScript microagent and the same trust chain verifies.
+- **Auditable delegation chains.** Every hop is a signed JWT. You can trace who authorized what, when, and with what scope.
+- **Fail-fast scope enforcement.** Capabilities declare what they need. agentpassport checks before the handler runs. A bad request does not leave partial work behind.
+- **Narrowing.** A hop can pass on a subset of its scope. It cannot widen the chain. `verify_auth_chain` and `Agent.handle` both reject the widened token.
+- **Revocation without process kills.** Revoke a delegation by JTI. The current action can finish; the next check fails. This script keeps the registry out of the path; see `InMemoryRevocationRegistry` and `SqliteRevocationRegistry`.
+- **Cross-language.** A LangGraph orchestrator can delegate to a TypeScript agent and the same chain verifies. See `examples/typescript`.
 
 ## What's next
 
 - Add `SqliteRevocationRegistry` for persistent revocation across restarts
-- Wire in real tool calls (search APIs, database writes) and protect them with capabilities
+- Point `writer_node` at a real chat model bound to `search_web` and `save_article`
 - Use `agentpassport-adapters` for MCP or A2A protocol integration
 
 ---
