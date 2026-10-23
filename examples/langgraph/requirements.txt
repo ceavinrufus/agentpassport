@@ -1,0 +1,4 @@
+# Third-party packages for this example.
+# agentpassport itself is installed from this repository — see README.md.
+langgraph>=1.2,<2
+langchain-core>=1.4.7,<2
