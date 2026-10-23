@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1497,7 +1497,7 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.observability</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileSink</span>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">FileSink</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/var/log/agentpassport/events.ndjson&quot;</span><span class="p">)))</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">FileSink</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">"/var/log/agentpassport/events.ndjson"</span><span class="p">)))</span>
 </code></pre></div>
 <p>The file is opened in append mode on every write. No rotation is built in — use logrotate or a similar tool if needed.</p>
 <h3 id="memorysink">MemorySink</h3>
@@ -1531,7 +1531,7 @@
 <a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="n">provider</span> <span class="o">=</span> <span class="n">TracerProvider</span><span class="p">()</span>
 <a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">provider</span><span class="o">.</span><span class="n">add_span_processor</span><span class="p">(</span>
 <a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="n">BatchSpanProcessor</span><span class="p">(</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>        <span class="n">OTLPSpanExporter</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;http://localhost:4317&quot;</span><span class="p">,</span> <span class="n">insecure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>        <span class="n">OTLPSpanExporter</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">"http://localhost:4317"</span><span class="p">,</span> <span class="n">insecure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="p">)</span>
 <a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="p">)</span>
 <a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="n">trace</span><span class="o">.</span><span class="n">set_tracer_provider</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
@@ -1543,20 +1543,20 @@
 <a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="n">private_key</span><span class="p">,</span> <span class="n">public_key</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
 <a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">public_key</span><span class="p">)</span>
 <a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;summariser&quot;</span><span class="p">,</span> <span class="n">did</span><span class="o">=</span><span class="n">did</span><span class="p">,</span> <span class="n">private_key</span><span class="o">=</span><span class="n">private_key</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"summariser"</span><span class="p">,</span> <span class="n">did</span><span class="o">=</span><span class="n">did</span><span class="p">,</span> <span class="n">private_key</span><span class="o">=</span><span class="n">private_key</span><span class="p">)</span>
 <a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
 <a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="c1"># OtelSink uses the globally configured tracer provider by default</span>
 <a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">OtelSink</span><span class="p">())</span>
 <a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;summarise&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoke:llm&quot;</span><span class="p">])</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">"summarise"</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">"invoke:llm"</span><span class="p">])</span>
 <a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">summarise</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
 <a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>    <span class="c1"># Each call to agent.handle() will emit spans to Datadog</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"summary"</span><span class="p">:</span> <span class="s2">"..."</span><span class="p">}</span>
 </code></pre></div>
 <p>If you want to pass a custom tracer instead of using the global one:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">opentelemetry</span><span class="w"> </span><span class="kn">import</span> <span class="n">trace</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">tracer</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_tracer</span><span class="p">(</span><span class="s2">&quot;my-custom-tracer&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">tracer</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_tracer</span><span class="p">(</span><span class="s2">"my-custom-tracer"</span><span class="p">)</span>
 <a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">OtelSink</span><span class="p">(</span><span class="n">tracer</span><span class="o">=</span><span class="n">tracer</span><span class="p">))</span>
 </code></pre></div>
 <h3 id="what-spans-look-like">What spans look like</h3>
@@ -1622,7 +1622,7 @@
 <a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="n">provider</span> <span class="o">=</span> <span class="n">TracerProvider</span><span class="p">()</span>
 <a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="n">provider</span><span class="o">.</span><span class="n">add_span_processor</span><span class="p">(</span>
 <a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>    <span class="n">BatchSpanProcessor</span><span class="p">(</span>
-<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>        <span class="n">OTLPSpanExporter</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;http://localhost:4317&quot;</span><span class="p">,</span> <span class="n">insecure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>        <span class="n">OTLPSpanExporter</span><span class="p">(</span><span class="n">endpoint</span><span class="o">=</span><span class="s2">"http://localhost:4317"</span><span class="p">,</span> <span class="n">insecure</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>    <span class="p">)</span>
 <a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="p">)</span>
 <a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="n">trace</span><span class="o">.</span><span class="n">set_tracer_provider</span><span class="p">(</span><span class="n">provider</span><span class="p">)</span>
@@ -1630,17 +1630,17 @@
 <a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="c1"># 2. Create the agent</span>
 <a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="n">priv</span><span class="p">,</span> <span class="n">pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
 <a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a><span class="n">did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
-<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;worker&quot;</span><span class="p">,</span> <span class="n">did</span><span class="o">=</span><span class="n">did</span><span class="p">,</span> <span class="n">private_key</span><span class="o">=</span><span class="n">priv</span><span class="p">)</span>
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a><span class="n">agent</span> <span class="o">=</span> <span class="n">Agent</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"worker"</span><span class="p">,</span> <span class="n">did</span><span class="o">=</span><span class="n">did</span><span class="p">,</span> <span class="n">private_key</span><span class="o">=</span><span class="n">priv</span><span class="p">)</span>
 <a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">OtelSink</span><span class="p">())</span>
 <a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>
-<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;echo&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">"echo"</span><span class="p">)</span>
 <a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">echo</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n">TaskEnvelope</span><span class="p">):</span>
-<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;echoed&quot;</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">intent</span><span class="o">.</span><span class="n">params</span><span class="p">}</span>
+<a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>    <span class="k">return</span> <span class="p">{</span><span class="s2">"echoed"</span><span class="p">:</span> <span class="n">task</span><span class="o">.</span><span class="n">intent</span><span class="o">.</span><span class="n">params</span><span class="p">}</span>
 <a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>
-<a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a><span class="c1"># 3. Handle a task — spans appear in Datadog APM under &quot;agentpassport.*&quot;</span>
+<a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a><span class="c1"># 3. Handle a task — spans appear in Datadog APM under "agentpassport.*"</span>
 <a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
 <a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a>    <span class="n">task</span> <span class="o">=</span> <span class="n">TaskEnvelope</span><span class="p">(</span>
-<a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>        <span class="n">intent</span><span class="o">=</span><span class="n">Intent</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;echo&quot;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;msg&quot;</span><span class="p">:</span> <span class="s2">&quot;hello&quot;</span><span class="p">}),</span>
+<a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>        <span class="n">intent</span><span class="o">=</span><span class="n">Intent</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">"echo"</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"msg"</span><span class="p">:</span> <span class="s2">"hello"</span><span class="p">}),</span>
 <a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>        <span class="n">constraints</span><span class="o">=</span><span class="n">Constraints</span><span class="p">(),</span>
 <a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a>    <span class="p">)</span>
 <a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">agent</span><span class="o">.</span><span class="n">handle</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
@@ -1655,7 +1655,7 @@
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.observability</span><span class="w"> </span><span class="kn">import</span> <span class="n">StdoutSink</span><span class="p">,</span> <span class="n">FileSink</span><span class="p">,</span> <span class="n">OtelSink</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">StdoutSink</span><span class="p">())</span>                               <span class="c1"># local dev</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">FileSink</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/tmp/events.ndjson&quot;</span><span class="p">)))</span>       <span class="c1"># file backup</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">FileSink</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">"/tmp/events.ndjson"</span><span class="p">)))</span>       <span class="c1"># file backup</span>
 <a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">add_sink</span><span class="p">(</span><span class="n">OtelSink</span><span class="p">())</span>                                 <span class="c1"># Datadog / Jaeger</span>
 </code></pre></div>
 <p>Sink failures are silently swallowed by <code>OtelSink</code> (so observability never crashes your agent). <code>StdoutSink</code> and <code>FileSink</code> do not catch exceptions — keep that in mind if the target file is on a full disk.</p>
@@ -1665,11 +1665,11 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">agent</span><span class="o">.</span><span class="n">emitter</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
 <a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="n">trace_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">trace_id</span><span class="p">,</span>
 <a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">task_id</span><span class="o">=</span><span class="n">task</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">event</span><span class="o">=</span><span class="s2">&quot;llm_call&quot;</span><span class="p">,</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="n">event</span><span class="o">=</span><span class="s2">"llm_call"</span><span class="p">,</span>
 <a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="n">agent</span><span class="o">=</span><span class="n">agent</span><span class="o">.</span><span class="n">did</span><span class="p">,</span>
 <a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="n">cost_used</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
 <a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>    <span class="n">budget_remaining</span><span class="o">=</span><span class="n">tracker</span><span class="o">.</span><span class="n">remaining</span><span class="p">,</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span> <span class="s2">&quot;tokens&quot;</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"model"</span><span class="p">:</span> <span class="s2">"gpt-4o"</span><span class="p">,</span> <span class="s2">"tokens"</span><span class="p">:</span> <span class="mi">512</span><span class="p">},</span>
 <a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="p">)</span>
 </code></pre></div>
 
@@ -1724,7 +1724,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

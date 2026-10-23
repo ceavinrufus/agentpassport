@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -2923,8 +2923,8 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Ed25519 public key (32 bytes)
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    → Prepend multicodec prefix 0xed 0x01 (2 bytes) → 34 bytes total
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    → Base58btc encode
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    → Prepend &quot;z&quot; (multibase prefix for base58btc)
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    → Prepend &quot;did:key:&quot;
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    → Prepend "z" (multibase prefix for base58btc)
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    → Prepend "did:key:"
 </code></pre></div>
 <p>The multicodec prefix <code>0xed01</code> is a varint-encoded identifier that means "Ed25519 public key" in the multicodec registry. This prefix allows future support for other key types without changing the DID method.</p>
 <h3 id="why-base58btc">Why base58btc?</h3>
@@ -2943,7 +2943,7 @@
 <a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    ↓ base58btc encode
 <a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>  z6Mk...
 <a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    ↓
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  &quot;did:key:z6Mk...&quot;
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>  "did:key:z6Mk..."
 </code></pre></div>
 <hr />
 <h2 id="3-ed25519-keypairs">3. Ed25519 Keypairs</h2>
@@ -3074,7 +3074,7 @@
 <a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  SHA-256(
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    JSON.stringify(
 <a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>      { capabilities: sorted(capabilities), did, endpoint, name },
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>      { sort_keys: true, separators: (&#39;,&#39;, &#39;:&#39;) }
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>      { sort_keys: true, separators: (',', ':') }
 <a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    )
 <a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  )
 </code></pre></div>
@@ -3191,9 +3191,9 @@
 <h3 id="the-solution-chained-jwts">The Solution: Chained JWTs</h3>
 <p>Each delegation hop produces one JWT. The <code>auth_chain</code> field of a <code>TaskEnvelope</code> is a list of these JWTs in order:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>auth_chain = [
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    JWT(iss=U, sub=A, scope=[&quot;*&quot;]),         # U delegated to A
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    JWT(iss=A, sub=B, scope=[&quot;read:db&quot;]),   # A delegated to B (narrowed scope)
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    JWT(iss=B, sub=C, scope=[&quot;read:db&quot;]),   # B delegated to C
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    JWT(iss=U, sub=A, scope=["*"]),         # U delegated to A
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    JWT(iss=A, sub=B, scope=["read:db"]),   # A delegated to B (narrowed scope)
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    JWT(iss=B, sub=C, scope=["read:db"]),   # B delegated to C
 <a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>]
 </code></pre></div>
 <h3 id="verification-rules">Verification rules</h3>
@@ -3217,7 +3217,7 @@
 <a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>  |                        |-- sign_delegation--&gt;|                     |
 <a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>  |                        |   iss=U.did         |                     |
 <a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>  |                        |   sub=A.did         |                     |
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>  |                        |   scope=[&quot;*&quot;]       |                     |
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>  |                        |   scope=["*"]       |                     |
 <a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>  |                        |                     |                     |
 <a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>  |                        |-- send task -------&gt;|                     |
 <a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>  |                        |   auth_chain=[JWT1] |                     |
@@ -3228,7 +3228,7 @@
 <a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>  |                        |                     |-- sign_delegation--&gt;|
 <a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>  |                        |                     |   iss=A.did         |
 <a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>  |                        |                     |   sub=B.did         |
-<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>  |                        |                     |   scope=[&quot;read:db&quot;] |
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>  |                        |                     |   scope=["read:db"] |
 <a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>  |                        |                     |                     |
 <a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>  |                        |                     |-- send subtask ----&gt;|
 <a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>  |                        |                     |   auth_chain=       |
@@ -3246,18 +3246,18 @@
 <h2 id="7-jwt-structure">7. JWT Structure</h2>
 <p>AgentPassport uses compact JWTs with the EdDSA algorithm profile. The format is identical between the Python and TypeScript SDKs.</p>
 <h3 id="header">Header</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span><span class="nt">&quot;alg&quot;</span><span class="p">:</span><span class="s2">&quot;EdDSA&quot;</span><span class="p">,</span><span class="nt">&quot;crv&quot;</span><span class="p">:</span><span class="s2">&quot;Ed25519&quot;</span><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span><span class="nt">"alg"</span><span class="p">:</span><span class="s2">"EdDSA"</span><span class="p">,</span><span class="nt">"crv"</span><span class="p">:</span><span class="s2">"Ed25519"</span><span class="p">}</span>
 </code></pre></div>
 <p>This is constant. It does not contain a <code>kid</code> (key ID) because the issuer DID in the payload serves as the key reference.</p>
 <h3 id="payload-delegation-claims">Payload (delegation claims)</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">&quot;iss&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="nt">&quot;sub&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:key:z6Mk...&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">&quot;iat&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1717123456</span><span class="p">,</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="nt">&quot;exp&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1717127056</span><span class="p">,</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span><span class="nt">&quot;jti&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;550e8400-e29b-41d4-a716-446655440000&quot;</span><span class="p">,</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="nt">&quot;scope&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;read:db:customers&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;write:cache&quot;</span><span class="p">],</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="nt">&quot;max_delegations&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">  </span><span class="nt">"iss"</span><span class="p">:</span><span class="w"> </span><span class="s2">"did:key:z6Mk..."</span><span class="p">,</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="nt">"sub"</span><span class="p">:</span><span class="w"> </span><span class="s2">"did:key:z6Mk..."</span><span class="p">,</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="nt">"iat"</span><span class="p">:</span><span class="w"> </span><span class="mi">1717123456</span><span class="p">,</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span><span class="nt">"exp"</span><span class="p">:</span><span class="w"> </span><span class="mi">1717127056</span><span class="p">,</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span><span class="nt">"jti"</span><span class="p">:</span><span class="w"> </span><span class="s2">"550e8400-e29b-41d4-a716-446655440000"</span><span class="p">,</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span><span class="nt">"scope"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"read:db:customers"</span><span class="p">,</span><span class="w"> </span><span class="s2">"write:cache"</span><span class="p">],</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">  </span><span class="nt">"max_delegations"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span>
 <a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="p">}</span>
 </code></pre></div>
 <table>
@@ -3375,7 +3375,7 @@
 <h3 id="multiple-scopes">Multiple scopes</h3>
 <p>A token can grant multiple scopes: <code>scope: ["read:db", "write:cache", "invoke:llm"]</code>. The receiving agent's granted scopes are the <strong>union</strong> of all scopes across all valid tokens in the chain whose subject is that agent.</p>
 <h3 id="declaring-required-scopes-on-capabilities">Declaring required scopes on capabilities</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">&quot;summarize&quot;</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;invoke:llm&quot;</span><span class="p">,</span> <span class="s2">&quot;read:docs&quot;</span><span class="p">])</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nd">@agent</span><span class="o">.</span><span class="n">capability</span><span class="p">(</span><span class="s2">"summarize"</span><span class="p">,</span> <span class="n">requires</span><span class="o">=</span><span class="p">[</span><span class="s2">"invoke:llm"</span><span class="p">,</span> <span class="s2">"read:docs"</span><span class="p">])</span>
 <a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span><span class="n">task</span><span class="p">):</span>
 <a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    <span class="o">...</span>
 </code></pre></div>
@@ -3669,8 +3669,8 @@
 <p><code>HttpTransport</code> serializes a <code>TaskEnvelope</code> to JSON and POSTs it to <code>&lt;endpoint&gt;/agentpassport/tasks</code>. It uses <code>httpx.AsyncClient</code> for async HTTP.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.transport.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">HttpTransport</span>
 <a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
-<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">transport</span> <span class="o">=</span> <span class="n">HttpTransport</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://my-agent.example.com&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">)</span>
-<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">transport</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;/agentpassport/tasks&quot;</span><span class="p">)</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">transport</span> <span class="o">=</span> <span class="n">HttpTransport</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">"https://my-agent.example.com"</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">)</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">transport</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">"/agentpassport/tasks"</span><span class="p">)</span>
 </code></pre></div>
 <table>
 <thead>
@@ -3697,8 +3697,8 @@
 <p><code>StdioTransport</code> launches a subprocess and communicates with it via stdin/stdout. The task is written as a newline-terminated JSON line to the subprocess stdin, and the response is read from stdout.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport.transport.stdio</span><span class="w"> </span><span class="kn">import</span> <span class="n">StdioTransport</span>
 <a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
-<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">transport</span> <span class="o">=</span> <span class="n">StdioTransport</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span> <span class="s2">&quot;-m&quot;</span><span class="p">,</span> <span class="s2">&quot;myagent&quot;</span><span class="p">])</span>
-<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">transport</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">transport</span> <span class="o">=</span> <span class="n">StdioTransport</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="p">[</span><span class="s2">"python"</span><span class="p">,</span> <span class="s2">"-m"</span><span class="p">,</span> <span class="s2">"myagent"</span><span class="p">])</span>
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">transport</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
 </code></pre></div>
 <p>Use cases:</p>
 <ul>
@@ -3789,10 +3789,10 @@
 <a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">agentpassport</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_keypair</span><span class="p">,</span> <span class="n">did_from_public_key</span><span class="p">,</span> <span class="n">sign_delegation</span>
 <a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="n">priv</span><span class="p">,</span> <span class="n">pub</span> <span class="o">=</span> <span class="n">generate_keypair</span><span class="p">()</span>
 <a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="n">did</span> <span class="o">=</span> <span class="n">did_from_public_key</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span>
-<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="n">token</span> <span class="o">=</span> <span class="n">sign_delegation</span><span class="p">(</span><span class="n">priv</span><span class="p">,</span> <span class="n">did</span><span class="p">,</span> <span class="n">other_did</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;read:db&quot;</span><span class="p">])</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="n">token</span> <span class="o">=</span> <span class="n">sign_delegation</span><span class="p">(</span><span class="n">priv</span><span class="p">,</span> <span class="n">did</span><span class="p">,</span> <span class="n">other_did</span><span class="p">,</span> <span class="p">[</span><span class="s2">"read:db"</span><span class="p">])</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1">// TypeScript: verify that token</span>
-<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">&quot;@agentpassport/core&quot;</span><span class="p">;</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s2">"@agentpassport/core"</span><span class="p">;</span>
 <a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="kd">const</span><span class="w"> </span><span class="nx">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">verifyAuthChain</span><span class="p">({</span>
 <a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">  </span><span class="nx">chain</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="nx">token</span><span class="p">],</span>
 <a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">  </span><span class="nx">expectedSubject</span><span class="o">:</span><span class="w"> </span><span class="kt">otherDid</span><span class="p">,</span>
@@ -3852,7 +3852,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>
