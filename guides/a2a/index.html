@@ -1624,7 +1624,7 @@
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│    ├── extract skillId → map to capability name                 │
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│    ├── parse auth chain header → attach to TaskEnvelope         │
 <a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>│    └── agent.handle(envelope)                                   │
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│          ├── TrustMiddleware.check() (scope enforcement)        │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│          ├── TrustMiddleware.check() (chain + scope)            │
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│          └── your @agent.capability("name") handler             │
 <a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>└─────────────────────────────────────────────────────────────────┘
 <a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
@@ -1786,9 +1786,9 @@
 <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>X-AgentPassport-Auth-Chain: eyJhbGc..., eyJhbGc...
 </code></pre></div>
 <p>The adapter splits this header on commas, strips whitespace, and attaches the resulting list to <code>TaskEnvelope.auth_chain</code>. Your capability handler receives the full envelope — including the chain — for any downstream inspection or forwarding.</p>
-<p>Scope enforcement happens automatically via <code>TrustMiddleware</code> before your handler runs. If the scope check fails, the adapter catches <code>ScopeError</code> and returns a JSON-RPC error response (code <code>-32000</code>) instead of a 500.</p>
+<p>Scope enforcement happens inside <code>Agent.handle</code> via <code>TrustMiddleware</code> before your handler runs. For a capability that declares <code>requires</code>, the chain must pass the same rules as <code>verify_auth_chain</code>: the final <code>sub</code> is this agent, each hop's <code>iss</code> equals the previous hop's <code>sub</code>, scope only narrows, and the final hop grants every required scope. If that check fails, the adapter catches <code>ScopeError</code> and returns a JSON-RPC error response (code <code>-32000</code>) instead of a 500.</p>
 <p><strong>Open capabilities</strong> (no <code>requires=</code> argument) don't check the auth chain at all — any caller can invoke them.</p>
-<p><strong>Protected capabilities</strong> (<code>requires=["scope:name"]</code>) require a valid chain with the named scope. No chain = <code>ScopeError</code>.</p>
+<p><strong>Protected capabilities</strong> (<code>requires=["scope:name"]</code>) reject an empty chain, a discontinuous chain, and a hop that widens scope, even when the required scope string is still on the final hop. Python <code>handle</code> does not consult a revocation registry. Call <code>verify_auth_chain(..., revocation_registry=...)</code> when a revoked <code>jti</code> must be rejected. The TypeScript <code>Agent</code> checks a registry when you pass <code>{ revocationRegistry }</code> to the constructor.</p>
 <hr />
 <h3 id="vanilla-a2a-client-calling-an-open-capability">Vanilla A2A client calling an open capability</h3>
 <p>No agentpassport setup needed. Standard A2A JSON-RPC 2.0:</p>
