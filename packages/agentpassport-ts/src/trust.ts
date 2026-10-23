@@ -1,20 +1,23 @@
 // trust.ts
-// TrustMiddleware and ScopeError — scope enforcement before capability dispatch
+// TrustMiddleware and ScopeError — scope enforcement before capability dispatch.
+// Chain acceptance matches verifyAuthChain: final subject, hop continuity,
+// and scope narrowing. The grant is the final hop's scope.
 
-import { verifyAuthChain } from "./jwt.js";
+import { decodeJwtClaims, verifyAuthChain } from "./jwt.js";
 import type { RevocationRegistry } from "./revocation.js";
 
 export class ScopeError extends Error {
   constructor(
     public readonly capability: string,
     public readonly required: string[],
-    public readonly granted: string[]
+    public readonly granted: string[],
+    detail?: string
   ) {
     const missing = required.filter((s) => !granted.includes(s) && !granted.includes("*"));
-    super(
+    const base =
       `Scope denied for capability "${capability}": ` +
-        `requires [${required.join(", ")}], missing [${missing.join(", ")}]`
-    );
+      `requires [${required.join(", ")}], missing [${missing.join(", ")}]`;
+    super(detail ? `${base}. ${detail}` : base);
     this.name = "ScopeError";
   }
 }
@@ -32,60 +35,58 @@ export class TrustMiddleware {
    *
    * - No requires declared → always passes (backward compat)
    * - Empty auth chain + requires declared → ScopeError
-   * - Scope matching: exact string OR "*" wildcard only
+   * - Otherwise the whole chain must pass verifyAuthChain for this agent
+   *   (subject, continuity, narrowing, signature, expiry, jti,
+   *   max_delegations, and revocation when a registry is configured)
+   * - Granted scopes are the final hop's scope. "*" covers any requirement;
+   *   other scopes match exactly.
    */
   check(authChain: string[], capabilityName: string): void {
     const required = this.capabilityScopes.get(capabilityName);
     if (!required || required.length === 0) return; // no scope required
 
-    // Collect granted scopes from all tokens whose sub == agentDid
-    // and whose issuer is trusted
-    const granted = new Set<string>();
-
-    for (const token of authChain) {
-      try {
-        // Quick decode without verification to check sub
-        const parts = token.split(".");
-        if (parts.length !== 3) continue;
-        const claims = JSON.parse(
-          new TextDecoder().decode(
-            (() => {
-              const s = parts[1].replace(/-/g, "+").replace(/_/g, "/");
-              const padding = (4 - (s.length % 4)) % 4;
-              const binary = atob(s + "=".repeat(padding));
-              const bytes = new Uint8Array(binary.length);
-              for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-              return bytes;
-            })()
-          )
-        );
-
-        if (claims.sub !== this.agentDid) continue;
-        if (!this.knownPublicKeys.has(claims.iss)) continue;
-
-        // Verify this token cryptographically
-        const valid = verifyAuthChain({
-          chain: [token],
-          expectedSubject: this.agentDid,
-          knownPublicKeys: this.knownPublicKeys,
-          revocationRegistry: this.revocationRegistry,
-        });
-
-        if (valid && Array.isArray(claims.scope)) {
-          for (const s of claims.scope) granted.add(s as string);
-        }
-      } catch {
-        // malformed token — skip
-      }
+    if (authChain.length === 0) {
+      throw new ScopeError(
+        capabilityName,
+        required,
+        [],
+        "The task carries no auth chain."
+      );
     }
 
-    // Wildcard grants everything
-    if (granted.has("*")) return;
+    const valid = verifyAuthChain({
+      chain: authChain,
+      expectedSubject: this.agentDid,
+      knownPublicKeys: this.knownPublicKeys,
+      revocationRegistry: this.revocationRegistry,
+    });
+    if (!valid) {
+      throw new ScopeError(
+        capabilityName,
+        required,
+        [],
+        "Auth chain is not a valid delegation to this agent."
+      );
+    }
 
-    // Check each required scope
-    const missing = required.filter((s) => !granted.has(s));
+    const granted = finalGrantedScopes(authChain);
+    if (granted.includes("*")) return;
+
+    const missing = required.filter((s) => !granted.includes(s));
     if (missing.length > 0) {
-      throw new ScopeError(capabilityName, required, Array.from(granted));
+      throw new ScopeError(capabilityName, required, granted);
     }
+  }
+}
+
+/** Scope strings on the final hop. The chain must already have verified. */
+function finalGrantedScopes(authChain: string[]): string[] {
+  try {
+    const claims = decodeJwtClaims(authChain[authChain.length - 1]);
+    const scope = claims["scope"];
+    if (!Array.isArray(scope)) return [];
+    return scope.filter((s): s is string => typeof s === "string");
+  } catch {
+    return [];
   }
 }

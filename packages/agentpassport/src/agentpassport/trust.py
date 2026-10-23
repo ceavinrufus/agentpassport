@@ -3,16 +3,24 @@
 TrustMiddleware is wired automatically inside Agent.handle(). Users
 declare required scope on each capability via the requires= parameter
 on the @agent.capability() decorator. The middleware verifies that the
-incoming task's auth chain grants every required scope string to this
-agent before the handler runs.
+incoming task's auth chain is a valid delegation to this agent and that
+it grants every required scope string before the handler runs.
 
-Scope matching rules:
-  - Exact string match: "read:db:customers" covers "read:db:customers"
-  - Wildcard: "*" in the chain scope covers any required scope string
-  - No partial glob patterns — exact match or wildcard only
+Chain rules match verify_auth_chain():
+  - every hop is a signed, unexpired delegation from a known issuer
+  - each hop's issuer equals the previous hop's subject
+  - scope can only narrow across hops (a previous "*" allows any
+    downstream scope)
+  - jti and max_delegations are enforced
+  - the final token's sub is this agent's DID
+
+The scopes granted to this agent are the final hop's scope list.
+"*" there covers any required scope. Otherwise matching is exact:
+"read:db:customers" covers only "read:db:customers".
 
 If auth_chain is empty and the capability declares requires, the check
-fails. No authorization was granted.
+fails. No authorization was granted. A capability with no required
+scope is not checked.
 
 Cross-deployment trust is out of scope for this refactor.
 # TODO(cross-deployment): placeholder for explicit cross-deployment
@@ -21,83 +29,31 @@ Cross-deployment trust is out of scope for this refactor.
 
 from __future__ import annotations
 
-from datetime import UTC
+import json
 
-from nacl.exceptions import BadSignatureError
-
-from agentpassport.identity.signing import _decode_jwt_claims, _verify_jwt_signature
+from agentpassport.identity.signing import _decode_jwt_claims, verify_auth_chain
 
 
 class ScopeError(Exception):
     """Raised when an agent's auth chain does not cover the declared required scope."""
 
 
-def _chain_granted_scopes(
-    auth_chain: list[str],
-    agent_did: str,
-    known_public_keys: dict[str, bytes],
-) -> set[str]:
-    """Return the effective scopes granted to *agent_did* by *auth_chain*,
-    respecting scope narrowing across hops.
+def _final_granted_scopes(auth_chain: list[str]) -> set[str]:
+    """Return the scope strings on the final hop of a chain.
 
-    Scope can only narrow as it travels down the chain — an intermediate agent
-    cannot grant permissions it was never given. The effective grant at any hop
-    is the intersection of the previous effective grant and the current token's
-    scope (wildcard '*' in the previous grant acts as a passthrough).
-
-    Only tokens that pass signature verification and target this agent (sub ==
-    agent_did) contribute. Expired tokens and tokens from untrusted issuers are
-    skipped.
+    Callers must already have accepted the chain with verify_auth_chain().
+    Narrowing is enforced there, so this set is what the receiving agent
+    was actually granted.
     """
-    from datetime import datetime
-
-    # First pass: collect all valid tokens in chain order with their scopes.
-    ordered_scopes: list[list[str]] = []
-    now_ts = datetime.now(UTC).timestamp()
-
-    for token in auth_chain:
-        try:
-            unverified = _decode_jwt_claims(token)
-        except Exception:
-            continue
-
-        issuer = unverified.get("iss")
-        pub_key_bytes = known_public_keys.get(issuer) if issuer else None
-        if pub_key_bytes is None:
-            continue
-
-        try:
-            claims = _verify_jwt_signature(token, pub_key_bytes)
-        except (BadSignatureError, ValueError):
-            continue
-
-        try:
-            if float(claims["iat"]) > now_ts or now_ts > float(claims["exp"]):
-                continue
-        except (KeyError, TypeError, ValueError):
-            continue
-
-        scope = claims.get("scope", [])
-        if isinstance(scope, list):
-            ordered_scopes.append(scope)
-
-    if not ordered_scopes:
+    try:
+        claims = _decode_jwt_claims(auth_chain[-1])
+    except (ValueError, json.JSONDecodeError):
         return set()
 
-    # Second pass: intersect scope across hops (narrowing only).
-    # The last token's sub must be agent_did — check that separately in check().
-    # Here we compute the effective grant by propagating narrowing through each hop.
-    effective: set[str] | None = None
-    for scope_list in ordered_scopes:
-        current = set(scope_list)
-        if effective is None:
-            effective = current
-        elif "*" in effective:
-            effective = current  # wildcard passthrough — current scope takes over
-        else:
-            effective = effective & current  # intersect (narrowing only)
-
-    return effective or set()
+    scope = claims.get("scope", [])
+    if not isinstance(scope, list):
+        return set()
+    return {item for item in scope if isinstance(item, str)}
 
 
 class TrustMiddleware:
@@ -118,12 +74,12 @@ class TrustMiddleware:
         self._capability_scopes = capability_scopes
 
     def check(self, task_auth_chain: list[str], capability_name: str) -> None:
-        """Raise ScopeError if the task's auth chain does not cover the
-        required scope declared for *capability_name*.
+        """Raise ScopeError if *capability_name* is not authorized.
 
-        If the capability declares no required scope, this is a no-op.
-        If the capability declares required scope and the chain is empty,
-        ScopeError is raised — no authorization was granted.
+        No-op when the capability declares no required scope. An empty
+        chain, a chain verify_auth_chain() rejects, or a final grant that
+        misses a required scope all raise ScopeError. The handler must
+        not run in those cases.
         """
         required = self._capability_scopes.get(capability_name)
         if not required:
@@ -135,11 +91,19 @@ class TrustMiddleware:
                 f"but the task carries no auth chain."
             )
 
-        granted = _chain_granted_scopes(
-            task_auth_chain, self._agent_did, self._known_public_keys
-        )
+        if not verify_auth_chain(
+            auth_chain=task_auth_chain,
+            expected_subject=self._agent_did,
+            known_public_keys=self._known_public_keys,
+        ):
+            raise ScopeError(
+                f"Capability '{capability_name}' requires scope {required!r} "
+                f"but the auth chain is not a valid delegation to this agent."
+            )
 
-        # "*" in granted covers everything
+        granted = _final_granted_scopes(task_auth_chain)
+
+        # "*" in the final grant covers everything
         if "*" in granted:
             return
 

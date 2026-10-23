@@ -208,7 +208,7 @@ async def handler(task: TaskEnvelope) -> dict[str, Any]:
 **Raises (at decoration time):** Nothing.
 
 **Raises (at call time via `handle()`):**
-- `ScopeError` — if `requires` is set and the auth chain doesn't cover all required scopes.
+- `ScopeError` — if `requires` is set and the auth chain is not a valid delegation to this agent, or does not cover all required scopes.
 - Any exception raised by the handler propagates out of `handle()`.
 
 **Example 1: Simple capability, no scope required**
@@ -379,7 +379,7 @@ Handle an incoming task by dispatching to the registered capability handler. Run
 
 **Raises:**
 - `ValueError` — if no handler is registered for `task.intent.type`.
-- `ScopeError` — if the capability declares `requires=[...]` and the auth chain doesn't cover it.
+- `ScopeError` — if the capability declares `requires=[...]` and the auth chain is not a valid delegation to this agent (`verify_auth_chain` rules) or does not cover the required scopes.
 - Any exception raised by the handler (handler exceptions cause the task to transition to `FAILED` and emit a `task_failed` event before re-raising).
 
 **Side effects:**
@@ -726,10 +726,13 @@ Verify a complete chain of delegation JWTs. Returns `True` only if every check p
 1. Structural validity (3 parts)
 2. `alg: EdDSA` in header
 3. Issuer in `known_public_keys`
-4. Valid Ed25519 signature
-5. `iat <= now <= exp` (temporal validity)
-6. `jti` is non-empty
-7. `jti` not revoked (if registry provided)
+4. This hop's `iss` equals the previous hop's `sub` (the first hop has no predecessor)
+5. Valid Ed25519 signature
+6. `iat` is not more than 30 seconds in the future, and `now <= exp`
+7. `jti` is non-empty
+8. `jti` not revoked (if registry provided)
+9. `scope` does not widen. Every scope string on this hop, including `"*"`, must be in the previous hop's scope unless that hop granted `"*"`. A previous `"*"` allows any concrete scope downstream.
+10. `max_delegations` on earlier hops still allows this hop
 
 **Final check:** Last token's `sub == expected_subject`.
 
@@ -1345,7 +1348,7 @@ Pre-execution scope enforcement. Wired automatically inside `Agent`. You typical
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `agent_did` | `str` | Yes | The DID of the agent whose scope is being checked. Tokens with `sub != agent_did` are ignored. |
+| `agent_did` | `str` | Yes | DID of the receiving agent. The final token's `sub` must equal this value; otherwise the chain is rejected. |
 | `known_public_keys` | `dict[str, bytes]` | Yes | Map from issuer DID to 32-byte public key. Passed by reference — mutations to the dict after construction are reflected in subsequent checks. |
 | `capability_scopes` | `dict[str, list[str]]` | Yes | Map from capability name to required scope list. Passed by reference. |
 
@@ -1355,7 +1358,7 @@ Pre-execution scope enforcement. Wired automatically inside `Agent`. You typical
 def check(self, task_auth_chain: list[str], capability_name: str) -> None
 ```
 
-Raises `ScopeError` if the auth chain doesn't cover the required scope for `capability_name`. No-op if the capability has no declared required scope.
+Raises `ScopeError` if the capability declares required scope and the auth chain is empty, fails `verify_auth_chain()` for this agent (signature, expiry, `jti`, `max_delegations`, final `sub`, hop continuity, or scope narrowing), or the final hop's scope does not cover every required string. No-op if the capability has no declared required scope. The granted set is the final hop's `scope`.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
@@ -1380,7 +1383,7 @@ class ScopeError(Exception):
 Raised by `TrustMiddleware.check()` and propagated through `Agent.handle()`. The message includes:
 - The capability name
 - The required scopes
-- The granted scopes (or "no auth chain" if chain was empty)
+- The granted scopes when the chain is valid but incomplete, "no auth chain" when the chain is empty, or "not a valid delegation to this agent" when `verify_auth_chain()` rejects it
 
 **Example:**
 ```python
@@ -1915,6 +1918,6 @@ Decodes the payload section of a JWT **without verifying the signature**. Used i
 
 Verifies the JWT signature and returns the decoded claims. Raises `ValueError` on structural issues, `nacl.exceptions.BadSignatureError` on invalid signatures.
 
-### `_chain_granted_scopes(auth_chain, agent_did, known_public_keys) -> set[str]`
+### `_final_granted_scopes(auth_chain) -> set[str]`
 
-Returns the union of scopes from all valid, non-expired, correctly-targeted tokens in the chain. Used by `TrustMiddleware.check()`.
+Returns the scope strings on the final hop. `TrustMiddleware.check()` calls this only after `verify_auth_chain()` has accepted the chain, so the set is the scope actually granted to the receiving agent.
