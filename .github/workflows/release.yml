@@ -1,0 +1,37 @@
+name: GitHub Release
+
+# Creates the GitHub Release for a tag Ceavin pushes. Does not create the tag.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Changelog section for this tag
+        run: python3 scripts/extract_changelog.py "${GITHUB_REF_NAME}" > release_notes.md
+
+      - name: Create release from the tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists."
+            exit 0
+          fi
+          args=(--title "$GITHUB_REF_NAME" --generate-notes --verify-tag)
+          if [ -s release_notes.md ]; then
+            # --notes is prepended to the notes GitHub generates from commits since the previous tag.
+            args+=(--notes "$(cat release_notes.md)")
+          fi
+          gh release create "$GITHUB_REF_NAME" "${args[@]}"
