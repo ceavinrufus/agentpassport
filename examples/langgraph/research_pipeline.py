@@ -84,20 +84,12 @@ async def _run_capability(
     params: dict[str, str],
     auth_chain: list[str],
 ) -> dict[str, object]:
-    """Verify the chain for the writer, then run the capability.
+    """Run the capability on the writer.
 
-    ``verify_auth_chain`` checks subject and hop continuity. ``handle`` then
-    enforces the capability's required scope.
+    ``handle`` checks the final subject, hop continuity, scope narrowing,
+    and the capability's required scope. It does not consult a revocation
+    registry.
     """
-    chain_ok = verify_auth_chain(
-        auth_chain=auth_chain,
-        expected_subject=writer.did,
-        known_public_keys=_writer_keys(),
-    )
-    if not chain_ok:
-        raise ScopeError(
-            f"Auth chain for {name!r} failed verification for subject {writer.did}"
-        )
     task = TaskEnvelope(
         intent=Intent(type=name, params=params),
         auth_chain=list(auth_chain),
@@ -201,8 +193,8 @@ def researcher_node(state: ResearchState) -> dict[str, str | list[str]]:
         raise RuntimeError("researcher rejected the delegation chain")
 
     # sign_delegation will sign write:db if asked; it does not read the parent
-    # grant. This hop passes read:web only. Widening is rejected later by
-    # verify_auth_chain — see _assert_over_grant_denied.
+    # grant. This hop passes read:web only. writer.handle and verify_auth_chain
+    # both reject a widened hop — see _assert_over_grant_denied.
     token = sign_delegation(
         issuer_private_key=_RESEARCHER_PRIVATE,
         issuer_did=researcher.did,
@@ -337,7 +329,7 @@ def _assert_happy_path(result: ResearchState, topic: str) -> None:
 
 
 async def _assert_over_grant_denied() -> None:
-    """A widened hop fails verify_auth_chain, and handle still denies the tool."""
+    """A widened hop fails verify_auth_chain, and handle denies the tool."""
     chain = _over_granted_chain()
     if verify_auth_chain(
         auth_chain=chain,
@@ -372,7 +364,7 @@ async def _assert_over_grant_denied() -> None:
         raise SystemExit("save_article handler ran on an over-granted chain")
 
     print("[researcher] over-granted write:db: verify_auth_chain is false")
-    print("[writer] save_article still denied on that chain")
+    print("[writer] save_article denied on that chain")
 
 
 def main() -> None:

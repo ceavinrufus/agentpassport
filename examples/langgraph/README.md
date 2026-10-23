@@ -23,21 +23,13 @@ The writer node is a tool-calling model. The model in this file is a stub: it al
 
 ## What the script checks
 
-Delegation tokens are signed with `sign_delegation`. That function signs the scope you pass. It does not look at the parent grant, so a researcher *can* put `write:db` on a token even if it was only given `read:web`.
+Delegation tokens are signed with `sign_delegation`. That function signs the scope you pass. It does not look at the parent grant, so a researcher can put `write:db` on a token even if it was only given `read:web`.
 
-`verify_auth_chain` is what rejects that expansion. Each tool calls it with `expected_subject=writer.did` before `writer.handle`:
+`writer.handle` rejects that expansion. It applies the same rules as `verify_auth_chain`: the final subject is the writer, each hop's issuer is the previous subject, and scope only narrows. It then checks the scope declared on the capability (`requires=["read:web"]` or `requires=["write:db"]`). It does not consult a revocation registry. On the happy path the chain is `read:web` only, so `search_web` runs and `save_article` raises `ScopeError` before its handler.
 
-```python
-chain_ok = verify_auth_chain(
-    auth_chain=auth_chain,
-    expected_subject=writer.did,
-    known_public_keys=writer_keys,
-)
-```
+The researcher calls `verify_auth_chain` with `expected_subject=researcher.did` before re-delegating. That check is the researcher's own grant. The writer does not need a second copy of it.
 
-`handle` then enforces the scope declared on the capability (`requires=["read:web"]` or `requires=["write:db"]`). On the happy path the chain is `read:web` only, so `search_web` runs and `save_article` raises `ScopeError` before its handler.
-
-The script also builds a negative chain where the researcher over-grants `write:db`. `verify_auth_chain` returns false for that chain, and `writer.handle` still denies `save_article` without running the handler.
+The script also builds a negative chain where the researcher over-grants `write:db`. `verify_auth_chain` returns false for that chain, and `writer.handle` denies `save_article` for the same reason, without running the handler.
 
 Tools register a sync function and a coroutine. `graph.invoke` uses the sync function. `graph.ainvoke` awaits the coroutine, so a tool call does not open a nested event loop with `asyncio.run`.
 
@@ -76,7 +68,7 @@ Research notes on cryptographic delegation in multi-agent systems.
 
 stub notes about cryptographic delegation in multi-agent systems
 [researcher] over-granted write:db: verify_auth_chain is false
-[writer] save_article still denied on that chain
+[writer] save_article denied on that chain
 example ok
 ```
 
@@ -86,7 +78,7 @@ The writer can read. It cannot write to the database. The scope check happens be
 
 - **Auditable delegation chains.** Every hop is a signed JWT. You can trace who authorized what, when, and with what scope.
 - **Fail-fast scope enforcement.** Capabilities declare what they need. agentpassport checks before the handler runs. A bad request does not leave partial work behind.
-- **Narrowing.** A hop can pass on a subset of its scope. It cannot widen the chain. `verify_auth_chain` rejects the widened token.
+- **Narrowing.** A hop can pass on a subset of its scope. It cannot widen the chain. `verify_auth_chain` and `Agent.handle` both reject the widened token.
 - **Revocation without process kills.** Revoke a delegation by JTI. The current action can finish; the next check fails. This script keeps the registry out of the path; see `InMemoryRevocationRegistry` and `SqliteRevocationRegistry`.
 - **Cross-language.** A LangGraph orchestrator can delegate to a TypeScript agent and the same chain verifies. See `examples/typescript`.
 

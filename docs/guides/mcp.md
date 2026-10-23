@@ -37,11 +37,11 @@ agentpassport sits on top of OAuth and MCP auth. It does not replace them, and i
 
 The patterns below run after the client is allowed to reach the server, and before the tool:
 
-1. **Scope** — `TrustMiddleware.check` requires the task's auth chain to grant the scope declared for the tool. It verifies JWT signatures against keys you have trusted, and it skips expired tokens and tokens from unknown issuers.
+1. **Chain and scope** — for a tool that declares a required scope, `TrustMiddleware.check` (what `Agent.handle` runs) accepts the task only when `verify_auth_chain` would. Every hop must be a signed, unexpired delegation from a trusted issuer. Each hop's `iss` must equal the previous hop's `sub`. Scope may only narrow, and the final `sub` must be this agent. The final hop's scope must include the tool's scope, or `"*"`. One bad hop fails the call. A capability with no `requires` is not checked.
 2. **Stop on failure** — `ScopeError` is raised before `McpAdapter.execute`, or before the proxy forwards, so the tool does not run.
 3. **Forward on success** — the tool call goes to the MCP server. The auth chain is not forwarded. The server does not have to understand agentpassport.
 
-`TrustMiddleware.check` does not consult a revocation registry. To reject a revoked `jti`, call `verify_auth_chain(..., revocation_registry=...)`. See [section 8](#8-revocation-mid-flight).
+Python `TrustMiddleware.check` and `Agent.handle` do not consult a revocation registry. To reject a revoked `jti`, call `verify_auth_chain(..., revocation_registry=...)`. The TypeScript `Agent` checks a registry when you pass `{ revocationRegistry }` to the constructor. See [section 8](#8-revocation-mid-flight).
 
 In the wrapper and proxy patterns the MCP server process is unchanged. OAuth on an HTTP server, if you use it, still decides which client may connect.
 
@@ -56,9 +56,10 @@ Agent / LLM orchestrator
   ▼
 agentpassport Agent (Python)
   ├── TrustMiddleware.check(auth_chain, "read_file")
-  │     ├── each token: signature, expiry, issuer key is trusted
-  │     ├── granted scope includes "fs:read", or "*"
-  │     └── chain linkage and revocation: use verify_auth_chain
+  │     ├── verify_auth_chain rules: signature, expiry, final subject,
+  │     │   hop continuity, scope narrowing, jti, max_delegations
+  │     ├── final hop grants "fs:read", or "*"
+  │     └── revocation registry: not consulted; call verify_auth_chain
   │
   ├── if check passes ──▶  McpAdapter.execute(task)
   │                           ├── spawn MCP server subprocess
@@ -236,10 +237,12 @@ Incoming request:
 
 agentpassport:
 1. Extracts auth chain from header
-2. verify_auth_chain — signatures, linkage, narrowing, and final subject
-3. TrustMiddleware.check — tool name → required scope
-4. Forwards to backend MCP server if all checks pass
-5. Returns 403 if either check fails
+2. TrustMiddleware.check — verify_auth_chain rules (signature, expiry,
+   final subject, hop continuity, scope narrowing) and the tool's scope
+3. Forwards to the backend MCP server if the check passes
+4. Returns 403 if the check fails
+
+Python check() does not consult a revocation registry.
 """
 
 import asyncio
@@ -249,7 +252,6 @@ from typing import Any
 import httpx
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response
-from agentpassport import verify_auth_chain
 from agentpassport.trust import TrustMiddleware, ScopeError
 
 # ---------------------------------------------------------------------------
@@ -274,8 +276,7 @@ TRUSTED_KEYS: dict[str, bytes] = {
     "did:key:z6Mk...": bytes.fromhex("abc123..."),  # orchestrator
 }
 
-# Final JWT subject for this proxy. verify_auth_chain requires sub == PROXY_DID.
-# TrustMiddleware.check does not compare the token subject to this DID.
+# Final JWT subject for this proxy. check() requires the final sub to equal PROXY_DID.
 PROXY_DID = "did:key:z6Mk..."
 
 # ---------------------------------------------------------------------------
@@ -305,15 +306,8 @@ def check_auth(auth_chain_header: str | None, tool_name: str, proxy_did: str) ->
     if not chain:
         raise HTTPException(status_code=403, detail="X-Auth-Chain header is empty.")
 
-    # Subject, chain linkage, and scope narrowing. TrustMiddleware.check does not do these.
-    if not verify_auth_chain(
-        auth_chain=chain,
-        expected_subject=proxy_did,
-        known_public_keys=TRUSTED_KEYS,
-    ):
-        raise HTTPException(status_code=403, detail="Auth chain verification failed.")
-
-    # Tool scope only. A token whose subject is not proxy_did still passes this call.
+    # Same rules as verify_auth_chain for this agent, plus the tool's scope.
+    # Does not consult a revocation registry.
     tm = TrustMiddleware(
         agent_did=proxy_did,
         known_public_keys=TRUSTED_KEYS,
@@ -548,7 +542,8 @@ revocation_registry = InMemoryRevocationRegistry()
 priv, pub = generate_keypair()
 orchestrator_did = did_from_public_key(pub)
 
-# MCP gateway agent. Its handle() checks scope, not the revocation registry.
+# MCP gateway agent. handle() enforces subject, continuity, narrowing, and scope.
+# It does not read the revocation registry.
 gateway = Agent("mcp-gateway")
 gateway.trust_keys({orchestrator_did: pub})
 

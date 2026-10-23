@@ -346,13 +346,13 @@ footer { position: relative; z-index: 1; border-top: 1px solid var(--border); pa
       <div class="feature-icon"><i data-lucide="shield-check"></i></div>
       <div class="feature-num">03 / ENFORCEMENT</div>
       <div class="feature-title">Pre-execution scope gates</div>
-      <p class="feature-desc">Capabilities declare required scope. agentpassport checks before the handler runs — fail fast, no partial state.</p>
+      <p class="feature-desc">Capabilities declare required scope. <code style="font-family:var(--mono);font-size:0.78rem;color:var(--green)">Agent.handle</code> checks final subject, hop continuity, and scope narrowing, then that scope, before the handler runs.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon"><i data-lucide="ban"></i></div>
       <div class="feature-num">04 / REVOCATION</div>
       <div class="feature-title">Mid-flight revocation</div>
-      <p class="feature-desc">Revoke a JTI in a registry. <code style="font-family:var(--mono);font-size:0.78rem;color:var(--green)">verify_auth_chain</code> rejects that token when you pass the registry. <code style="font-family:var(--mono);font-size:0.78rem;color:var(--green)">Agent.handle</code> does not check it.</p>
+      <p class="feature-desc">Revoke a JTI in a registry. <code style="font-family:var(--mono);font-size:0.78rem;color:var(--green)">verify_auth_chain</code> rejects that token when you pass the registry. Python <code style="font-family:var(--mono);font-size:0.78rem;color:var(--green)">Agent.handle</code> does not consult one.</p>
     </div>
     <div class="feature-card">
       <div class="feature-icon"><i data-lucide="arrow-left-right"></i></div>
@@ -427,7 +427,8 @@ token = <span class="fn">sign_delegation</span>(
 <span class="kw">async def</span> <span class="fn">handle</span>(task):
     <span class="kw">return</span> {<span class="str">"customers"</span>: [...]}  <span class="c"># only runs if the chain grants that scope</span>
 
-<span class="c"># Revoke by JTI. Checked by verify_auth_chain, not Agent.handle</span>
+<span class="c"># Revoke by JTI. verify_auth_chain with a registry rejects it.</span>
+<span class="c"># Python Agent.handle does not consult a registry.</span>
 registry.<span class="fn">revoke</span>(jti)
 <span class="fn">verify_auth_chain</span>(
     auth_chain=[token],
@@ -440,6 +441,7 @@ registry.<span class="fn">revoke</span>(jti)
 
 <span class="kw">const</span> registry = <span class="kw">new</span> <span class="fn">InMemoryRevocationRegistry</span>()
 <span class="kw">const</span> agent = <span class="kw">new</span> <span class="fn">Agent</span>(<span class="str">"ts-agent"</span>, { privateKey, revocationRegistry: registry })
+<span class="c">// handle checks revocationRegistry. Python Agent.handle does not.</span>
 
 agent.<span class="fn">trustKeys</span>({ [orchestratorDid]: orchestratorPublicKey })
 
@@ -534,7 +536,7 @@ const SCENARIOS = {
       { cls:'log-dim', text:'[01] delegation  jti=d77dd09a… active' },
       { cls:'log-dim', text:'[02] revocation  registry.revoke(jti)' },
       { cls:'log-err', text:'[03] verify      verify_auth_chain(..., revocation_registry)' },
-      { cls:'log-err', text:'[04] result      false — Agent.handle does not apply this' },
+      { cls:'log-err', text:'[04] result      false — Python Agent.handle does not check it' },
     ]
   }
 };
